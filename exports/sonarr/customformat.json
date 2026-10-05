@@ -1,0 +1,100 @@
+[
+  {
+    "id": 2,
+    "includeCustomFormatWhenRenaming": false,
+    "name": "Rar blocker",
+    "specifications": [
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Custom Format RegEx is Case Insensitive",
+            "isFloat": false,
+            "label": "Regular Expression",
+            "name": "value",
+            "order": 0,
+            "privacy": "normal",
+            "type": "textbox",
+            "value": "\\.rar(\\b|$)"
+          }
+        ],
+        "implementation": "ReleaseTitleSpecification",
+        "implementationName": "Release Title",
+        "infoLink": "https://wiki.servarr.com/sonarr/settings#custom-formats-2",
+        "name": "Rar block",
+        "negate": false,
+        "required": false
+      },
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Custom Format RegEx is Case Insensitive",
+            "isFloat": false,
+            "label": "Regular Expression",
+            "name": "value",
+            "order": 0,
+            "privacy": "normal",
+            "type": "textbox",
+            "value": "\\.txt(\\b|$)"
+          }
+        ],
+        "implementation": "ReleaseTitleSpecification",
+        "implementationName": "Release Title",
+        "infoLink": "https://wiki.servarr.com/sonarr/settings#custom-formats-2",
+        "name": "Txt block",
+        "negate": false,
+        "required": false
+      },
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Custom Format RegEx is Case Insensitive",
+            "isFloat": false,
+            "label": "Regular Expression",
+            "name": "value",
+            "order": 0,
+            "privacy": "normal",
+            "type": "textbox",
+            "value": "\\.zip(\\b|$)"
+          }
+        ],
+        "implementation": "ReleaseTitleSpecification",
+        "implementationName": "Release Title",
+        "infoLink": "https://wiki.servarr.com/sonarr/settings#custom-formats-2",
+        "name": "Zip block",
+        "negate": false,
+        "required": false
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "includeCustomFormatWhenRenaming": false,
+    "name": "TV Extras",
+    "specifications": [
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Custom Format RegEx is Case Insensitive",
+            "isFloat": false,
+            "label": "Regular Expression",
+            "name": "value",
+            "order": 0,
+            "privacy": "normal",
+            "type": "textbox",
+            "value": "(?<=\\bS\\d+\\b).*\\b(Extras|Bonus|Extended[ ._-]Clip)\\b"
+          }
+        ],
+        "implementation": "ReleaseTitleSpecification",
+        "implementationName": "Release Title",
+        "infoLink": "https://wiki.servarr.com/sonarr/settings#custom-formats-2",
+        "name": "TV Extras",
+        "negate": false,
+        "required": true
+      }
+    ]
+  }
+]

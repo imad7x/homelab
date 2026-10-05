@@ -1,0 +1,89 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/settings/
+
+title: iMad7x Homelab
+favicon: https://johnbwoodruff.com/img/homelab.png
+
+headerStyle: boxedWidgets
+statusStyle: dot          # compact status dots instead of text labels
+useEqualHeights: true     # stops cards in a row from jittering to different heights
+target: _blank
+theme: dark
+color: neutral
+
+# Served from ./config/images/bg.jpg. Previously this pulled a JPEG from
+# styles.redditmedia.com on every page load - slow, and the page lost its
+# background entirely whenever that host was unreachable.
+background:
+  image: /images/bg.jpg
+  blur: sm       # sm, md, xl
+  saturate: 70   # 0, 50, 100
+  brightness: 50 # 0, 50, 75
+  opacity: 90    # 0-100
+
+# Type anywhere on the page to filter services by name or description, then hit
+# enter to jump straight to one. This is the fastest way to navigate once you
+# have twenty-odd tiles.
+quicklaunch:
+  searchDescriptions: true
+  showSearchSuggestions: true
+  hideInternetSearch: false
+  hideVisitURL: false
+
+# Explicit ordering and column counts. Without this block the groups render in
+# file order at a default width, which is what made the page feel ragged.
+layout:
+  Media:
+    style: row
+    columns: 4
+    icon: mdi-play-circle
+  Arr:
+    style: row
+    columns: 4
+    icon: mdi-television-classic
+  Downloads:
+    style: row
+    columns: 4
+    icon: mdi-download-circle
+  Infrastructure:
+    style: row
+    columns: 4
+    icon: mdi-server-network
+  Monitoring:
+    style: row
+    columns: 4
+    icon: mdi-chart-areaspline
+  Finance:
+    style: row
+    columns: 4
+    icon: mdi-cash-multiple
+
+  # LAN shortcut groups from bookmarks.yaml. Placed after the service groups
+  # so the page reads: public tiles first, direct 192.168.0.10 links below.
+  Media (local):
+    style: row
+    columns: 4
+    icon: mdi-lan-connect
+  Arr (local):
+    style: row
+    columns: 4
+    icon: mdi-lan-connect
+  Downloads (local):
+    style: row
+    columns: 4
+    icon: mdi-lan-connect
+  Infra (local):
+    style: row
+    columns: 6
+    icon: mdi-lan-connect
+  Finance (local):
+    style: row
+    columns: 4
+    icon: mdi-lan-connect
+
+providers:
+  # NOTE: unused - there is no weather widget configured in widgets.yaml. Add
+  # latitude/longitude to an openweathermap widget there to make use of it, or
+  # drop this key. It is also stored in plaintext; see HOMEPAGE_VAR_* in the docs.
+  openweathermap: [[secret:HOMEPAGE_OPENWEATHERMAP]]

@@ -1,0 +1,3 @@
+# Only the Dockerfile and app/ belong in the build context.
+state
+selftest-*

@@ -1,0 +1,83 @@
+# Document archive with OCR and full-text search.
+#
+#   drop a file in /data/inbox
+#        -> OCR (Tesseract) if it has no text layer already
+#        -> text indexed in Postgres, original filed under /data/documents/media
+#        -> findable by what is INSIDE it, not what it is called
+#
+# So a lab report saved as 1234.pdf is found by searching "health report".
+#
+#   on the LAN:  http://192.168.0.10:8000
+#   drop docs:   \\lab7x\lab7x\inbox   (or \\lab7x\inbox if the dedicated
+#                share in inbox-share.smb.conf gets added)
+#   log:         docker logs paperless
+#
+# Deliberately NOT on the cloudflared tunnel. Medical and financial paperwork
+# is the last thing that should be publicly reachable; reach it from outside
+# over Tailscale instead.
+
+services:
+  paperless-db:
+    image: postgres:16-alpine
+    container_name: paperless-db
+    restart: unless-stopped
+    env_file:
+      - ./db.env
+    # No ports at all. Only paperless talks to this, over the compose network.
+    # (finance-db publishes on 127.0.0.1:5432 and would clash anyway.)
+    volumes:
+      - paperless_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paperless -d paperless"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  paperless-redis:
+    image: docker.io/library/redis:7-alpine
+    container_name: paperless-redis
+    restart: unless-stopped
+    volumes:
+      - paperless_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperless
+    restart: unless-stopped
+    env_file:
+      - ./paperless.env
+    ports:
+      - "8000:8000"
+    volumes:
+      # Search index, classifier model and thumbnails. On the NVMe on purpose:
+      # this is the hot path for every search, and it is small (~hundreds of MB).
+      - ./data:/usr/src/paperless/data
+      # The documents themselves - originals plus the OCR'd archive copies.
+      # On the pool because that is where the space is.
+      - /data/documents/media:/usr/src/paperless/media
+      # Watched folder - the ONLY path you ever touch by hand. Kept at the top
+      # of the pool, not nested under documents/, so it is one hop from the
+      # root of the Samba share: \\lab7x\lab7x\inbox
+      - /data/inbox:/usr/src/paperless/consume
+      # `document_exporter` writes here; this is what a backup would copy.
+      - /data/documents/export:/usr/src/paperless/export
+    depends_on:
+      paperless-db:
+        condition: service_healthy
+      paperless-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+volumes:
+  paperless_db_data:
+  paperless_redis_data:

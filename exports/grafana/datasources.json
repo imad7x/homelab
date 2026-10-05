@@ -1,0 +1,141 @@
+[
+  {
+    "access": "proxy",
+    "basicAuth": false,
+    "database": "",
+    "id": 3,
+    "isDefault": false,
+    "jsonData": {
+      "connMaxLifetime": 14400,
+      "database": "firefly",
+      "maxIdleConns": 2,
+      "maxOpenConns": 5,
+      "postgresVersion": 1600,
+      "sslmode": "disable",
+      "timescaledb": false
+    },
+    "name": "Finance (Firefly)",
+    "orgId": 1,
+    "readOnly": true,
+    "type": "grafana-postgresql-datasource",
+    "typeLogoUrl": "public/plugins/grafana-postgresql-datasource/img/postgresql_logo.svg",
+    "typeName": "PostgreSQL",
+    "uid": "finance-pg",
+    "url": "finance-db:5432",
+    "user": "grafana_ro"
+  },
+  {
+    "access": "proxy",
+    "basicAuth": false,
+    "database": "",
+    "id": 4,
+    "isDefault": false,
+    "jsonData": {
+      "connMaxLifetime": 14400,
+      "database": "jfstat",
+      "maxIdleConns": 2,
+      "maxOpenConns": 5,
+      "postgresVersion": 1600,
+      "sslmode": "disable",
+      "timescaledb": false
+    },
+    "name": "Jellystat",
+    "orgId": 1,
+    "readOnly": true,
+    "type": "grafana-postgresql-datasource",
+    "typeLogoUrl": "public/plugins/grafana-postgresql-datasource/img/postgresql_logo.svg",
+    "typeName": "PostgreSQL",
+    "uid": "jellystat-pg",
+    "url": "jellystat-db:5432",
+    "user": "grafana_ro"
+  },
+  {
+    "access": "proxy",
+    "basicAuth": false,
+    "database": "",
+    "id": 1,
+    "isDefault": true,
+    "jsonData": {},
+    "name": "Prometheus",
+    "orgId": 1,
+    "readOnly": false,
+    "type": "prometheus",
+    "typeLogoUrl": "public/plugins/prometheus/img/prometheus_logo.svg",
+    "typeName": "Prometheus",
+    "uid": "PBFA97CFB590B2093",
+    "url": "http://prometheus:9090",
+    "user": ""
+  },
+  {
+    "access": "proxy",
+    "basicAuth": false,
+    "database": "",
+    "id": 6,
+    "isDefault": false,
+    "jsonData": {
+      "allowedHosts": [
+        "http://192.168.0.10:7878"
+      ],
+      "apiKeyKey": "X-Api-Key",
+      "apiKeyType": "header",
+      "auth_method": "apiKey"
+    },
+    "name": "Radarr API",
+    "orgId": 1,
+    "readOnly": true,
+    "type": "yesoreyeram-infinity-datasource",
+    "typeLogoUrl": "public/plugins/yesoreyeram-infinity-datasource/img/icon.svg",
+    "typeName": "Infinity",
+    "uid": "radarr-api",
+    "url": "",
+    "user": ""
+  },
+  {
+    "access": "proxy",
+    "basicAuth": false,
+    "database": "",
+    "id": 5,
+    "isDefault": false,
+    "jsonData": {
+      "allowedHosts": [
+        "http://192.168.0.10:5055"
+      ],
+      "apiKeyKey": "X-Api-Key",
+      "apiKeyType": "header",
+      "auth_method": "apiKey"
+    },
+    "name": "Seerr API",
+    "orgId": 1,
+    "readOnly": true,
+    "type": "yesoreyeram-infinity-datasource",
+    "typeLogoUrl": "public/plugins/yesoreyeram-infinity-datasource/img/icon.svg",
+    "typeName": "Infinity",
+    "uid": "seerr-api",
+    "url": "",
+    "user": ""
+  },
+  {
+    "access": "proxy",
+    "basicAuth": false,
+    "database": "",
+    "id": 7,
+    "isDefault": false,
+    "jsonData": {
+      "allowedHosts": [
+        "http://192.168.0.10:8989"
+      ],
+      "apiKeyKey": "X-Api-Key",
+      "apiKeyType": "header",
+      "auth_method": "apiKey"
+    },
+    "name": "Sonarr API",
+    "orgId": 1,
+    "readOnly": true,
+    "type": "yesoreyeram-infinity-datasource",
+    "typeLogoUrl": "public/plugins/yesoreyeram-infinity-datasource/img/icon.svg",
+    "typeName": "Infinity",
+    "uid": "sonarr-api",
+    "url": "",
+    "user": ""
+  }
+]

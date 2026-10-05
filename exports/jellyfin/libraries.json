@@ -1,0 +1,277 @@
+[
+  {
+    "CollectionType": "boxsets",
+    "LibraryOptions": {
+      "AllowEmbeddedSubtitles": "AllowAll",
+      "AutomaticRefreshIntervalDays": 0,
+      "AutomaticallyAddToCollection": false,
+      "CustomTagDelimiters": [
+        "/",
+        "|",
+        ";",
+        "\\"
+      ],
+      "DelimiterWhitelist": [],
+      "DisabledLocalMetadataReaders": [],
+      "DisabledLyricFetchers": [],
+      "DisabledMediaSegmentProviders": [],
+      "DisabledSubtitleFetchers": [],
+      "EnableAutomaticSeriesGrouping": true,
+      "EnableChapterImageExtraction": false,
+      "EnableEmbeddedEpisodeInfos": false,
+      "EnableEmbeddedExtrasTitles": false,
+      "EnableEmbeddedTitles": false,
+      "EnableInternetProviders": false,
+      "EnableLUFSScan": false,
+      "EnablePhotos": true,
+      "EnableRealtimeMonitor": false,
+      "EnableTrickplayImageExtraction": false,
+      "Enabled": true,
+      "ExtractChapterImagesDuringLibraryScan": false,
+      "ExtractTrickplayImagesDuringLibraryScan": false,
+      "LyricFetcherOrder": [],
+      "MediaSegmentProviderOrder": [],
+      "PathInfos": [
+        {
+          "Path": "/config/data/data/collections"
+        }
+      ],
+      "PreferNonstandardArtistsTag": false,
+      "RequirePerfectSubtitleMatch": true,
+      "SaveLocalMetadata": true,
+      "SaveLyricsWithMedia": false,
+      "SaveSubtitlesWithMedia": true,
+      "SaveTrickplayWithMedia": false,
+      "SeasonZeroDisplayName": "Specials",
+      "SkipSubtitlesIfAudioTrackMatches": true,
+      "SkipSubtitlesIfEmbeddedSubtitlesPresent": false,
+      "SubtitleFetcherOrder": [],
+      "TypeOptions": [],
+      "UseCustomTagDelimiters": false
+    },
+    "Locations": [
+      "/config/data/data/collections"
+    ],
+    "Name": "Collections"
+  },
+  {
+    "CollectionType": "movies",
+    "LibraryOptions": {
+      "AllowEmbeddedSubtitles": "AllowAll",
+      "AutomaticRefreshIntervalDays": 0,
+      "AutomaticallyAddToCollection": true,
+      "CustomTagDelimiters": [
+        "/",
+        "|",
+        ";",
+        "\\"
+      ],
+      "DelimiterWhitelist": [],
+      "DisabledLocalMetadataReaders": [],
+      "DisabledLyricFetchers": [],
+      "DisabledMediaSegmentProviders": [],
+      "DisabledSubtitleFetchers": [],
+      "EnableAutomaticSeriesGrouping": false,
+      "EnableChapterImageExtraction": false,
+      "EnableEmbeddedEpisodeInfos": false,
+      "EnableEmbeddedExtrasTitles": false,
+      "EnableEmbeddedTitles": false,
+      "EnableInternetProviders": false,
+      "EnableLUFSScan": true,
+      "EnablePhotos": true,
+      "EnableRealtimeMonitor": true,
+      "EnableTrickplayImageExtraction": false,
+      "Enabled": true,
+      "ExtractChapterImagesDuringLibraryScan": false,
+      "ExtractTrickplayImagesDuringLibraryScan": false,
+      "LocalMetadataReaderOrder": [
+        "Nfo"
+      ],
+      "LyricFetcherOrder": [],
+      "MediaSegmentProviderOrder": [],
+      "MetadataCountryCode": "US",
+      "MetadataSavers": [],
+      "PathInfos": [
+        {
+          "Path": "/data/movies"
+        }
+      ],
+      "PreferNonstandardArtistsTag": false,
+      "PreferredMetadataLanguage": "en",
+      "RequirePerfectSubtitleMatch": true,
+      "SaveLocalMetadata": false,
+      "SaveLyricsWithMedia": false,
+      "SaveSubtitlesWithMedia": true,
+      "SaveTrickplayWithMedia": false,
+      "SeasonZeroDisplayName": "Specials",
+      "SkipSubtitlesIfAudioTrackMatches": false,
+      "SkipSubtitlesIfEmbeddedSubtitlesPresent": false,
+      "SubtitleDownloadLanguages": [],
+      "SubtitleFetcherOrder": [],
+      "TypeOptions": [
+        {
+          "ImageFetcherOrder": [
+            "TheMovieDb",
+            "The Open Movie Database",
+            "Embedded Image Extractor",
+            "Screen Grabber"
+          ],
+          "ImageFetchers": [
+            "TheMovieDb",
+            "The Open Movie Database",
+            "Embedded Image Extractor",
+            "Screen Grabber"
+          ],
+          "ImageOptions": [],
+          "MetadataFetcherOrder": [
+            "TheMovieDb",
+            "The Open Movie Database"
+          ],
+          "MetadataFetchers": [
+            "TheMovieDb",
+            "The Open Movie Database"
+          ],
+          "SimilarItemProviderOrder": [],
+          "SimilarItemProviders": [
+            "Local Genre/Tag"
+          ],
+          "Type": "Movie"
+        }
+      ],
+      "UseCustomTagDelimiters": false
+    },
+    "Locations": [
+      "/data/movies"
+    ],
+    "Name": "Movies"
+  },
+  {
+    "CollectionType": "tvshows",
+    "LibraryOptions": {
+      "AllowEmbeddedSubtitles": "AllowAll",
+      "AutomaticRefreshIntervalDays": 0,
+      "AutomaticallyAddToCollection": false,
+      "CustomTagDelimiters": [
+        "/",
+        "|",
+        ";",
+        "\\"
+      ],
+      "DelimiterWhitelist": [],
+      "DisabledLocalMetadataReaders": [],
+      "DisabledLyricFetchers": [],
+      "DisabledMediaSegmentProviders": [],
+      "DisabledSubtitleFetchers": [],
+      "EnableAutomaticSeriesGrouping": false,
+      "EnableChapterImageExtraction": false,
+      "EnableEmbeddedEpisodeInfos": false,
+      "EnableEmbeddedExtrasTitles": false,
+      "EnableEmbeddedTitles": false,
+      "EnableInternetProviders": false,
+      "EnableLUFSScan": true,
+      "EnablePhotos": true,
+      "EnableRealtimeMonitor": true,
+      "EnableTrickplayImageExtraction": false,
+      "Enabled": true,
+      "ExtractChapterImagesDuringLibraryScan": false,
+      "ExtractTrickplayImagesDuringLibraryScan": false,
+      "LocalMetadataReaderOrder": [
+        "Nfo"
+      ],
+      "LyricFetcherOrder": [],
+      "MediaSegmentProviderOrder": [],
+      "MetadataCountryCode": "",
+      "MetadataSavers": [],
+      "PathInfos": [
+        {
+          "Path": "/data/shows"
+        }
+      ],
+      "PreferNonstandardArtistsTag": false,
+      "PreferredMetadataLanguage": "en",
+      "RequirePerfectSubtitleMatch": true,
+      "SaveLocalMetadata": false,
+      "SaveLyricsWithMedia": false,
+      "SaveSubtitlesWithMedia": true,
+      "SaveTrickplayWithMedia": false,
+      "SeasonZeroDisplayName": "Specials",
+      "SkipSubtitlesIfAudioTrackMatches": false,
+      "SkipSubtitlesIfEmbeddedSubtitlesPresent": false,
+      "SubtitleDownloadLanguages": [],
+      "SubtitleFetcherOrder": [],
+      "TypeOptions": [
+        {
+          "ImageFetcherOrder": [
+            "TheMovieDb"
+          ],
+          "ImageFetchers": [
+            "TheMovieDb"
+          ],
+          "ImageOptions": [],
+          "MetadataFetcherOrder": [
+            "TheMovieDb",
+            "The Open Movie Database"
+          ],
+          "MetadataFetchers": [
+            "TheMovieDb",
+            "The Open Movie Database"
+          ],
+          "SimilarItemProviderOrder": [],
+          "SimilarItemProviders": [
+            "Local Genre/Tag"
+          ],
+          "Type": "Series"
+        },
+        {
+          "ImageFetcherOrder": [
+            "TheMovieDb"
+          ],
+          "ImageFetchers": [
+            "TheMovieDb"
+          ],
+          "ImageOptions": [],
+          "MetadataFetcherOrder": [
+            "TheMovieDb"
+          ],
+          "MetadataFetchers": [
+            "TheMovieDb"
+          ],
+          "SimilarItemProviderOrder": [],
+          "SimilarItemProviders": [],
+          "Type": "Season"
+        },
+        {
+          "ImageFetcherOrder": [
+            "TheMovieDb",
+            "The Open Movie Database",
+            "Embedded Image Extractor",
+            "Screen Grabber"
+          ],
+          "ImageFetchers": [
+            "TheMovieDb",
+            "The Open Movie Database",
+            "Embedded Image Extractor",
+            "Screen Grabber"
+          ],
+          "ImageOptions": [],
+          "MetadataFetcherOrder": [
+            "TheMovieDb",
+            "The Open Movie Database"
+          ],
+          "MetadataFetchers": [
+            "TheMovieDb",
+            "The Open Movie Database"
+          ],
+          "SimilarItemProviderOrder": [],
+          "SimilarItemProviders": [],
+          "Type": "Episode"
+        }
+      ],
+      "UseCustomTagDelimiters": false
+    },
+    "Locations": [
+      "/data/shows"
+    ],
+    "Name": "Shows"
+  }
+]

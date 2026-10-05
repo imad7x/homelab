@@ -1,0 +1,89 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/bookmarks
+#
+# LAN shortcuts. The service tiles above point at the public *.[[private:DOMAIN]]
+# hostnames (which go out through the Cloudflare tunnel and back); these go
+# straight to the box at 192.168.0.10, which is what you want while at home.
+# Both are always available - tile for public, bookmark for direct.
+
+- Media (local):
+    - Jellyfin:
+        - icon: jellyfin.png
+          href: http://192.168.0.10:8096
+          description: 192.168.0.10:8096
+    - Jellyseerr:
+        - icon: jellyseerr.png
+          href: http://192.168.0.10:5055
+          description: 192.168.0.10:5055
+    - Navidrome:
+        - icon: navidrome.png
+          href: http://192.168.0.10:4533
+          description: 192.168.0.10:4533
+- Arr (local):
+    - Sonarr:
+        - icon: sonarr.png
+          href: http://192.168.0.10:8989
+          description: 192.168.0.10:8989
+    - Radarr:
+        - icon: radarr.png
+          href: http://192.168.0.10:7878
+          description: 192.168.0.10:7878
+    - Bazarr:
+        - icon: bazarr.png
+          href: http://192.168.0.10:6767
+          description: 192.168.0.10:6767
+
+- Downloads (local):
+    - qBittorrent:
+        - icon: qbittorrent.png
+          href: http://192.168.0.10:8080
+          description: 192.168.0.10:8080
+    - Prowlarr:
+        - icon: prowlarr.png
+          href: http://192.168.0.10:9696
+          description: 192.168.0.10:9696
+    - Soulseek:
+        - icon: slskd.png
+          href: http://192.168.0.10:5030
+          description: 192.168.0.10:5030
+    - FlareSolverr:
+        - icon: flaresolverr.png
+          href: http://192.168.0.10:8191
+          description: 192.168.0.10:8191
+
+- Infra (local):
+    - Updates:
+        - icon: mdi-package-up
+          href: http://192.168.0.10:8084
+          description: 192.168.0.10:8084
+    - Pi-hole:
+        - icon: pi-hole.png
+          href: http://192.168.0.10:8081/admin
+          description: 192.168.0.10:8081
+    - Grafana:
+        - icon: grafana.png
+          href: http://192.168.0.10:3001
+          description: 192.168.0.10:3001
+    - Scrutiny:
+        - icon: scrutiny.png
+          href: http://192.168.0.10:8083
+          description: 192.168.0.10:8083
+    - Prometheus:
+        - icon: prometheus.png
+          href: http://192.168.0.10:9090
+          description: 192.168.0.10:9090
+    - cAdvisor:
+        - icon: cadvisor.png
+          href: http://192.168.0.10:8082
+          description: 192.168.0.10:8082
+
+- Finance (local):
+    - Firefly III:
+        - icon: firefly-iii.png
+          href: http://192.168.0.10:3002
+          description: 192.168.0.10:3002
+    - Finance Dashboard:
+        - icon: grafana.png
+          href: http://192.168.0.10:3001/d/finance/finance
+          description: 192.168.0.10:3001

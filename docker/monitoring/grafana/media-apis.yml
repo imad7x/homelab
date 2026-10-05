@@ -1,0 +1,38 @@
+# JSON APIs for the Media Usage dashboard, read through the Infinity plugin.
+# Keys come from ../grafana-media.env via the container environment.
+apiVersion: 1
+
+datasources:
+  - name: Seerr API
+    uid: seerr-api
+    type: yesoreyeram-infinity-datasource
+    jsonData:
+      auth_method: apiKey
+      apiKeyKey: X-Api-Key
+      apiKeyType: header
+      allowedHosts: ["http://192.168.0.10:5055"]
+    secureJsonData:
+      apiKeyValue: $SEERR_API_KEY
+    editable: false
+  - name: Radarr API
+    uid: radarr-api
+    type: yesoreyeram-infinity-datasource
+    jsonData:
+      auth_method: apiKey
+      apiKeyKey: X-Api-Key
+      apiKeyType: header
+      allowedHosts: ["http://192.168.0.10:7878"]
+    secureJsonData:
+      apiKeyValue: $RADARR_API_KEY
+    editable: false
+  - name: Sonarr API
+    uid: sonarr-api
+    type: yesoreyeram-infinity-datasource
+    jsonData:
+      auth_method: apiKey
+      apiKeyKey: X-Api-Key
+      apiKeyType: header
+      allowedHosts: ["http://192.168.0.10:8989"]
+    secureJsonData:
+      apiKeyValue: $SONARR_API_KEY
+    editable: false

@@ -1,0 +1,7 @@
+{
+  "group_by": [
+    "grafana_folder",
+    "alertname"
+  ],
+  "receiver": "grafana-default-email"
+}

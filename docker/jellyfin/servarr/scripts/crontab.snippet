@@ -1,0 +1,4 @@
+# Optional: keep the USB data disks out of standby. Both measured ACTIVE on
+# 2026-09-22, so this is insurance only - see disk-keepalive.sh for why.
+# Catch anything the Sonarr/Radarr import hooks missed (manual copies, failed hooks).
+*/30 * * * * /docker/jellyfin/servarr/scripts/jellyfin-prewarm.sh --all >> /docker/jellyfin/logs/prewarm.log 2>&1

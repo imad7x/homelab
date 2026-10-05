@@ -1,0 +1,8 @@
+# Real secrets never live in this repo; only *.env.example copies do.
+*.env
+.env
+!*.env.example
+__pycache__/
+*.pyc
+*.age
+/restore-out/

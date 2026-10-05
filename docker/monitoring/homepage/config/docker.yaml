@@ -1,0 +1,10 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/docker/
+
+# The socket is already mounted read-only in compose.yaml and the container runs
+# as root, so no extra permissions are needed. With this enabled, every service
+# that declares `server: my-docker` + `container: <name>` gets a live running/
+# stopped indicator plus CPU and memory stats.
+my-docker:
+  socket: /var/run/docker.sock

@@ -1,0 +1,27 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    ports:
+      - 3000:3000
+    volumes:
+      - /data:/data:ro
+      - ./config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kolkata
+      - HOMEPAGE_ALLOWED_HOSTS=*
+    # `privileged: true` was removed. It was load-bearing only by accident: the
+    # app runs as the unprivileged `node` user, and privileged granted
+    # CAP_DAC_OVERRIDE, which let it bypass the permissions on docker.sock.
+    # Joining the host's docker group (gid 988, owner of /var/run/docker.sock)
+    # grants exactly that one access instead of every capability on the host.
+    # Start directly as the app's own uid/gid. The entrypoint only drops
+    # privileges when it starts as root, and that drop resets supplementary
+    # groups - which is why group_add alone did not reach the server process.
+    user: "1000:1000"
+    group_add:
+      - "988"
+    restart: unless-stopped

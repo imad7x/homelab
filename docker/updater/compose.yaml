@@ -1,0 +1,52 @@
+# Container updates, one click at a time.
+#
+# Lists every running compose container, says which ones have a newer image
+# on their registry, and updates one on request: `docker compose pull` then
+# `up -d` for that service, waits for it to come up healthy, and puts the
+# old image back if it doesn't. Checks run daily at CHECK_TIME.
+#
+#   on the LAN: http://192.168.0.10:8084
+#   log:        docker logs updater
+#
+# To check weekly instead of daily, set CHECK_DAY below (mon..sun, e.g. sun)
+# and run `docker compose up -d` here.
+
+services:
+  updater:
+    build: .
+    image: updater:latest
+    container_name: updater
+    restart: unless-stopped
+    # Runs as you, not root. The docker group (gid 988 on this host, owner of
+    # /var/run/docker.sock) is the one extra permission it needs.
+    user: "1000:1000"
+    group_add:
+      - "988"
+    ports:
+      - "8084:8084"
+    environment:
+      - TZ=Asia/Kolkata
+      - CHECK_TIME=06:00
+      # Blank = every day. A day name (mon..sun) = once a week on that day.
+      - CHECK_DAY=
+      # The docker CLI keeps its config under here. Your ~/.docker (with the
+      # Docker Hub login) is deliberately not mounted: checks and pulls stay
+      # anonymous, which the public images in use are fine with.
+      - DOCKER_CONFIG=/state/docker-config
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      # Pulling and recreating containers is done through the host's daemon.
+      # This is root-equivalent access, which is why the page only takes
+      # requests carrying its own header (see app/server.py).
+      - /var/run/docker.sock:/var/run/docker.sock
+      # The stacks' compose files, read-only and at the SAME path as on the
+      # host. Compose turns relative paths like ./config into absolute host
+      # paths before handing them to the daemon, so the files must be seen
+      # where they really live or every recreated container gets wrong mounts.
+      - /docker:/docker:ro
+      # Last check results and the update history (state.json).
+      - ./state:/state
+      # The code is mounted read-only so an edit takes effect on the next
+      # restart, like finance-ingest.
+      - ./app:/app:ro

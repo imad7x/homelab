@@ -1,0 +1,272 @@
+[
+  {
+    "id": 65,
+    "includeCustomFormatWhenRenaming": false,
+    "name": "3D",
+    "specifications": [
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Custom Format RegEx is Case Insensitive",
+            "isFloat": false,
+            "label": "Regular Expression",
+            "name": "value",
+            "order": 0,
+            "privacy": "normal",
+            "type": "textbox",
+            "value": "(?<=\\b[12]\\d{3}\\b).*\\b((bluray|bd)?3d|sbs|half[ .-]ou|half[ .-]sbs)\\b"
+          }
+        ],
+        "implementation": "ReleaseTitleSpecification",
+        "implementationName": "Release Title",
+        "infoLink": "https://wiki.servarr.com/radarr/settings#custom-formats-2",
+        "name": "3D",
+        "negate": false,
+        "required": true
+      }
+    ]
+  },
+  {
+    "id": 106,
+    "includeCustomFormatWhenRenaming": false,
+    "name": "Extras",
+    "specifications": [
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Custom Format RegEx is Case Insensitive",
+            "isFloat": false,
+            "label": "Regular Expression",
+            "name": "value",
+            "order": 0,
+            "privacy": "normal",
+            "type": "textbox",
+            "value": "(?i)(?<=\\b[12]\\d{3}\\b).*(\\b|\\.)\\b(Extras?|Bonus|Extended[ ._-]Clip|Special Feature[s]?)\\b"
+          }
+        ],
+        "implementation": "ReleaseTitleSpecification",
+        "implementationName": "Release Title",
+        "infoLink": "https://wiki.servarr.com/radarr/settings#custom-formats-2",
+        "name": "Extras",
+        "negate": false,
+        "required": true
+      }
+    ]
+  },
+  {
+    "id": 158,
+    "includeCustomFormatWhenRenaming": false,
+    "name": "Rar blocker",
+    "specifications": [
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Custom Format RegEx is Case Insensitive",
+            "isFloat": false,
+            "label": "Regular Expression",
+            "name": "value",
+            "order": 0,
+            "privacy": "normal",
+            "type": "textbox",
+            "value": "\\.rar(\\b|$)"
+          }
+        ],
+        "implementation": "ReleaseTitleSpecification",
+        "implementationName": "Release Title",
+        "infoLink": "https://wiki.servarr.com/radarr/settings#custom-formats-2",
+        "name": "rar",
+        "negate": false,
+        "required": false
+      },
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Custom Format RegEx is Case Insensitive",
+            "isFloat": false,
+            "label": "Regular Expression",
+            "name": "value",
+            "order": 0,
+            "privacy": "normal",
+            "type": "textbox",
+            "value": "\\.txt(\\b|$)"
+          }
+        ],
+        "implementation": "ReleaseTitleSpecification",
+        "implementationName": "Release Title",
+        "infoLink": "https://wiki.servarr.com/radarr/settings#custom-formats-2",
+        "name": "txt",
+        "negate": false,
+        "required": false
+      },
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Custom Format RegEx is Case Insensitive",
+            "isFloat": false,
+            "label": "Regular Expression",
+            "name": "value",
+            "order": 0,
+            "privacy": "normal",
+            "type": "textbox",
+            "value": "\\.zip(\\b|$)"
+          }
+        ],
+        "implementation": "ReleaseTitleSpecification",
+        "implementationName": "Release Title",
+        "infoLink": "https://wiki.servarr.com/radarr/settings#custom-formats-2",
+        "name": "zip",
+        "negate": false,
+        "required": false
+      }
+    ]
+  },
+  {
+    "id": 159,
+    "includeCustomFormatWhenRenaming": false,
+    "name": "Over 5GB",
+    "specifications": [
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Release must be greater than this size",
+            "isFloat": true,
+            "label": "Minimum Size",
+            "name": "min",
+            "order": 0,
+            "privacy": "normal",
+            "type": "number",
+            "unit": "GB",
+            "value": 5
+          },
+          {
+            "advanced": false,
+            "helpText": "Release must be less than or equal to this size",
+            "isFloat": true,
+            "label": "Maximum Size",
+            "name": "max",
+            "order": 1,
+            "privacy": "normal",
+            "type": "number",
+            "unit": "GB",
+            "value": 100000
+          }
+        ],
+        "implementation": "SizeSpecification",
+        "implementationName": "Size",
+        "infoLink": "https://wiki.servarr.com/radarr/settings#custom-formats-2",
+        "name": "Size",
+        "negate": false,
+        "required": true
+      }
+    ]
+  },
+  {
+    "id": 160,
+    "includeCustomFormatWhenRenaming": false,
+    "name": "4K SDR over 12GB",
+    "specifications": [
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Release must be greater than this size",
+            "isFloat": true,
+            "label": "Minimum Size",
+            "name": "min",
+            "order": 0,
+            "privacy": "normal",
+            "type": "number",
+            "unit": "GB",
+            "value": 12
+          },
+          {
+            "advanced": false,
+            "helpText": "Release must be less than or equal to this size",
+            "isFloat": true,
+            "label": "Maximum Size",
+            "name": "max",
+            "order": 1,
+            "privacy": "normal",
+            "type": "number",
+            "unit": "GB",
+            "value": 100000
+          }
+        ],
+        "implementation": "SizeSpecification",
+        "implementationName": "Size",
+        "infoLink": "https://wiki.servarr.com/radarr/settings#custom-formats-2",
+        "name": "Size 12GB+",
+        "negate": false,
+        "required": true
+      },
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Custom Format RegEx is Case Insensitive",
+            "isFloat": false,
+            "label": "Regular Expression",
+            "name": "value",
+            "order": 0,
+            "privacy": "normal",
+            "type": "textbox",
+            "value": "\\bHDR(\\b|\\d)|\\b(DV|DoVi|Dolby[ ._-]?Vision|HLG|PQ)\\b"
+          }
+        ],
+        "implementation": "ReleaseTitleSpecification",
+        "implementationName": "Release Title",
+        "infoLink": "https://wiki.servarr.com/radarr/settings#custom-formats-2",
+        "name": "Not HDR/DV",
+        "negate": true,
+        "required": true
+      }
+    ]
+  },
+  {
+    "id": 161,
+    "includeCustomFormatWhenRenaming": false,
+    "name": "Over 25GB",
+    "specifications": [
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Release must be greater than this size",
+            "isFloat": true,
+            "label": "Minimum Size",
+            "name": "min",
+            "order": 0,
+            "privacy": "normal",
+            "type": "number",
+            "unit": "GB",
+            "value": 25
+          },
+          {
+            "advanced": false,
+            "helpText": "Release must be less than or equal to this size",
+            "isFloat": true,
+            "label": "Maximum Size",
+            "name": "max",
+            "order": 1,
+            "privacy": "normal",
+            "type": "number",
+            "unit": "GB",
+            "value": 100000
+          }
+        ],
+        "implementation": "SizeSpecification",
+        "implementationName": "Size",
+        "infoLink": "https://wiki.servarr.com/radarr/settings#custom-formats-2",
+        "name": "Size 25GB+",
+        "negate": false,
+        "required": true
+      }
+    ]
+  }
+]

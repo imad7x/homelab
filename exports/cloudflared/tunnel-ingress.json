@@ -1,0 +1,85 @@
+{
+  "ingress": [
+    {
+      "hostname": "[[private:DOMAIN]]",
+      "service": "http://192.168.0.10:3000"
+    },
+    {
+      "hostname": "jellyfin.[[private:DOMAIN]]",
+      "service": "http://192.168.0.10:8096"
+    },
+    {
+      "hostname": "jellyseerr.[[private:DOMAIN]]",
+      "originRequest": {},
+      "service": "http://192.168.0.10:5055"
+    },
+    {
+      "hostname": "sonarr.[[private:DOMAIN]]",
+      "originRequest": {},
+      "service": "http://192.168.0.10:8989"
+    },
+    {
+      "hostname": "radarr.[[private:DOMAIN]]",
+      "originRequest": {},
+      "service": "http://192.168.0.10:7878"
+    },
+    {
+      "hostname": "bazarr.[[private:DOMAIN]]",
+      "originRequest": {},
+      "service": "http://192.168.0.10:6767"
+    },
+    {
+      "hostname": "qb.[[private:DOMAIN]]",
+      "originRequest": {},
+      "service": "http://192.168.0.10:8080"
+    },
+    {
+      "hostname": "prowlarr.[[private:DOMAIN]]",
+      "originRequest": {},
+      "service": "http://192.168.0.10:9696"
+    },
+    {
+      "hostname": "pihole.[[private:DOMAIN]]",
+      "originRequest": {},
+      "path": "admin",
+      "service": "http://192.168.0.10:8081"
+    },
+    {
+      "hostname": "grafana.[[private:DOMAIN]]",
+      "originRequest": {},
+      "service": "http://192.168.0.10:3001"
+    },
+    {
+      "hostname": "p8s.[[private:DOMAIN]]",
+      "originRequest": {},
+      "service": "http://192.168.0.10:9090"
+    },
+    {
+      "hostname": "cadvisor.[[private:DOMAIN]]",
+      "originRequest": {},
+      "service": "http://192.168.0.10:8082"
+    },
+    {
+      "hostname": "navidrome.[[private:DOMAIN]]",
+      "originRequest": {},
+      "service": "http://192.168.0.10:4533"
+    },
+    {
+      "hostname": "soulseek.[[private:DOMAIN]]",
+      "originRequest": {},
+      "service": "http://192.168.0.10:5030"
+    },
+    {
+      "hostname": "finance.[[private:DOMAIN]]",
+      "originRequest": {},
+      "service": "http://192.168.0.10:3002"
+    },
+    {
+      "service": "http_status:404"
+    }
+  ],
+  "version": 28,
+  "warp-routing": {
+    "enabled": false
+  }
+}

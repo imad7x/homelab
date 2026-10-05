@@ -1,0 +1,23 @@
+# Jellystat's database (Jellyfin watch history), for the Media Usage dashboard.
+# grafana_ro is read-only and cannot read app_config (Jellyfin API key, Jellystat login).
+# Password comes from ../grafana-jellystat.env via the container environment.
+apiVersion: 1
+
+datasources:
+  - name: Jellystat
+    uid: jellystat-pg
+    type: grafana-postgresql-datasource
+    access: proxy
+    url: jellystat-db:5432
+    user: grafana_ro
+    jsonData:
+      database: jfstat
+      sslmode: disable
+      postgresVersion: 1600
+      timescaledb: false
+      maxOpenConns: 5
+      maxIdleConns: 2
+      connMaxLifetime: 14400
+    secureJsonData:
+      password: $JELLYSTAT_DB_RO_PASSWORD
+    editable: false

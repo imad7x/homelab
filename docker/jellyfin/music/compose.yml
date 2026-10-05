@@ -1,0 +1,32 @@
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    ports:
+      - "4533:4533"
+    environment:
+      ND_SCANSCHEDULE: "15m"
+      ND_LOGLEVEL: "info"
+      TZ: "Asia/Kolkata"
+    volumes:
+      - ./navidrome-data:/data
+      - /data/music:/music:ro
+    restart: unless-stopped
+
+  slskd:
+    image: slskd/slskd:latest
+    container_name: slskd
+    ports:
+      - "5030:5030"   # Web UI
+      - "50300:50300" # Soulseek port
+    environment:
+      SLSKD_SLSK_USERNAME: imad7x
+      SLSKD_SLSK_PASSWORD: "${SLSKD_SLSK_PASSWORD}"
+      SLSKD_HTTP_AUTHENTICATION: "true"
+      SLSKD_USERNAME: imad7x
+      SLSKD_PASSWORD: "${SLSKD_PASSWORD}"
+      SLSKD_REMOTE_CONFIGURATION: "true"
+    volumes:
+      - ./slskd-data:/app
+      - /data/music:/app/downloads
+    restart: unless-stopped

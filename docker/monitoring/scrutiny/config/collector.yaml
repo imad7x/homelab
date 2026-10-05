@@ -1,0 +1,36 @@
+version: 1
+
+host:
+  id: "lab"
+
+# Device type overrides. Scrutiny finds disks with `smartctl --scan`, but the scan
+# result is wrong for the USB enclosures on this host, so each device is pinned to
+# the transport that was verified working with `smartctl -i -d <type>`:
+#
+#   /dev/sda  Seagate Expansion  (USB 0bc2:2322, driver: uas)
+#             ATA passthrough is rejected by this bridge - sat, sat,12, sat,16,
+#             usbjmicron, usbsunplus and usbprolific all fail with
+#             "scsi error unsupported field in scsi command". Plain SCSI works and
+#             still reports overall health ("SMART Health Status: OK"), but gives
+#             no SMART attributes and no real temperature (reports 0 C).
+#             To get full SMART from this disk the uas driver has to be disabled
+#             for it via the kernel cmdline: usb-storage.quirks=0bc2:2322:u
+#             The collector logs "smartctl returned an error code (4)" for sda on
+#             every run. That is expected and harmless: the bridge does not support
+#             error-counter logging, so smartctl sets that bit. The device still
+#             registers and reports its health. -b ignore / -T permissive do not
+#             clear it, so there is nothing to suppress.
+#
+#   /dev/sdb  WDC WD15SMRW-11YNDS0 (USB 1058:25a2, driver: usb-storage)
+#             Full ATA passthrough works, all attributes available.
+#
+#   /dev/nvme0  SPCC M.2 PCIe SSD - native NVMe.
+devices:
+  - device: /dev/sda
+    type: 'scsi'
+
+  - device: /dev/sdb
+    type: 'sat'
+
+  - device: /dev/nvme0
+    type: 'nvme'

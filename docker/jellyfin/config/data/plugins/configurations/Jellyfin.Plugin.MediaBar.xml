@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PluginConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Enabled>Enabled</Enabled>
+  <VersionString>main</VersionString>
+  <UseAvatarsFile>true</UseAvatarsFile>
+  <AvatarsPlaylist />
+  <WebConfig>
+    <ImageSvgs />
+    <ShuffleInterval>-1</ShuffleInterval>
+    <RetryInterval>-1</RetryInterval>
+    <MinSwipeDistance>-1</MinSwipeDistance>
+    <LoadingCheckInterval>-1</LoadingCheckInterval>
+    <MaxPlotLength>-1</MaxPlotLength>
+    <MaxMovies>-1</MaxMovies>
+    <MaxTvShows>-1</MaxTvShows>
+    <MaxItems>-1</MaxItems>
+    <PreloadCount>-1</PreloadCount>
+    <FadeTransitionDuration>-1</FadeTransitionDuration>
+    <SlideAnimationEnabled>true</SlideAnimationEnabled>
+  </WebConfig>
+</PluginConfiguration>

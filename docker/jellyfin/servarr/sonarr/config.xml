@@ -1,0 +1,19 @@
+<Config>
+  <BindAddress>*</BindAddress>
+  <Port>8989</Port>
+  <SslPort>9898</SslPort>
+  <EnableSsl>False</EnableSsl>
+  <LaunchBrowser>True</LaunchBrowser>
+  <ApiKey>[[secret:SONARR_APIKEY]]</ApiKey>
+  <AuthenticationMethod>Forms</AuthenticationMethod>
+  <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
+  <Branch>main</Branch>
+  <LogLevel>debug</LogLevel>
+  <SslCertPath></SslCertPath>
+  <SslCertPassword></SslCertPassword>
+  <UrlBase></UrlBase>
+  <InstanceName>Sonarr</InstanceName>
+  <UpdateMechanism>Docker</UpdateMechanism>
+  <AllowedHosts>localhost,127.0.0.1,192.168.0.10,[[private:TAILSCALE_IP_SERVER]],lab,lab7x,lab7x.[[private:TAILNET]],sonarr.[[private:DOMAIN]],sonarr,172.39.0.3</AllowedHosts>
+  <TrustedNetworks></TrustedNetworks>
+</Config>

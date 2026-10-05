@@ -1,0 +1,54 @@
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kolkata
+    volumes:
+      - ./config:/config
+      - /data:/data
+    devices:
+      - /dev/dri:/dev/dri #Use for Intel QuickSync
+    ports:
+      - 8096:8096
+      - 7359:7359/udp #Service Discovery
+      - 1900:1900/udp #Client Discovery
+    restart: unless-stopped
+
+  # Jellystat: watch history / usage stats for Jellyfin (web UI on :3003).
+  # Grafana's "Media Usage" dashboard reads its database as the read-only grafana_ro.
+  jellystat-db:
+    image: postgres:16-alpine
+    container_name: jellystat-db
+    restart: unless-stopped
+    env_file: ./jellystat/jellystat.env
+    environment:
+      - TZ=Asia/Kolkata
+    volumes:
+      - ./jellystat/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jellystat -d jfstat"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  jellystat:
+    image: cyfershepard/jellystat:latest
+    container_name: jellystat
+    restart: unless-stopped
+    env_file: ./jellystat/jellystat.env
+    environment:
+      - POSTGRES_IP=jellystat-db
+      - POSTGRES_PORT=5432
+      - TZ=Asia/Kolkata
+      - MINIMUM_SECONDS_TO_INCLUDE_PLAYBACK=30   # ignore accidental clicks / trailers
+    volumes:
+      - ./jellystat/backup-data:/app/backend/backup-data
+    ports:
+      - 3003:3000
+    depends_on:
+      jellystat-db:
+        condition: service_healthy

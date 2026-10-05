@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PluginConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ExcludeSeries />
+  <ClientList />
+  <AutoDetectIntros>true</AutoDetectIntros>
+  <AnalyzeSeasonZero>false</AnalyzeSeasonZero>
+  <PreferChromaprint>false</PreferChromaprint>
+  <CacheFingerprints>true</CacheFingerprints>
+  <UseAlternativeBlackFrameAnalyzer>false</UseAlternativeBlackFrameAnalyzer>
+  <UpdateMediaSegments>true</UpdateMediaSegments>
+  <RebuildMediaSegments>false</RebuildMediaSegments>
+  <ScanIntroduction>true</ScanIntroduction>
+  <ScanCredits>true</ScanCredits>
+  <ScanRecap>true</ScanRecap>
+  <ScanPreview>true</ScanPreview>
+  <ScanCommercial>true</ScanCommercial>
+  <AnalysisPercent>15</AnalysisPercent>
+  <AnalysisLengthLimit>10</AnalysisLengthLimit>
+  <FullLengthChapters>false</FullLengthChapters>
+  <MinimumIntroDuration>10</MinimumIntroDuration>
+  <MaximumIntroDuration>120</MaximumIntroDuration>
+  <MinimumCreditsDuration>10</MinimumCreditsDuration>
+  <MaximumCreditsDuration>450</MaximumCreditsDuration>
+  <MaximumMovieCreditsDuration>900</MaximumMovieCreditsDuration>
+  <MinimumRecapDuration>15</MinimumRecapDuration>
+  <MaximumRecapDuration>120</MaximumRecapDuration>
+  <MinimumPreviewDuration>15</MinimumPreviewDuration>
+  <MaximumPreviewDuration>120</MaximumPreviewDuration>
+  <MinimumCommercialDuration>15</MinimumCommercialDuration>
+  <MaximumCommercialDuration>120</MaximumCommercialDuration>
+  <BlackFrameMinimumPercentage>85</BlackFrameMinimumPercentage>
+  <BlackFrameThreshold>28</BlackFrameThreshold>
+  <UseChapterMarkersBlackFrame>true</UseChapterMarkersBlackFrame>
+  <AdjustIntroBasedOnChapters>true</AdjustIntroBasedOnChapters>
+  <AdjustIntroBasedOnSilence>true</AdjustIntroBasedOnSilence>
+  <SnapToKeyframe>true</SnapToKeyframe>
+  <EndSnapThreshold>2</EndSnapThreshold>
+  <AdjustWindowInward>5</AdjustWindowInward>
+  <AdjustWindowOutward>2</AdjustWindowOutward>
+  <ChapterAnalyzerIntroductionPattern>(^|\s)(Intro|Introduction|OP|Opening)(?!\sEnd)(\s|$)</ChapterAnalyzerIntroductionPattern>
+  <ChapterAnalyzerEndCreditsPattern>(^|\s)(Credits?|ED|Ending|Outro)(?!\sEnd)(\s|$)</ChapterAnalyzerEndCreditsPattern>
+  <ChapterAnalyzerPreviewPattern>(^|\s)(Preview|PV|Sneak\s?Peek|Coming\s?(Up|Soon)|Next\s+(time|on|episode)|Extra|Teaser|Trailer)(?!\sEnd)(\s|:|$)</ChapterAnalyzerPreviewPattern>
+  <ChapterAnalyzerRecapPattern>(^|\s)(Re?cap|Sum{1,2}ary|Prev(ious(ly)?)?|(Last|Earlier)(\s\w+)?|Catch[ -]up)(?!\sEnd)(\s|:|$)</ChapterAnalyzerRecapPattern>
+  <ChapterAnalyzerCommercialPattern>(^|\s)(Ad(vert(isement)?)?|Commercial)(?!\sEnd)(\s|$)</ChapterAnalyzerCommercialPattern>
+  <PluginSkip>false</PluginSkip>
+  <AutoSkip>false</AutoSkip>
+  <TypeList />
+  <AutoSkipCredits>false</AutoSkipCredits>
+  <AutoSkipRecap>false</AutoSkipRecap>
+  <AutoSkipPreview>false</AutoSkipPreview>
+  <AutoSkipCommercial>false</AutoSkipCommercial>
+  <SkipFirstEpisode>true</SkipFirstEpisode>
+  <IntroEndOffset>0</IntroEndOffset>
+  <IntroStartOffset>0</IntroStartOffset>
+  <AutoSkipDelay>0</AutoSkipDelay>
+  <MaximumFingerprintPointDifferences>6</MaximumFingerprintPointDifferences>
+  <MaximumTimeSkip>3.5</MaximumTimeSkip>
+  <InvertedIndexShift>2</InvertedIndexShift>
+  <SilenceDetectionMaximumNoise>-50</SilenceDetectionMaximumNoise>
+  <SilenceDetectionMinimumDuration>0.33</SilenceDetectionMinimumDuration>
+  <AutoSkipNotificationText>%duration seconds of %segmenttype skipped</AutoSkipNotificationText>
+  <MaxParallelism>2</MaxParallelism>
+  <ProcessThreads>0</ProcessThreads>
+  <ProcessPriority>BelowNormal</ProcessPriority>
+  <UseFileTransformationPlugin>false</UseFileTransformationPlugin>
+  <SkipbuttonHideDelay>8</SkipbuttonHideDelay>
+</PluginConfiguration>

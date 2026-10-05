@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Updates</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%232458d6'/%3E%3Cpath d='M8 4v6M5 7l3 3 3-3' stroke='white' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --surface: #ffffff;
+    --text: #1b1e23;
+    --muted: #5d6470;
+    --border: #e0e3e8;
+    --accent: #2458d6;
+    --accent-hover: #1d49b5;
+    --accent-on: #ffffff;
+    --accent-soft: #e9effc;
+    --danger: #b3261e;
+    --warn-soft: #fdf3e2;
+    --warn-text: #7a4d00;
+    --radius: 10px;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111318;
+      --surface: #1a1d23;
+      --text: #e5e7eb;
+      --muted: #9aa2ad;
+      --border: #2c3139;
+      --accent: #7ea6ff;
+      --accent-hover: #a3c0ff;
+      --accent-on: #0e1420;
+      --accent-soft: #1e2940;
+      --danger: #ff8f86;
+      --warn-soft: #33290f;
+      --warn-text: #f0c46a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  main { max-width: 64rem; margin: 0 auto; padding: 1.5rem 16px 3rem; }
+  h1 { font-size: 1.5rem; margin: 0; letter-spacing: -0.01em; }
+  h2 { font-size: 1rem; margin: 0 0 .6rem; }
+  .muted { color: var(--muted); }
+
+  /* Header */
+  .top { display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: flex-end; justify-content: space-between; margin-bottom: 1.25rem; }
+  .summary { margin: .25rem 0 0; color: var(--muted); }
+  .summary strong { color: var(--text); font-weight: 600; }
+  .actions { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+  .conn { font-size: .85rem; color: var(--muted); }
+  .notice { margin: -.5rem 0 1rem; padding: .6rem .8rem; border-radius: 8px; background: var(--warn-soft); color: var(--warn-text); font-size: .9rem; }
+
+  /* Buttons */
+  .btn {
+    font: inherit; font-size: .9rem; line-height: 1.2;
+    padding: .5rem .9rem; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  }
+  .btn:hover:not(:disabled) { border-color: var(--muted); }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-on); font-weight: 600; }
+  .btn.primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn.small { padding: .35rem .8rem; }
+
+  /* Container list */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1.2fr);
+    gap: .4rem 1rem; align-items: center;
+    padding: .75rem 1rem; border-top: 1px solid var(--border);
+  }
+  .row:first-child { border-top: 0; }
+  .row.head { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); padding-top: .6rem; padding-bottom: .6rem; }
+  .row.dim .name { color: var(--muted); }
+  .name { font-weight: 600; overflow-wrap: anywhere; }
+  .stack { color: var(--muted); font-size: .85rem; margin-left: .35rem; font-weight: 400; }
+  .ver { overflow-wrap: anywhere; }
+  .new { color: var(--accent); font-weight: 600; }
+  .chip {
+    display: inline-block; margin: .3rem .3rem 0 0; padding: .05rem .45rem;
+    border: 1px solid var(--border); border-radius: 999px; font-size: .75rem; color: var(--muted);
+  }
+  .note { margin-top: .3rem; font-size: .8rem; color: var(--warn-text); }
+  .act { display: flex; flex-direction: column; align-items: flex-end; gap: .3rem; text-align: right; font-size: .88rem; }
+  .act .label { color: var(--muted); font-size: .8rem; }
+  .act .err { color: var(--danger); }
+  .act .busy { display: inline-flex; align-items: center; gap: .45rem; color: var(--accent); font-weight: 600; }
+  .empty { padding: 2rem 1rem; text-align: center; color: var(--muted); }
+
+  /* Live job log */
+  .live { margin-bottom: 1.25rem; padding: .8rem 1rem; }
+  .live-head { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-bottom: .5rem; }
+  .log {
+    margin: 0; max-height: 18rem; overflow: auto;
+    padding: .6rem .7rem; border-radius: 8px; background: var(--bg); border: 1px solid var(--border);
+    font: .78rem/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+
+  /* Recent jobs */
+  .jobs { margin-top: 2rem; }
+  .job { border-top: 1px solid var(--border); }
+  .job:first-child { border-top: 0; }
+  .job summary { list-style: none; cursor: pointer; padding: .7rem 1rem; display: flex; flex-wrap: wrap; gap: .25rem .75rem; align-items: baseline; }
+  .job summary::-webkit-details-marker { display: none; }
+  .job summary::before { content: "▸"; color: var(--muted); width: .8rem; }
+  .job[open] summary::before { content: "▾"; }
+  .job .log { margin: 0 1rem .8rem; }
+  .job .msg { flex-basis: 100%; padding-left: 1.55rem; font-size: .85rem; color: var(--muted); }
+  .outcome { font-size: .78rem; font-weight: 600; padding: .05rem .5rem; border-radius: 999px; border: 1px solid var(--border); }
+  .outcome.updated { color: var(--accent); background: var(--accent-soft); border-color: transparent; }
+  .outcome.failed, .outcome.rolled { color: var(--danger); }
+  .when { margin-left: auto; font-size: .85rem; color: var(--muted); }
+
+  /* Spinner */
+  .spin { width: .9rem; height: .9rem; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: turn .8s linear infinite; flex: none; }
+  @keyframes turn { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spin { animation-duration: 3s; } }
+
+  /* Confirm dialog */
+  dialog { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); padding: 1.2rem; width: min(30rem, calc(100vw - 32px)); }
+  dialog::backdrop { background: rgb(0 0 0 / .45); }
+  dialog ol { padding-left: 2.2rem; max-height: 50vh; overflow: auto; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding-top: .4rem; padding-bottom: .4rem; }
+  dialog li { margin: .25rem 0; }
+  .dialog-actions { display: flex; justify-content: flex-end; gap: .5rem; margin-top: 1rem; }
+
+  /* Phones: each row becomes a small card */
+  @media (max-width: 640px) {
+    main { padding-top: 1rem; }
+    .row.head { display: none; }
+    .row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "c c" "r a" "x x"; gap: .5rem .75rem; }
+    .row .c { grid-area: c; }
+    .row .r { grid-area: r; }
+    .row .a { grid-area: a; }
+    .row .x { grid-area: x; align-items: flex-start; text-align: left; }
+    .row .x:empty { display: none; }
+    .row .r::before, .row .a::before { content: attr(data-label); display: block; font-size: .72rem; font-weight: 400; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+    .actions { width: 100%; }
+    .actions .btn { flex: 1; }
+    .when { margin-left: 1.55rem; flex-basis: 100%; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div>
+      <h1>Updates</h1>
+      <p class="summary" id="summary">Loading…</p>
+    </div>
+    <div class="actions">
+      <span class="conn" id="conn" hidden>reconnecting…</span>
+      <button class="btn" id="check-btn" type="button">Check now</button>
+      <button class="btn primary" id="all-btn" type="button" hidden>Update all</button>
+    </div>
+  </header>
+
+  <p class="notice" id="check-error" hidden></p>
+  <p class="notice" id="notice" hidden></p>
+
+  <section class="card live" id="live" hidden aria-live="polite">
+    <div class="live-head">
+      <span class="spin" aria-hidden="true"></span>
+      <strong id="live-title"></strong>
+      <span class="muted" id="live-queue"></span>
+    </div>
+    <pre class="log" id="live-log"></pre>
+  </section>
+
+  <section class="card" id="list" aria-label="Containers"></section>
+
+  <section class="jobs" id="jobs-section" hidden>
+    <h2>Recent updates</h2>
+    <div class="card" id="jobs"></div>
+  </section>
+</main>
+
+<dialog id="confirm">
+  <form method="dialog">
+    <h2 id="confirm-title">Update all?</h2>
+    <p class="muted" id="confirm-text">Every image is downloaded first, then the containers are recreated one at a time. A container that doesn't come up healthy is put back on its old image.</p>
+    <ol id="plan"></ol>
+    <p class="muted" id="confirm-last" hidden>Pi-hole, Caddy and the Cloudflare containers go last. This page may lose its connection for a moment while they restart.</p>
+    <div class="dialog-actions">
+      <button class="btn" value="cancel" autofocus>Cancel</button>
+      <button class="btn primary" value="ok" id="confirm-ok">Update all</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+"use strict";
+
+// ---- Small helpers --------------------------------------------------------
+
+const $ = (id) => document.getElementById(id);
+
+// Build an element: el("span", {class: "x", title: "t"}, "text", child, ...)
+function el(tag, attrs, ...children) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs || {})) {
+    if (value === null || value === undefined || value === false) continue;
+    if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
+    else node.setAttribute(key, value === true ? "" : value);
+  }
+  for (const child of children.flat()) {
+    if (child === null || child === undefined || child === false) continue;
+    node.append(child instanceof Node ? child : document.createTextNode(String(child)));
+  }
+  return node;
+}
+
+async function post(path, body) {
+  // The custom header is the server's CSRF guard: other sites can't send it.
+  const response = await fetch(path, {
+    method: "POST",
+    headers: {"Content-Type": "application/json", "X-Updater": "1"},
+    body: JSON.stringify(body || {}),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
+  return data;
+}
+
+// ---- Time formatting (server time zone, relative times) --------------------
+
+let tz = "Asia/Kolkata";
+let clockSkew = 0; // browser clock minus server clock, in ms
+const now = () => new Date(Date.now() - clockSkew);
+
+function ago(iso) {
+  const seconds = (now() - new Date(iso)) / 1000;
+  if (seconds < 45) return "just now";
+  if (seconds < 3600) return `${Math.max(1, Math.round(seconds / 60))} min ago`;
+  if (seconds < 86400) return `${Math.round(seconds / 3600)} h ago`;
+  const days = Math.round(seconds / 86400);
+  return days === 1 ? "yesterday" : `${days} days ago`;
+}
+
+function dayKey(date) {
+  return new Intl.DateTimeFormat("en-CA", {timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit"}).format(date);
+}
+function clock(date) {
+  return new Intl.DateTimeFormat("en-GB", {timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23"}).format(date);
+}
+function fullTime(iso) {
+  return new Intl.DateTimeFormat("en-GB", {timeZone: tz, dateStyle: "medium", timeStyle: "short"}).format(new Date(iso));
+}
+// "today 06:00", "tomorrow 06:00", "Sun 28 Sep 06:00"
+function upcoming(iso) {
+  const date = new Date(iso);
+  const today = dayKey(now());
+  const tomorrow = dayKey(new Date(now().getTime() + 86400000));
+  const key = dayKey(date);
+  if (key === today) return `today ${clock(date)}`;
+  if (key === tomorrow) return `tomorrow ${clock(date)}`;
+  const day = new Intl.DateTimeFormat("en-GB", {timeZone: tz, weekday: "short", day: "numeric", month: "short"}).format(date);
+  return `${day} ${clock(date)}`;
+}
+
+// ---- State and polling ----------------------------------------------------
+
+let status = null;
+let lastListKey = "";
+let lastJobsKey = "";
+let failing = false;
+let timer = null;
+const openJobs = new Set();   // recent jobs whose log is expanded
+const jobLogs = new Map();    // job id -> log lines, fetched on first expand
+
+function isActive() {
+  return status && (status.checking || status.current || status.queue.length > 0);
+}
+
+async function refresh() {
+  clearTimeout(timer);
+  try {
+    const response = await fetch("/api/status", {cache: "no-store"});
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    status = await response.json();
+    tz = status.tz || tz;
+    clockSkew = Date.now() - new Date(status.now).getTime();
+    failing = false;
+    render();
+  } catch (error) {
+    // Updating Caddy (or the page's own network) drops this connection for
+    // a moment; keep quiet and try again soon.
+    failing = true;
+  }
+  $("conn").hidden = !failing;
+  timer = setTimeout(refresh, isActive() || failing ? 2000 : 30000);
+}
+
+function showNotice(text) {
+  $("notice").textContent = text;
+  $("notice").hidden = !text;
+}
+
+// ---- Rendering ------------------------------------------------------------
+
+function render() {
+  renderSummary();
+  renderLive();
+  // Rebuild the list only when something in it changed, so a button isn't
+  // replaced under the pointer by a poll.
+  const listKey = JSON.stringify(status.containers);
+  if (listKey !== lastListKey) {
+    lastListKey = listKey;
+    renderList();
+  }
+  const jobsKey = JSON.stringify(status.jobs);
+  if (jobsKey !== lastJobsKey) {
+    lastJobsKey = jobsKey;
+    renderJobs();
+  }
+  // Keep "5 min ago" honest between rebuilds.
+  document.querySelectorAll("[data-ago]").forEach((node) => { node.textContent = ago(node.dataset.ago); });
+}
+
+function renderSummary() {
+  const available = status.counts.update + status.counts.restart;
+  const parts = [];
+  if (status.checking) {
+    parts.push(el("strong", null, "Checking for updates…"));
+  } else if (!status.last_check) {
+    parts.push(el("strong", null, "Not checked yet"));
+  } else if (available) {
+    parts.push(el("strong", null, `${available} update${available === 1 ? "" : "s"} available`));
+  } else {
+    parts.push(el("strong", null, "Everything is up to date"));
+  }
+  if (status.last_check) parts.push(el("span", {title: fullTime(status.last_check)}, `checked ${ago(status.last_check)}`));
+  parts.push(el("span", {title: `Checks run ${status.schedule}`}, `next check ${upcoming(status.next_check)}`));
+  if (status.counts.error) parts.push(`${status.counts.error} check${status.counts.error === 1 ? "" : "s"} failed`);
+
+  const summary = $("summary");
+  summary.replaceChildren();
+  parts.forEach((part, i) => {
+    if (i) summary.append(" · ");
+    summary.append(part);
+  });
+
+  // Unlike the notice (a button's own error), this stays until a check works.
+  const failed = !status.checking && status.check_error;
+  $("check-error").hidden = !failed;
+  if (failed) {
+    $("check-error").textContent = `The last check failed ${ago(failed.at)}: ${failed.message}. ` +
+      (status.last_check ? `The list shows the check from ${ago(status.last_check)}.` : "Nothing has been checked yet.");
+  }
+
+  const checkButton = $("check-btn");
+  checkButton.disabled = status.checking;
+  checkButton.textContent = status.checking ? "Checking…" : "Check now";
+
+  const allButton = $("all-btn");
+  allButton.hidden = available === 0;
+  allButton.disabled = !!(status.current || status.queue.length);
+  allButton.textContent = `Update all (${available})`;
+}
+
+function renderLive() {
+  const job = status.current;
+  $("live").hidden = !job;
+  if (!job) return;
+  $("live-title").textContent = `Updating ${job.container}`;
+  const waiting = status.queue.length;
+  $("live-queue").textContent = waiting ? `· ${waiting} more queued` : "";
+
+  const log = $("live-log");
+  const text = job.log.join("\n");
+  if (log.textContent !== text) {
+    // Follow the output unless the reader has scrolled up to look at something.
+    const atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 30;
+    log.textContent = text;
+    if (atBottom) log.scrollTop = log.scrollHeight;
+  }
+}
+
+function renderList() {
+  const list = $("list");
+  if (!status.containers.length) {
+    list.replaceChildren(el("div", {class: "empty"},
+      status.checking ? "Checking…" : "Nothing checked yet. Press Check now."));
+    return;
+  }
+  const head = el("div", {class: "row head", "aria-hidden": "true"},
+    el("div", null, "Container"), el("div", null, "Running"),
+    el("div", null, "Available"), el("div", {style: "text-align:right"}, ""));
+  list.replaceChildren(head, ...status.containers.map(row));
+}
+
+function row(c) {
+  const canUpdate = c.status === "update" || c.status === "restart";
+  const dim = c.status === "local" || c.status === "nocompose";
+
+  const nameCell = el("div", {class: "c"},
+    el("div", null, el("span", {class: "name"}, c.name), c.stack ? el("span", {class: "stack"}, c.stack) : null),
+    c.tag && c.tag !== "latest"
+      ? el("span", {class: "chip", title: `Pinned to the tag "${c.tag}". Only new builds of this same tag are detected, not newer versions under other tags.`}, `tag ${c.tag}`)
+      : null,
+    c.drift ? el("div", {class: "note"}, "compose file changed since this container started" +
+      (canUpdate ? " — updating also applies those changes" : "")) : null);
+
+  const running = el("div", {class: "r ver", "data-label": "Running", title: c.running.full || null}, c.running.display);
+
+  let available;
+  if (canUpdate) {
+    const full = c.available ? [c.available.full, c.available.date && `built ${c.available.date}`].filter(Boolean).join(" · ") : null;
+    available = el("div", {class: "a ver new", "data-label": "Available", title: full}, c.available_text);
+  } else if (c.status === "ok") {
+    available = el("div", {class: "a muted", "data-label": "Available"}, "Up to date");
+  } else {
+    available = el("div", {class: "a muted", "data-label": "Available"}, "—");
+  }
+
+  return el("div", {class: `row${dim ? " dim" : ""}`}, nameCell, running, available, actionCell(c, canUpdate));
+}
+
+function actionCell(c, canUpdate) {
+  const cell = el("div", {class: "act x"});
+  if (c.job && c.job.status === "running") {
+    cell.append(el("span", {class: "busy"}, el("span", {class: "spin", "aria-hidden": "true"}), "Updating…"));
+  } else if (c.job) {
+    cell.append(el("span", {class: "label"}, "Queued"));
+  } else if (canUpdate) {
+    cell.append(
+      el("span", {class: "label"}, c.status_text),
+      el("button", {class: "btn small primary", type: "button", onclick: (e) => updateOne(c.name, e.currentTarget)}, "Update"));
+  } else if (c.status === "error") {
+    cell.append(el("span", {class: "err"}, c.status_text));
+  } else if (c.status !== "ok") {
+    cell.append(el("span", {class: "label"}, c.status_text));
+  }
+  return cell;
+}
+
+function renderJobs() {
+  $("jobs-section").hidden = status.jobs.length === 0;
+  $("jobs").replaceChildren(...status.jobs.map(jobItem));
+}
+
+function jobItem(job) {
+  const outcomeClass = {"updated": "updated", "rolled back": "rolled", "failed": "failed"}[job.status] || "";
+  const pre = el("pre", {class: "log"}, jobLogs.has(job.id) ? jobLogs.get(job.id).join("\n") : "Loading…");
+  const change = job.from && job.to && job.from !== job.to ? `${job.from} → ${job.to}` : null;
+  const details = el("details", {class: "job", open: openJobs.has(job.id)},
+    el("summary", null,
+      el("span", {class: `outcome ${outcomeClass}`}, job.status),
+      el("span", {class: "name"}, job.container),
+      change ? el("span", {class: "muted"}, change) : null,
+      el("span", {class: "when", title: fullTime(job.finished || job.created), "data-ago": job.finished || job.created}, ago(job.finished || job.created)),
+      job.message ? el("span", {class: "msg"}, job.message) : null),
+    pre);
+  details.addEventListener("toggle", async () => {
+    if (!details.open) { openJobs.delete(job.id); return; }
+    openJobs.add(job.id);
+    if (jobLogs.has(job.id)) return;
+    try {
+      const response = await fetch(`/api/jobs/${job.id}`, {cache: "no-store"});
+      const full = await response.json();
+      jobLogs.set(job.id, full.log || []);
+      pre.textContent = (full.log || []).join("\n") || "(empty log)";
+    } catch (error) {
+      pre.textContent = "Couldn't load the log. Try again in a moment.";
+    }
+  });
+  return details;
+}
+
+// ---- Actions --------------------------------------------------------------
+
+async function checkNow() {
+  showNotice("");
+  $("check-btn").disabled = true;
+  try {
+    await post("/api/check", {});
+  } catch (error) {
+    showNotice(`Couldn't start a check: ${error.message}`);
+  }
+  refresh();
+}
+
+async function updateOne(name, button) {
+  showNotice("");
+  button.disabled = true;
+  try {
+    await post("/api/update", {containers: [name]});
+  } catch (error) {
+    showNotice(`Couldn't update ${name}: ${error.message}`);
+    button.disabled = false;
+  }
+  refresh();
+}
+
+async function updateAll() {
+  showNotice("");
+  let plan;
+  try {
+    plan = (await post("/api/update", {all: true, dry_run: true})).plan;
+  } catch (error) {
+    showNotice(`Couldn't prepare the update: ${error.message}`);
+    return;
+  }
+  if (!plan.length) {
+    showNotice("Nothing to update.");
+    return;
+  }
+  const n = plan.length;
+  $("confirm-title").textContent = `Update ${n} container${n === 1 ? "" : "s"}?`;
+  $("confirm-ok").textContent = `Update ${n}`;
+  $("plan").replaceChildren(...plan.map((p) => el("li", null,
+    el("strong", null, p.name), p.stack ? el("span", {class: "muted"}, ` ${p.stack}`) : null,
+    el("span", {class: "muted"}, ` · ${p.running} → ${p.available || "same"}`))));
+  const critical = ["pihole", "caddy", "cloudflared", "cloudflared_tunnel"];
+  $("confirm-last").hidden = !plan.some((p) => critical.includes(p.name));
+
+  const dialog = $("confirm");
+  dialog.returnValue = "";
+  dialog.showModal();
+  dialog.addEventListener("close", async () => {
+    if (dialog.returnValue !== "ok") return;
+    try {
+      await post("/api/update", {all: true});
+    } catch (error) {
+      showNotice(`Couldn't start the update: ${error.message}`);
+    }
+    refresh();
+  }, {once: true});
+}
+
+$("check-btn").addEventListener("click", checkNow);
+$("all-btn").addEventListener("click", updateAll);
+// Coming back to a background tab: refresh at once instead of waiting 30 s.
+document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
+refresh();
+</script>
+</body>
+</html>

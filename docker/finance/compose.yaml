@@ -1,0 +1,89 @@
+# Household finance ledger.
+#
+#   bank alert mail + monthly e-statement PDFs
+#        -> ingest worker (added in a later step)
+#        -> Firefly III REST API
+#        -> Postgres
+#
+# Firefly is deliberately NOT published to the tunnel by this file. It listens
+# on 3002 (LAN: http://192.168.0.10:3002); public access goes through cloudflared with a
+# Cloudflare Access policy in front, configured in the Zero Trust dashboard.
+
+services:
+  finance-db:
+    image: postgres:16-alpine
+    container_name: finance-db
+    restart: unless-stopped
+    env_file:
+      - ./db.env
+    # Bound to loopback on purpose. Nothing outside this box needs the database,
+    # and 0.0.0.0:5432 would be reachable from every device on the home network.
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - finance_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U firefly -d firefly"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  firefly:
+    image: fireflyiii/core:latest
+    container_name: firefly
+    restart: unless-stopped
+    env_file:
+      - ./firefly.env
+    ports:
+      - "3002:8080"
+    volumes:
+      - firefly_upload:/var/www/html/storage/upload
+    depends_on:
+      finance-db:
+        condition: service_healthy
+
+  # Firefly's scheduled work (recurring transactions, bill due-dates, currency
+  # rates) only runs when something pokes /api/v1/cron. The image has no cron of
+  # its own, so this sidecar is the documented way to drive it.
+  firefly-cron:
+    image: alpine:3
+    container_name: firefly-cron
+    restart: unless-stopped
+    env_file:
+      - ./firefly.env
+    command: >
+      sh -c "echo \"0 3 * * * wget -qO- http://firefly:8080/api/v1/cron/$${STATIC_CRON_TOKEN}\"
+      | crontab - && crond -f -L /dev/stdout"
+    depends_on:
+      - firefly
+
+  # Reads the forwarding mailbox every 15 minutes and keeps Firefly current:
+  # alerts are posted, statements reconcile the accounts, and the category
+  # learner spreads your edits to similar payments. See ingest/worker.py.
+  # Its state (mail seen, categories you set by hand) lives in ./state and its
+  # log is `docker logs finance-ingest`.
+  finance-ingest:
+    build: ./ingest
+    image: finance-ingest:latest
+    container_name: finance-ingest
+    restart: unless-stopped
+    user: "1000:1000"
+    command: ["python", "/app/worker.py"]
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - INGEST_INTERVAL=900
+      - TZ=Asia/Kolkata
+    volumes:
+      # /w holds the secrets, statements, mail copies and state; the code is
+      # mounted read-only so an edit takes effect on the next restart
+      - ./:/w
+      - ./ingest:/app:ro
+    depends_on:
+      finance-db:
+        condition: service_healthy
+      firefly:
+        condition: service_started
+
+volumes:
+  finance_db_data:
+  firefly_upload:

@@ -1,0 +1,94 @@
+# Wall-power model for the homelab box (ThinkCentre M720q, i3-8100, 16 GB,
+# NVMe boot SSD, two bus-powered 2.5" USB HDDs). Feeds the Power & cost row on
+# the "My Lab" Grafana dashboard.
+#
+#   CPU, RAM   MEASURED  Intel RAPL energy counters (package / dram domains),
+#                        read by node-exporter's rapl collector.
+#   SSD, HDD   ESTIMATED from how busy each disk is (node_disk_io_time), between
+#                        an idle and an active figure per drive.
+#   Board      ESTIMATED fixed draw of everything RAPL can't see: chipset, NIC,
+#                        fan, VRM and USB-rail losses.
+#   Adapter    ESTIMATED loss in the external power brick (efficiency below).
+#
+# Nothing here is a wall-socket reading. A smart plug with energy monitoring
+# is the only way to get one; if one is added, calibrate BOARD against it.
+#
+# Knobs (change the numbers inline, then `docker kill -s HUP prometheus`):
+#   HDD   idle 1.3 W, active 2.5 W   2.5" 5400 rpm drive + USB-SATA bridge.
+#                                    The drives never entered standby in 2 days
+#                                    of 5-minute SMART polls, so no spin-down
+#                                    state is modelled.
+#   SSD   idle 0.2 W, active 3.0 W   SPCC NVMe, APST on (PS0 max 3.5 W).
+#   BOARD 4.0 W
+#   ADAPTER efficiency 0.85          -> loss = DC * (1/0.85 - 1)
+#
+# The energy panels integrate homelab:power_watts:total as
+# sum_over_time(...) * 15 / 3.6e6 (kWh), which relies on interval: 15s below.
+
+groups:
+  - name: homelab-power
+    interval: 15s
+    rules:
+      # One series per mount of interest, mapping the block device to its
+      # mountpoint and kind. USB disks can swap sda/sdb across reboots; the
+      # mountpoints (fstab) cannot, so dashboards key disks on mountpoint.
+      - record: homelab:disk_mount:info
+        expr: |
+          label_replace(
+            label_replace(
+              max by (device, mountpoint) (
+                label_replace(
+                  node_filesystem_size_bytes{job="node-exporter", mountpoint=~"/|/mnt/disk.*"},
+                  "device", "$1$2", "device", "/dev/(?:(sd[a-z]+)[0-9]*|(nvme[0-9]+n[0-9]+)p[0-9]+)"
+                )
+              ) * 0 + 1,
+              "kind", "HDD", "", ""
+            ),
+            "kind", "SSD", "device", "nvme.*"
+          )
+
+      - record: homelab:power_watts
+        expr: sum(rate(node_rapl_package_joules_total{job="node-exporter"}[1m]))
+        labels:
+          component: CPU
+          source: measured
+
+      - record: homelab:power_watts
+        expr: sum(rate(node_rapl_dram_joules_total{job="node-exporter"}[1m]))
+        labels:
+          component: RAM
+          source: measured
+
+      - record: homelab:power_watts
+        expr: |
+          (
+            0.2 + 2.8 * clamp_max(sum by (device) (rate(node_disk_io_time_seconds_total{job="node-exporter"}[1m])), 1)
+          ) * on (device) group_left (mountpoint) homelab:disk_mount:info{kind="SSD"}
+        labels:
+          component: SSD
+          source: estimated
+
+      - record: homelab:power_watts
+        expr: |
+          (
+            1.3 + 1.2 * clamp_max(sum by (device) (rate(node_disk_io_time_seconds_total{job="node-exporter"}[1m])), 1)
+          ) * on (device) group_left (mountpoint) homelab:disk_mount:info{kind="HDD"}
+        labels:
+          component: HDD
+          source: estimated
+
+      - record: homelab:power_watts
+        expr: 4.0 * (max(up{job="node-exporter"}) == 1)
+        labels:
+          component: Board
+          source: estimated
+
+      # Excludes its own previous sample, which is still inside the lookback.
+      - record: homelab:power_watts
+        expr: sum(homelab:power_watts{component!="Adapter"}) * (1 / 0.85 - 1)
+        labels:
+          component: Adapter
+          source: estimated
+
+      - record: homelab:power_watts:total
+        expr: sum(homelab:power_watts)

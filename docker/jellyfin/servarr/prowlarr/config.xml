@@ -1,0 +1,20 @@
+<Config>
+  <BindAddress>*</BindAddress>
+  <Port>9696</Port>
+  <SslPort>6969</SslPort>
+  <EnableSsl>False</EnableSsl>
+  <LaunchBrowser>True</LaunchBrowser>
+  <ApiKey>[[secret:PROWLARR_APIKEY]]</ApiKey>
+  <AuthenticationMethod>Forms</AuthenticationMethod>
+  <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
+  <Branch>master</Branch>
+  <LogLevel>debug</LogLevel>
+  <SslCertPath></SslCertPath>
+  <SslCertPassword></SslCertPassword>
+  <UrlBase></UrlBase>
+  <InstanceName>Prowlarr</InstanceName>
+  <UpdateMechanism>Docker</UpdateMechanism>
+  <AnalyticsEnabled>False</AnalyticsEnabled>
+  <AllowedHosts>localhost,127.0.0.1,192.168.0.10,[[private:TAILSCALE_IP_SERVER]],lab,lab7x,lab7x.[[private:TAILNET]],prowlarr.[[private:DOMAIN]],prowlarr,172.39.0.8</AllowedHosts>
+  <TrustedNetworks></TrustedNetworks>
+</Config>

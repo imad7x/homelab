@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PluginConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ExtractionDuringLibraryScan>false</ExtractionDuringLibraryScan>
+  <SelectedSubtitlesLibraries />
+  <SelectedAttachmentsLibraries />
+  <SelectedCodecs>
+    <string>ass</string>
+    <string>DVDSUB</string>
+    <string>subrip</string>
+    <string>PGSSUB</string>
+    <string>DVBSUB</string>
+    <string>eia_608</string>
+    <string>jacosub</string>
+    <string>microdvd</string>
+    <string>mov_text</string>
+    <string>mpl2</string>
+    <string>pjs</string>
+    <string>realtext</string>
+    <string>sami</string>
+    <string>stl</string>
+    <string>subviewer</string>
+    <string>subviewer1</string>
+    <string>text</string>
+    <string>vplayer</string>
+    <string>webvtt</string>
+    <string>xsub</string>
+  </SelectedCodecs>
+  <IsAdvancedMode>false</IsAdvancedMode>
+  <IncludeTextSubtitles>true</IncludeTextSubtitles>
+  <IncludeGraphicalSubtitles>true</IncludeGraphicalSubtitles>
+</PluginConfiguration>

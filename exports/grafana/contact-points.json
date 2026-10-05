@@ -1,0 +1,11 @@
+[
+  {
+    "disableResolveMessage": false,
+    "name": "email receiver",
+    "settings": {
+      "addresses": "<example@email.com>"
+    },
+    "type": "email",
+    "uid": ""
+  }
+]
