@@ -1,0 +1,1430 @@
+{
+  "schemaVersion": 2,
+  "lastUpdated": 1791199778435,
+  "lastUpdatedBy": "moonfin-flutter",
+  "syncEnabled": true,
+  "global": {
+    "hiddenContinueWatchingItems": "{}",
+    "hiddenNextUpSeries": "{}"
+  },
+  "desktop": {
+    "seerrEnabled": true,
+    "seerrBlockNsfw": false,
+    "seerrRows": {
+      "rowOrder": [
+        "recent_requests",
+        "recently_added",
+        "trending",
+        "popular_movies",
+        "movie_genres",
+        "upcoming_movies",
+        "studios",
+        "popular_series",
+        "series_genres",
+        "upcoming_series",
+        "networks"
+      ]
+    },
+    "jellyseerrEnabled": true,
+    "jellyseerrBlockNsfw": false,
+    "jellyseerrRows": {
+      "rowOrder": [
+        "recent_requests",
+        "recently_added",
+        "trending",
+        "popular_movies",
+        "movie_genres",
+        "upcoming_movies",
+        "studios",
+        "popular_series",
+        "series_genres",
+        "upcoming_series",
+        "networks"
+      ]
+    },
+    "mdblistEnabled": false,
+    "mdblistRatingSources": [],
+    "mdblistShowRatingNames": true,
+    "mdblistShowRatingBadges": true,
+    "tmdbApiKey": "",
+    "tmdbEpisodeRatingsEnabled": false,
+    "navbarPosition": "top",
+    "navbarColor": "gray",
+    "navbarOpacity": 50,
+    "focusColor": "white",
+    "visualTheme": "moonfin",
+    "customThemeId": "",
+    "watchedIndicator": "always",
+    "cardFocusExpansion": true,
+    "showShuffleButton": false,
+    "showGenresButton": false,
+    "showFavoritesButton": false,
+    "showSyncPlayButton": false,
+    "showLibrariesInToolbar": false,
+    "shuffleContentType": "both",
+    "mergeContinueWatchingNextUp": false,
+    "enableMultiServerLibraries": false,
+    "enableFolderView": false,
+    "mediaBarMode": "moonfin",
+    "mediaBarItemCount": 10,
+    "mediaBarOpacity": 50,
+    "mediaBarOverlayColor": "gray",
+    "mediaBarAutoAdvance": true,
+    "mediaBarIntervalMs": 10000,
+    "mediaBarTrailerPreview": true,
+    "mediaBarTrailerAudio": false,
+    "episodePreviewEnabled": true,
+    "previewAudioEnabled": true,
+    "mediaBarSourceType": "both",
+    "mediaBarCollectionIds": [],
+    "mediaBarLibraryIds": [],
+    "mediaBarExcludedGenres": [],
+    "seasonalSurprise": "none",
+    "backdropEnabled": true,
+    "homeRowsImageTypeOverride": false,
+    "homeRowsStyle": "v2",
+    "homeRowsImageType": "thumb",
+    "homeImageTypeContinueWatching": "banner",
+    "homeImageUseSeriesImage": false,
+    "posterSize": "medium",
+    "detailsScreenBlur": "10",
+    "browsingBlur": "10",
+    "themeMusicEnabled": false,
+    "themeMusicOnHomeRows": false,
+    "themeMusicVolume": 30,
+    "homeRowOrder": [
+      "resume",
+      "nextup",
+      "latestmedia"
+    ],
+    "displayFavoritesRows": false,
+    "displayCollectionsRows": false,
+    "displayGenresRows": false,
+    "favoritesRowSortBy": "name",
+    "collectionsRowSortBy": "name",
+    "genresRowSortBy": "name",
+    "genresRowItemFilter": "both"
+  },
+  "mobile": {
+    "seerrEnabled": true,
+    "seerrBlockNsfw": false,
+    "seerrRows": {
+      "rowOrder": [
+        "recent_requests",
+        "recently_added",
+        "trending",
+        "popular_movies",
+        "movie_genres",
+        "upcoming_movies",
+        "studios",
+        "popular_series",
+        "series_genres",
+        "upcoming_series",
+        "networks"
+      ]
+    },
+    "jellyseerrEnabled": true,
+    "jellyseerrBlockNsfw": false,
+    "jellyseerrRows": {
+      "rowOrder": [
+        "recent_requests",
+        "recently_added",
+        "trending",
+        "popular_movies",
+        "movie_genres",
+        "upcoming_movies",
+        "studios",
+        "popular_series",
+        "series_genres",
+        "upcoming_series",
+        "networks"
+      ]
+    },
+    "mdblistEnabled": false,
+    "mdblistApiKey": "[[secret:JELLYFIN_MOONFIN_MDBLISTAPIKEY]]",
+    "mdblistRatingSources": [],
+    "mdblistShowRatingNames": true,
+    "mdblistShowRatingBadges": true,
+    "tmdbApiKey": "",
+    "tmdbEpisodeRatingsEnabled": false,
+    "navbarPosition": "top",
+    "navbarColor": "gray",
+    "navbarOpacity": 50,
+    "navbarAlwaysExpanded": false,
+    "mediaBarTrailerCaptions": false,
+    "focusColor": "white",
+    "detailScreenStyle": "modern",
+    "detailExpandedTabs": true,
+    "visualTheme": "moonfin",
+    "customThemeId": "redflix",
+    "oledMode": "off",
+    "watchedIndicator": "always",
+    "cardFocusExpansion": true,
+    "showShuffleButton": false,
+    "showGenresButton": false,
+    "showFavoritesButton": false,
+    "showSyncPlayButton": false,
+    "showLibrariesInToolbar": false,
+    "shuffleContentType": "both",
+    "mergeContinueWatchingNextUp": false,
+    "nextUpMaxDays": 365,
+    "enableMultiServerLibraries": false,
+    "enableFolderView": false,
+    "useDetailedSubHeadings": true,
+    "confirmExit": true,
+    "mediaBarMode": "moonfin",
+    "mediaBarItemCount": 10,
+    "mediaBarOpacity": 50,
+    "mediaBarOverlayColor": "gray",
+    "mediaBarAutoAdvance": true,
+    "mediaBarIntervalMs": 10000,
+    "mediaBarTrailerPreview": true,
+    "mediaBarTrailerAudio": false,
+    "episodePreviewEnabled": false,
+    "previewAudioEnabled": true,
+    "mediaBarSourceType": "both",
+    "mediaBarCollectionIds": [],
+    "mediaBarLibraryIds": [],
+    "mediaBarExcludedGenres": [],
+    "seasonalSurprise": "none",
+    "backdropEnabled": true,
+    "homeRowsImageTypeOverride": false,
+    "homeRowsStyle": "v2",
+    "modernHomeRowsPadding": 460,
+    "classicHomeRowsPadding": 30,
+    "fullScreenRows": true,
+    "homeRowsImageType": "thumb",
+    "homeImageTypeContinueWatching": "banner",
+    "homeImageUseSeriesImage": false,
+    "posterSize": "medium",
+    "detailsScreenBlur": "10",
+    "browsingBlur": "10",
+    "themeMusicEnabled": false,
+    "themeMusicOnHomeRows": false,
+    "themeMusicVolume": 30,
+    "themeMusicLoop": true,
+    "homeRowOrder": [
+      "resume",
+      "nextup",
+      "latestmedia"
+    ],
+    "homeSections": [
+      {
+        "type": "resume",
+        "enabled": true,
+        "order": 0
+      },
+      {
+        "type": "nextup",
+        "enabled": true,
+        "order": 1
+      },
+      {
+        "type": "latestmedia",
+        "enabled": true,
+        "order": 2
+      },
+      {
+        "type": "mediabar",
+        "enabled": false,
+        "order": 3
+      },
+      {
+        "type": "recentlyreleased",
+        "enabled": false,
+        "order": 4
+      },
+      {
+        "type": "smalllibrarytiles",
+        "enabled": false,
+        "order": 5
+      },
+      {
+        "type": "librarybuttons",
+        "enabled": false,
+        "order": 6
+      },
+      {
+        "type": "resumeaudio",
+        "enabled": false,
+        "order": 7
+      },
+      {
+        "type": "resumebook",
+        "enabled": false,
+        "order": 8
+      },
+      {
+        "type": "activerecordings",
+        "enabled": false,
+        "order": 9
+      },
+      {
+        "type": "playlists",
+        "enabled": false,
+        "order": 10
+      },
+      {
+        "type": "audioartists",
+        "enabled": false,
+        "order": 11
+      },
+      {
+        "type": "audioalbums",
+        "enabled": false,
+        "order": 12
+      },
+      {
+        "type": "audioplaylists",
+        "enabled": false,
+        "order": 13
+      },
+      {
+        "type": "favoritemovies",
+        "enabled": false,
+        "order": 14
+      },
+      {
+        "type": "favoriteseries",
+        "enabled": false,
+        "order": 15
+      },
+      {
+        "type": "favoriteepisodes",
+        "enabled": false,
+        "order": 16
+      },
+      {
+        "type": "favoritepeople",
+        "enabled": false,
+        "order": 17
+      },
+      {
+        "type": "favoriteartists",
+        "enabled": false,
+        "order": 18
+      },
+      {
+        "type": "favoritemusicvideos",
+        "enabled": false,
+        "order": 19
+      },
+      {
+        "type": "favoritealbums",
+        "enabled": false,
+        "order": 20
+      },
+      {
+        "type": "favoritesongs",
+        "enabled": false,
+        "order": 21
+      },
+      {
+        "type": "collections",
+        "enabled": false,
+        "order": 22
+      },
+      {
+        "type": "genres",
+        "enabled": false,
+        "order": 23
+      },
+      {
+        "type": "studios",
+        "enabled": false,
+        "order": 24
+      },
+      {
+        "type": "livetv",
+        "enabled": false,
+        "order": 25
+      },
+      {
+        "type": "seerr_shortcuts",
+        "enabled": false,
+        "order": 26
+      },
+      {
+        "type": "seerr_recent_requests",
+        "enabled": false,
+        "order": 27
+      },
+      {
+        "type": "seerr_watchlist",
+        "enabled": false,
+        "order": 28
+      },
+      {
+        "type": "seerr_recently_added",
+        "enabled": false,
+        "order": 29
+      },
+      {
+        "type": "seerr_popular_movies",
+        "enabled": false,
+        "order": 30
+      },
+      {
+        "type": "seerr_upcoming_movies",
+        "enabled": false,
+        "order": 31
+      },
+      {
+        "type": "seerr_popular_series",
+        "enabled": false,
+        "order": 32
+      },
+      {
+        "type": "seerr_upcoming_series",
+        "enabled": false,
+        "order": 33
+      },
+      {
+        "type": "seerr_trending",
+        "enabled": false,
+        "order": 34
+      },
+      {
+        "type": "seerr_movie_genres",
+        "enabled": false,
+        "order": 35
+      },
+      {
+        "type": "seerr_studios",
+        "enabled": false,
+        "order": 36
+      },
+      {
+        "type": "seerr_series_genres",
+        "enabled": false,
+        "order": 37
+      },
+      {
+        "type": "seerr_networks",
+        "enabled": false,
+        "order": 38
+      },
+      {
+        "type": "imdb_top_250_movies",
+        "enabled": false,
+        "order": 39
+      },
+      {
+        "type": "imdb_top_250_tv_shows",
+        "enabled": false,
+        "order": 40
+      },
+      {
+        "type": "imdb_most_popular_movies",
+        "enabled": false,
+        "order": 41
+      },
+      {
+        "type": "imdb_most_popular_tv_shows",
+        "enabled": false,
+        "order": 42
+      },
+      {
+        "type": "imdb_lowest_rated_movies",
+        "enabled": false,
+        "order": 43
+      },
+      {
+        "type": "imdb_top_english_movies",
+        "enabled": false,
+        "order": 44
+      },
+      {
+        "type": "tmdb_popular_movies",
+        "enabled": false,
+        "order": 45
+      },
+      {
+        "type": "tmdb_top_rated_movies",
+        "enabled": false,
+        "order": 46
+      },
+      {
+        "type": "tmdb_now_playing_movies",
+        "enabled": false,
+        "order": 47
+      },
+      {
+        "type": "tmdb_upcoming_movies",
+        "enabled": false,
+        "order": 48
+      },
+      {
+        "type": "tmdb_popular_tv",
+        "enabled": false,
+        "order": 49
+      },
+      {
+        "type": "tmdb_top_rated_tv",
+        "enabled": false,
+        "order": 50
+      },
+      {
+        "type": "tmdb_airing_today_tv",
+        "enabled": false,
+        "order": 51
+      },
+      {
+        "type": "tmdb_on_the_air_tv",
+        "enabled": false,
+        "order": 52
+      },
+      {
+        "type": "tmdb_trending_movie_daily",
+        "enabled": false,
+        "order": 53
+      },
+      {
+        "type": "tmdb_trending_movie_weekly",
+        "enabled": false,
+        "order": 54
+      },
+      {
+        "type": "tmdb_trending_tv_daily",
+        "enabled": false,
+        "order": 55
+      },
+      {
+        "type": "tmdb_trending_tv_weekly",
+        "enabled": false,
+        "order": 56
+      },
+      {
+        "type": "tmdb_trending_all_weekly",
+        "enabled": false,
+        "order": 57
+      },
+      {
+        "type": "radarr_calendar",
+        "enabled": false,
+        "order": 58
+      },
+      {
+        "type": "sonarr_calendar",
+        "enabled": false,
+        "order": 59
+      },
+      {
+        "type": "sinceyouwatched1",
+        "enabled": false,
+        "order": 60
+      },
+      {
+        "type": "sinceyouwatched2",
+        "enabled": false,
+        "order": 61
+      },
+      {
+        "type": "sinceyouwatched3",
+        "enabled": false,
+        "order": 62
+      },
+      {
+        "type": "sinceyouwatched4",
+        "enabled": false,
+        "order": 63
+      },
+      {
+        "type": "sinceyouwatched5",
+        "enabled": false,
+        "order": 64
+      },
+      {
+        "type": "rewatch",
+        "enabled": false,
+        "order": 65
+      }
+    ],
+    "displayFavoritesRows": false,
+    "displayCollectionsRows": false,
+    "displayGenresRows": false,
+    "displaySeerrRows": false,
+    "displayPlaylistsRows": false,
+    "displayAudioRows": false,
+    "displaySinceYouWatchedRows": true,
+    "sinceYouWatchedSource": "local",
+    "sinceYouWatchedSourceType": "movies",
+    "sinceYouWatchedSourceItem": "recentlyWatched",
+    "sinceYouWatchedNumRows": 1,
+    "sinceYouWatchedIncludeWatched": false,
+    "displayRewatchRow": false,
+    "rewatchSortBy": "recentlyWatched",
+    "rewatchIncludeMovies": true,
+    "rewatchIncludeShows": true,
+    "rewatchIncludeCollections": true,
+    "favoritesRowSortBy": "name",
+    "favoritesRowSortOrder": "ascending",
+    "collectionsRowSortBy": "name",
+    "collectionsRowSortOrder": "ascending",
+    "genresRowSortBy": "name",
+    "genresRowSortOrder": "ascending",
+    "genresRowItemFilter": "both",
+    "mediaBarContentType": "both",
+    "detailShowTechnicalDetails": false,
+    "detailTrailersExternal": false,
+    "hideDetailsMediaDescription": false,
+    "detailUseSeriesThumbnails": false,
+    "hideHomeMediaDescription": false,
+    "recommendationSystemSource": "local",
+    "recommendationsApplyParentalRatingCap": true,
+    "screensaverEnabled": true,
+    "screensaverMode": "library",
+    "screensaverTimeout": "m5",
+    "screensaverDimming": 0,
+    "screensaverClockMode": "off",
+    "screensaverMaxAgeRating": "any",
+    "screensaverRequireRating": false,
+    "subtitleMode": "flagged",
+    "defaultSubtitleLanguage": "eng",
+    "fallbackSubtitleLanguage": "",
+    "preferSdhSubtitles": false,
+    "subtitlesUseEmbeddedStyles": true,
+    "subtitlesUseEmbeddedFontSizes": true,
+    "pgsDirectPlay": true,
+    "assDirectPlay": true,
+    "subtitlesTextColor": "#FFFFFFFF",
+    "subtitleTextStrokeColor": "#FF000000",
+    "subtitlesBackgroundColor": "#00000000",
+    "subtitlesTextSize": 20,
+    "subtitlesOffsetPosition": 0.04,
+    "subtitlesTextWeight": 400,
+    "subtitlesHdrSeparate": false,
+    "subtitlesHdrTextColor": "#FF808080",
+    "subtitlesHdrTextStrokeColor": "#FF000000",
+    "subtitlesHdrBackgroundColor": "#00000000",
+    "subtitlesHdrTextSize": 20,
+    "subtitlesHdrOffsetPosition": 0.04,
+    "subtitlesHdrTextWeight": 400,
+    "defaultAudioLanguage": "eng",
+    "fallbackAudioLanguage": "",
+    "preferDefaultAudioTrack": false,
+    "preferAudioDescription": false,
+    "audioNightMode": false,
+    "showDescriptionOnPause": false,
+    "playerZoomMode": "fit",
+    "resumeSubtractDuration": "0",
+    "unpauseRewindDuration": 0,
+    "skipBackLength": 10000,
+    "skipForwardLength": 30000,
+    "osdLockEnabled": false,
+    "detailButtonOrderTv": [],
+    "detailButtonOrderMobile": [],
+    "detailButtonOrderDesktop": [],
+    "osdButtonOrderTv": [],
+    "osdButtonOrderMobile": [],
+    "osdButtonOrderDesktop": [],
+    "hiddenDetailButtonsTv": [],
+    "hiddenDetailButtonsMobile": [],
+    "hiddenDetailButtonsDesktop": [],
+    "hiddenOsdButtonsTv": [],
+    "hiddenOsdButtonsMobile": [],
+    "hiddenOsdButtonsDesktop": [],
+    "videoStartDelay": 0,
+    "liveTvDirectPlayEnabled": false,
+    "maxBitrate": "120",
+    "maxVideoResolution": "auto",
+    "cinemaModeEnabled": true,
+    "mediaSegmentActions": "intro:askToSkip,outro:askToSkip",
+    "mediaSegmentCountdown": "both",
+    "autoplayNextEpisode": true,
+    "nextUpBehavior": "extended",
+    "nextUpTimeout": 7000,
+    "replaceSkipOutroWithNextUp": false,
+    "stillWatchingBehavior": "disabled",
+    "mediaQueuingEnabled": true,
+    "resumeLastQueueOnPlay": true,
+    "syncPlayEnabled": false,
+    "syncPlayAdvancedCorrectionEnabled": true,
+    "syncPlayEnableSyncCorrection": true,
+    "syncPlayUseSpeedToSync": true,
+    "syncPlayUseSkipToSync": true,
+    "syncPlayMinDelaySpeedToSync": 100,
+    "syncPlayMaxDelaySpeedToSync": 5000,
+    "syncPlaySpeedToSyncDuration": 1000,
+    "syncPlayMinDelaySkipToSync": 2000,
+    "syncPlayExtraTimeOffset": 0,
+    "defaultDownloadQuality": "original",
+    "downloadWifiOnly": false,
+    "reportDownloadsAsActivity": true,
+    "downloadStorageLimitMb": 0,
+    "imdbTop250MoviesEnabled": false,
+    "imdbTop250TvShowsEnabled": false,
+    "imdbMostPopularMoviesEnabled": false,
+    "imdbMostPopularTvShowsEnabled": false,
+    "imdbLowestRatedMoviesEnabled": false,
+    "imdbTopEnglishMoviesEnabled": false,
+    "tmdbPopularMoviesEnabled": false,
+    "tmdbTopRatedMoviesEnabled": false,
+    "tmdbNowPlayingMoviesEnabled": false,
+    "tmdbUpcomingMoviesEnabled": false,
+    "tmdbPopularTvEnabled": false,
+    "tmdbTopRatedTvEnabled": false,
+    "tmdbAiringTodayTvEnabled": false,
+    "tmdbOnTheAirTvEnabled": false,
+    "tmdbTrendingMovieDailyEnabled": false,
+    "tmdbTrendingMovieWeeklyEnabled": false,
+    "tmdbTrendingTvDailyEnabled": false,
+    "tmdbTrendingTvWeeklyEnabled": false,
+    "tmdbTrendingAllWeeklyEnabled": false,
+    "mergeRadarrSonarrCalendars": false,
+    "enableRadarrCalendar": false,
+    "radarrCalendarShowCinema": true,
+    "radarrCalendarShowDigital": true,
+    "radarrCalendarShowPhysical": true,
+    "radarrCalendarShowDate": true,
+    "enableSonarrCalendar": false,
+    "sonarrCalendarShowEpisodeInfo": true,
+    "sonarrCalendarShowDate": true,
+    "libraryPosterSize": "medium",
+    "playlistPosterSize": "medium",
+    "audioSortOption": "name",
+    "favoritesViewStyle": "home",
+    "defaultFavoritesFilter": "",
+    "displayAudioAlbumArtists": true,
+    "displayAudioAlbums": true,
+    "displayAudioArtists": true,
+    "displayAudioFavorites": true,
+    "displayAudioLastPlayed": true,
+    "displayAudioLatest": true,
+    "displayAudioPlaylists": true,
+    "personPageGroupItems": false,
+    "personPageSortOption": "alphabetical",
+    "liveTvChannelSortBy": "number",
+    "allGenresImageType": "thumb",
+    "groupItemsIntoCollections": false,
+    "showMediaDetailsOnLibraryPage": true,
+    "hideBackdropsInLibraries": false,
+    "playlistsRowSortBy": "playlistOrder",
+    "playlistsRowSortOrder": "ascending",
+    "audioRowsSortBy": "name",
+    "audioRowsSortOrder": "ascending",
+    "displayStudiosRows": false,
+    "studiosRowSortBy": "name",
+    "studiosRowSortOrder": "ascending",
+    "studiosRowSelectedIds": "",
+    "cinemaModeEpisodesEnabled": false,
+    "playerSwipeGestures": true,
+    "desktopScrollSensitivity": 100,
+    "mediaSegmentAutoHide": "off",
+    "mediaTypeBadgeBehavior": "always",
+    "personalRatingStyle": "thumbs",
+    "epgMobileView": "list",
+    "sinceYouWatched1Enabled": false,
+    "sinceYouWatched2Enabled": false,
+    "sinceYouWatched3Enabled": false,
+    "sinceYouWatched4Enabled": false,
+    "sinceYouWatched5Enabled": false,
+    "languageOverride": "system",
+    "interfaceStyle": "automatic",
+    "glassQuality": "auto",
+    "desktopUiScale": "medium",
+    "preferSystemImeKeyboard": true,
+    "clockBehavior": "always",
+    "use24HourClock": true,
+    "homeRowInfoOverlay": false,
+    "showSeerrButton": true,
+    "crashReportsEnabled": true,
+    "showServerMessagesButton": false,
+    "diagnosticLoggingEnabled": false,
+    "updateNotificationsEnabled": true,
+    "musicPlaybackTimeDisplay": "totalDuration",
+    "playbackTimeAboveLeft": "none",
+    "playbackTimeAboveCenter": "none",
+    "playbackTimeAboveRight": "endsAt",
+    "playbackTimeBelowLeft": "elapsed",
+    "playbackTimeBelowCenter": "none",
+    "playbackTimeBelowRight": "totalDuration",
+    "collectionsRowShowEpisodes": false,
+    "mergeRecentRowsByType": false,
+    "playlistsRowShowEpisodes": false,
+    "recentlyReleasedSeriesType": "series"
+  },
+  "tv": {
+    "seerrEnabled": true,
+    "seerrBlockNsfw": false,
+    "seerrShowMissingCollectionItems": true,
+    "showSeerrAvailabilityBadges": true,
+    "showBookDiscoverTab": true,
+    "seerrRows": {
+      "rowOrder": [
+        "recent_requests",
+        "recently_added",
+        "trending",
+        "popular_movies",
+        "movie_genres",
+        "upcoming_movies",
+        "studios",
+        "popular_series",
+        "series_genres",
+        "upcoming_series",
+        "networks"
+      ]
+    },
+    "jellyseerrEnabled": true,
+    "jellyseerrBlockNsfw": false,
+    "jellyseerrRows": {
+      "rowOrder": [
+        "recent_requests",
+        "recently_added",
+        "trending",
+        "popular_movies",
+        "movie_genres",
+        "upcoming_movies",
+        "studios",
+        "popular_series",
+        "series_genres",
+        "upcoming_series",
+        "networks"
+      ]
+    },
+    "mdblistEnabled": true,
+    "mdblistApiKey": "[[secret:JELLYFIN_MOONFIN_MDBLISTAPIKEY]]",
+    "mdblistRatingSources": [
+      "tomatoes",
+      "tomatoes_audience",
+      "imdb"
+    ],
+    "mdblistShowRatingNames": true,
+    "mdblistShowRatingBadges": true,
+    "tmdbApiKey": "",
+    "tmdbEpisodeRatingsEnabled": true,
+    "detailsBackdropBlur": 20,
+    "navbarPosition": "left",
+    "navbarColor": "gray",
+    "navbarOpacity": 80,
+    "navbarAlwaysExpanded": false,
+    "mediaBarTrailerCaptions": false,
+    "focusColor": "",
+    "detailScreenStyle": "modern",
+    "detailExpandedTabs": true,
+    "visualTheme": "moonfin",
+    "customThemeId": "midnight",
+    "oledMode": "subtle",
+    "watchedIndicator": "always",
+    "cardFocusExpansion": true,
+    "showShuffleButton": false,
+    "showGenresButton": true,
+    "showFavoritesButton": false,
+    "showSyncPlayButton": false,
+    "showLibrariesInToolbar": false,
+    "shuffleContentType": "both",
+    "mergeContinueWatchingNextUp": true,
+    "nextUpMaxDays": 365,
+    "enableMultiServerLibraries": false,
+    "enableFolderView": false,
+    "useDetailedSubHeadings": true,
+    "confirmExit": true,
+    "mediaBarMode": "off",
+    "mediaBarItemCount": 10,
+    "mediaBarOpacity": 50,
+    "mediaBarOverlayColor": "gray",
+    "mediaBarAutoAdvance": true,
+    "mediaBarIntervalMs": 10000,
+    "mediaBarTrailerPreview": false,
+    "mediaBarTrailerAudio": false,
+    "episodePreviewEnabled": true,
+    "previewAudioEnabled": true,
+    "mediaBarSourceType": "library",
+    "mediaBarCollectionIds": [],
+    "mediaBarLibraryIds": [],
+    "mediaBarExcludedGenres": [],
+    "seasonalSurprise": "none",
+    "backdropEnabled": true,
+    "homeRowsImageTypeOverride": false,
+    "homeRowsStyle": "v1",
+    "modernCardsOnMyMediaRow": true,
+    "modernHomeRowsPadding": 460,
+    "classicHomeRowsPadding": 30,
+    "fullScreenRows": false,
+    "homeRowsImageType": "poster",
+    "homeImageTypeContinueWatching": "banner",
+    "homeImageUseSeriesImage": true,
+    "posterSize": "medium",
+    "detailsScreenBlur": "0",
+    "browsingBlur": "0",
+    "themeMusicEnabled": false,
+    "themeMusicOnHomeRows": false,
+    "themeMusicVolume": 30,
+    "themeMusicLoop": true,
+    "blockedRatings": [],
+    "homeRowOrder": [
+      "smalllibrarytiles",
+      "resume",
+      "nextup",
+      "latestmedia"
+    ],
+    "homeSections": [
+      {
+        "type": "smalllibrarytiles",
+        "enabled": true,
+        "order": 0
+      },
+      {
+        "type": "resume",
+        "enabled": true,
+        "order": 1
+      },
+      {
+        "type": "nextup",
+        "enabled": true,
+        "order": 2
+      },
+      {
+        "type": "latestmedia",
+        "enabled": true,
+        "order": 3
+      },
+      {
+        "type": "mediabar",
+        "enabled": false,
+        "order": 4
+      },
+      {
+        "type": "recentlyreleased",
+        "enabled": false,
+        "order": 5
+      },
+      {
+        "type": "librarybuttons",
+        "enabled": false,
+        "order": 6
+      },
+      {
+        "type": "resumeaudio",
+        "enabled": false,
+        "order": 7
+      },
+      {
+        "type": "resumebook",
+        "enabled": false,
+        "order": 8
+      },
+      {
+        "type": "activerecordings",
+        "enabled": false,
+        "order": 9
+      },
+      {
+        "type": "playlists",
+        "enabled": false,
+        "order": 10
+      },
+      {
+        "type": "audioartists",
+        "enabled": false,
+        "order": 11
+      },
+      {
+        "type": "audioalbums",
+        "enabled": false,
+        "order": 12
+      },
+      {
+        "type": "audioplaylists",
+        "enabled": false,
+        "order": 13
+      },
+      {
+        "type": "favoritemovies",
+        "enabled": false,
+        "order": 14
+      },
+      {
+        "type": "favoriteseries",
+        "enabled": false,
+        "order": 15
+      },
+      {
+        "type": "favoriteepisodes",
+        "enabled": false,
+        "order": 16
+      },
+      {
+        "type": "favoritepeople",
+        "enabled": false,
+        "order": 17
+      },
+      {
+        "type": "favoriteartists",
+        "enabled": false,
+        "order": 18
+      },
+      {
+        "type": "favoritemusicvideos",
+        "enabled": false,
+        "order": 19
+      },
+      {
+        "type": "favoritealbums",
+        "enabled": false,
+        "order": 20
+      },
+      {
+        "type": "favoritesongs",
+        "enabled": false,
+        "order": 21
+      },
+      {
+        "type": "collections",
+        "enabled": false,
+        "order": 22
+      },
+      {
+        "type": "genres",
+        "enabled": false,
+        "order": 23
+      },
+      {
+        "type": "studios",
+        "enabled": false,
+        "order": 24
+      },
+      {
+        "type": "livetv",
+        "enabled": false,
+        "order": 25
+      },
+      {
+        "type": "seerr_shortcuts",
+        "enabled": false,
+        "order": 26
+      },
+      {
+        "type": "seerr_recent_requests",
+        "enabled": false,
+        "order": 27
+      },
+      {
+        "type": "seerr_watchlist",
+        "enabled": false,
+        "order": 28
+      },
+      {
+        "type": "seerr_recently_added",
+        "enabled": false,
+        "order": 29
+      },
+      {
+        "type": "seerr_popular_movies",
+        "enabled": false,
+        "order": 30
+      },
+      {
+        "type": "seerr_upcoming_movies",
+        "enabled": false,
+        "order": 31
+      },
+      {
+        "type": "seerr_popular_series",
+        "enabled": false,
+        "order": 32
+      },
+      {
+        "type": "seerr_upcoming_series",
+        "enabled": false,
+        "order": 33
+      },
+      {
+        "type": "seerr_trending",
+        "enabled": false,
+        "order": 34
+      },
+      {
+        "type": "seerr_movie_genres",
+        "enabled": false,
+        "order": 35
+      },
+      {
+        "type": "seerr_studios",
+        "enabled": false,
+        "order": 36
+      },
+      {
+        "type": "seerr_series_genres",
+        "enabled": false,
+        "order": 37
+      },
+      {
+        "type": "seerr_networks",
+        "enabled": false,
+        "order": 38
+      },
+      {
+        "type": "imdb_top_250_movies",
+        "enabled": false,
+        "order": 39
+      },
+      {
+        "type": "imdb_top_250_tv_shows",
+        "enabled": false,
+        "order": 40
+      },
+      {
+        "type": "imdb_most_popular_movies",
+        "enabled": false,
+        "order": 41
+      },
+      {
+        "type": "imdb_most_popular_tv_shows",
+        "enabled": false,
+        "order": 42
+      },
+      {
+        "type": "imdb_lowest_rated_movies",
+        "enabled": false,
+        "order": 43
+      },
+      {
+        "type": "imdb_top_english_movies",
+        "enabled": false,
+        "order": 44
+      },
+      {
+        "type": "tmdb_popular_movies",
+        "enabled": false,
+        "order": 45
+      },
+      {
+        "type": "tmdb_top_rated_movies",
+        "enabled": false,
+        "order": 46
+      },
+      {
+        "type": "tmdb_now_playing_movies",
+        "enabled": false,
+        "order": 47
+      },
+      {
+        "type": "tmdb_upcoming_movies",
+        "enabled": false,
+        "order": 48
+      },
+      {
+        "type": "tmdb_popular_tv",
+        "enabled": false,
+        "order": 49
+      },
+      {
+        "type": "tmdb_top_rated_tv",
+        "enabled": false,
+        "order": 50
+      },
+      {
+        "type": "tmdb_airing_today_tv",
+        "enabled": false,
+        "order": 51
+      },
+      {
+        "type": "tmdb_on_the_air_tv",
+        "enabled": false,
+        "order": 52
+      },
+      {
+        "type": "tmdb_trending_movie_daily",
+        "enabled": false,
+        "order": 53
+      },
+      {
+        "type": "tmdb_trending_movie_weekly",
+        "enabled": false,
+        "order": 54
+      },
+      {
+        "type": "tmdb_trending_tv_daily",
+        "enabled": false,
+        "order": 55
+      },
+      {
+        "type": "tmdb_trending_tv_weekly",
+        "enabled": false,
+        "order": 56
+      },
+      {
+        "type": "tmdb_trending_all_weekly",
+        "enabled": false,
+        "order": 57
+      },
+      {
+        "type": "radarr_calendar",
+        "enabled": false,
+        "order": 58
+      },
+      {
+        "type": "sonarr_calendar",
+        "enabled": false,
+        "order": 59
+      },
+      {
+        "type": "sinceyouwatched1",
+        "enabled": false,
+        "order": 60
+      },
+      {
+        "type": "sinceyouwatched2",
+        "enabled": false,
+        "order": 61
+      },
+      {
+        "type": "sinceyouwatched3",
+        "enabled": false,
+        "order": 62
+      },
+      {
+        "type": "sinceyouwatched4",
+        "enabled": false,
+        "order": 63
+      },
+      {
+        "type": "sinceyouwatched5",
+        "enabled": false,
+        "order": 64
+      },
+      {
+        "type": "rewatch",
+        "enabled": false,
+        "order": 65
+      }
+    ],
+    "displayFavoritesRows": false,
+    "displayCollectionsRows": true,
+    "displayGenresRows": false,
+    "displaySeerrRows": false,
+    "displayPlaylistsRows": false,
+    "displayAudioRows": false,
+    "displaySinceYouWatchedRows": true,
+    "sinceYouWatchedSource": "local",
+    "sinceYouWatchedSourceType": "movies",
+    "sinceYouWatchedSourceItem": "recentlyWatched",
+    "sinceYouWatchedNumRows": 1,
+    "sinceYouWatchedIncludeWatched": false,
+    "displayRewatchRow": false,
+    "rewatchSortBy": "recentlyWatched",
+    "rewatchIncludeMovies": true,
+    "rewatchIncludeShows": true,
+    "rewatchIncludeCollections": true,
+    "favoritesRowSortBy": "name",
+    "favoritesRowSortOrder": "ascending",
+    "collectionsRowSortBy": "premiereDate",
+    "collectionsRowSortOrder": "ascending",
+    "genresRowSortBy": "name",
+    "genresRowSortOrder": "ascending",
+    "genresRowItemFilter": "both",
+    "mediaBarContentType": "both",
+    "detailShowTechnicalDetails": true,
+    "detailTrailersExternal": false,
+    "hideDetailsMediaDescription": false,
+    "detailUseSeriesThumbnails": false,
+    "hideHomeMediaDescription": false,
+    "recommendationSystemSource": "hybrid",
+    "recommendationsApplyParentalRatingCap": true,
+    "screensaverEnabled": true,
+    "screensaverMode": "library",
+    "screensaverTimeout": "m5",
+    "screensaverDimming": 0,
+    "screensaverClockMode": "off",
+    "screensaverMaxAgeRating": "any",
+    "screensaverRequireRating": false,
+    "screensaverBackdrop": "library",
+    "screensaverComponent": "none",
+    "screensaverMovement": "fast",
+    "screensaverPosition": "middle",
+    "screensaverSize": "medium",
+    "screensaverContentType": "both",
+    "screensaverLibraryIds": [],
+    "screensaverCollectionIds": [],
+    "screensaverExcludedGenres": [],
+    "subtitleMode": "flagged",
+    "defaultSubtitleLanguage": "eng",
+    "fallbackSubtitleLanguage": "",
+    "preferSdhSubtitles": false,
+    "subtitlesUseEmbeddedStyles": true,
+    "subtitlesUseEmbeddedFontSizes": true,
+    "pgsDirectPlay": true,
+    "assDirectPlay": true,
+    "subtitlesTextColor": "#FFFFFFFF",
+    "subtitleTextStrokeColor": "#FF000000",
+    "subtitlesBackgroundColor": "#00000000",
+    "subtitlesTextSize": 20,
+    "subtitlesOffsetPosition": 0.04,
+    "subtitlesTextWeight": 400,
+    "subtitlesHdrSeparate": false,
+    "subtitlesHdrTextColor": "#FF808080",
+    "subtitlesHdrTextStrokeColor": "#FF000000",
+    "subtitlesHdrBackgroundColor": "#00000000",
+    "subtitlesHdrTextSize": 20,
+    "subtitlesHdrOffsetPosition": 0.04,
+    "subtitlesHdrTextWeight": 400,
+    "defaultAudioLanguage": "eng",
+    "fallbackAudioLanguage": "",
+    "preferDefaultAudioTrack": false,
+    "preferAudioDescription": false,
+    "audioNightMode": false,
+    "showDescriptionOnPause": false,
+    "playerZoomMode": "fit",
+    "resumeSubtractDuration": "0",
+    "unpauseRewindDuration": 0,
+    "skipBackLength": 5000,
+    "skipForwardLength": 30000,
+    "osdLockEnabled": false,
+    "showChapterMarkers": false,
+    "detailButtonOrderTv": [],
+    "detailButtonOrderMobile": [],
+    "detailButtonOrderDesktop": [],
+    "osdButtonOrderTv": [],
+    "osdButtonOrderMobile": [],
+    "osdButtonOrderDesktop": [],
+    "hiddenDetailButtonsTv": [],
+    "hiddenDetailButtonsMobile": [],
+    "hiddenDetailButtonsDesktop": [],
+    "hiddenOsdButtonsTv": [],
+    "hiddenOsdButtonsMobile": [],
+    "hiddenOsdButtonsDesktop": [],
+    "detailMetadataOrderTv": [],
+    "detailMetadataOrderMobile": [],
+    "detailMetadataOrderDesktop": [],
+    "hiddenDetailMetadataTv": [],
+    "hiddenDetailMetadataMobile": [],
+    "hiddenDetailMetadataDesktop": [],
+    "videoStartDelay": 0,
+    "liveTvDirectPlayEnabled": false,
+    "maxBitrate": "120",
+    "maxVideoResolution": "auto",
+    "cinemaModeEnabled": true,
+    "mediaSegmentActions": "intro:askToSkip,outro:askToSkip",
+    "mediaSegmentCountdown": "both",
+    "autoplayNextEpisode": true,
+    "nextUpBehavior": "extended",
+    "nextUpTimeout": 7000,
+    "replaceSkipOutroWithNextUp": false,
+    "stillWatchingBehavior": "disabled",
+    "mediaQueuingEnabled": true,
+    "resumeLastQueueOnPlay": true,
+    "syncPlayEnabled": false,
+    "syncPlayAdvancedCorrectionEnabled": true,
+    "syncPlayEnableSyncCorrection": true,
+    "syncPlayUseSpeedToSync": true,
+    "syncPlayUseSkipToSync": true,
+    "syncPlayMinDelaySpeedToSync": 100,
+    "syncPlayMaxDelaySpeedToSync": 5000,
+    "syncPlaySpeedToSyncDuration": 1000,
+    "syncPlayMinDelaySkipToSync": 2000,
+    "syncPlayExtraTimeOffset": 0,
+    "defaultDownloadQuality": "original",
+    "downloadWifiOnly": false,
+    "reportDownloadsAsActivity": true,
+    "downloadStorageLimitMb": 0,
+    "imdbTop250MoviesEnabled": false,
+    "imdbTop250TvShowsEnabled": false,
+    "imdbMostPopularMoviesEnabled": false,
+    "imdbMostPopularTvShowsEnabled": false,
+    "imdbLowestRatedMoviesEnabled": false,
+    "imdbTopEnglishMoviesEnabled": false,
+    "tmdbPopularMoviesEnabled": false,
+    "tmdbTopRatedMoviesEnabled": false,
+    "tmdbNowPlayingMoviesEnabled": false,
+    "tmdbUpcomingMoviesEnabled": false,
+    "tmdbPopularTvEnabled": false,
+    "tmdbTopRatedTvEnabled": false,
+    "tmdbAiringTodayTvEnabled": false,
+    "tmdbOnTheAirTvEnabled": false,
+    "tmdbTrendingMovieDailyEnabled": false,
+    "tmdbTrendingMovieWeeklyEnabled": false,
+    "tmdbTrendingTvDailyEnabled": false,
+    "tmdbTrendingTvWeeklyEnabled": false,
+    "tmdbTrendingAllWeeklyEnabled": false,
+    "mergeRadarrSonarrCalendars": false,
+    "enableRadarrCalendar": false,
+    "radarrCalendarShowCinema": true,
+    "radarrCalendarShowDigital": true,
+    "radarrCalendarShowPhysical": true,
+    "radarrCalendarShowDate": true,
+    "enableSonarrCalendar": false,
+    "sonarrCalendarShowEpisodeInfo": true,
+    "sonarrCalendarShowDate": true,
+    "libraryPosterSize": "medium",
+    "playlistPosterSize": "medium",
+    "audioSortOption": "name",
+    "favoritesViewStyle": "home",
+    "defaultFavoritesFilter": "",
+    "displayAudioAlbumArtists": true,
+    "displayAudioAlbums": true,
+    "displayAudioArtists": true,
+    "displayAudioFavorites": true,
+    "displayAudioLastPlayed": true,
+    "displayAudioLatest": true,
+    "displayAudioPlaylists": true,
+    "personPageGroupItems": false,
+    "personPageSortOption": "alphabetical",
+    "liveTvChannelSortBy": "number",
+    "allGenresImageType": "thumb",
+    "groupItemsIntoCollections": false,
+    "showMediaDetailsOnLibraryPage": true,
+    "hideBackdropsInLibraries": false,
+    "playlistsRowSortBy": "playlistOrder",
+    "playlistsRowSortOrder": "ascending",
+    "audioRowsSortBy": "name",
+    "audioRowsSortOrder": "ascending",
+    "displayStudiosRows": false,
+    "studiosRowSortBy": "name",
+    "studiosRowSortOrder": "ascending",
+    "studiosRowSelectedIds": "",
+    "cinemaModeEpisodesEnabled": true,
+    "playerSwipeGestures": true,
+    "desktopScrollSensitivity": 100,
+    "mediaSegmentAutoHide": "off",
+    "mediaTypeBadgeBehavior": "always",
+    "personalRatingStyle": "thumbs",
+    "epgMobileView": "list",
+    "sinceYouWatched1Enabled": false,
+    "sinceYouWatched2Enabled": false,
+    "sinceYouWatched3Enabled": false,
+    "sinceYouWatched4Enabled": false,
+    "sinceYouWatched5Enabled": false,
+    "languageOverride": "system",
+    "interfaceStyle": "apple",
+    "glassQuality": "full",
+    "desktopUiScale": "medium",
+    "preferSystemImeKeyboard": false,
+    "clockBehavior": "never",
+    "use24HourClock": false,
+    "homeRowInfoOverlay": false,
+    "showSeerrButton": true,
+    "crashReportsEnabled": true,
+    "showDownloadsButton": true,
+    "showLiveTvButton": false,
+    "showServerMessagesButton": false,
+    "diagnosticLoggingEnabled": false,
+    "updateNotificationsEnabled": true,
+    "musicPlaybackTimeDisplay": "totalDuration",
+    "playbackTimeAboveLeft": "none",
+    "playbackTimeAboveCenter": "none",
+    "playbackTimeAboveRight": "endsAt",
+    "playbackTimeBelowLeft": "elapsed",
+    "playbackTimeBelowCenter": "none",
+    "playbackTimeBelowRight": "totalDuration",
+    "collectionsRowShowEpisodes": false,
+    "mergeRecentRowsByType": false,
+    "playlistsRowShowEpisodes": false,
+    "recentlyReleasedSeriesType": "series",
+    "loadingAnimationImage": "moonPhases",
+    "loadingAnimationSize": "small",
+    "loadingAnimationPosition": "middle",
+    "loadingAnimationSpeed": "moderate",
+    "showLoadingAnimationText": false
+  },
+  "hiddenContentBaselines": {
+    "tv": {
+      "continueWatching": "{}",
+      "nextUpSeries": "{}"
+    },
+    "mobile": {
+      "continueWatching": "{}",
+      "nextUpSeries": "{}"
+    }
+  }
+}

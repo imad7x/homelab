@@ -1,0 +1,40 @@
+[
+  {
+    "configContract": "FlareSolverrSettings",
+    "fields": [
+      {
+        "advanced": false,
+        "isFloat": false,
+        "label": "Host",
+        "name": "host",
+        "order": 0,
+        "privacy": "normal",
+        "type": "textbox",
+        "value": "http://192.168.0.10:8191"
+      },
+      {
+        "advanced": true,
+        "helpText": "FlareSolverr maxTimeout Request Parameter",
+        "isFloat": false,
+        "label": "Request Timeout",
+        "name": "requestTimeout",
+        "order": 1,
+        "privacy": "normal",
+        "type": "textbox",
+        "unit": "seconds",
+        "value": 60
+      }
+    ],
+    "id": 3,
+    "implementation": "FlareSolverr",
+    "implementationName": "FlareSolverr",
+    "includeHealthWarnings": false,
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported#flaresolverr",
+    "name": "FlareSolverr",
+    "onHealthIssue": false,
+    "supportsOnHealthIssue": false,
+    "tags": [
+      3
+    ]
+  }
+]

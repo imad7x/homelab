@@ -1,0 +1,142 @@
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.size=40GB'
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    extra_hosts:
+      - "dockerlab:host-gateway"
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - monitoring_prometheus_data:/prometheus
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3001:3000
+    restart: unless-stopped
+    volumes:
+      - ./grafana:/etc/grafana/provisioning/datasources
+      # Dashboard provisioning. Kept as its own mount on purpose: the line above
+      # lands ./grafana/provisioning/* one level too deep to be read by Grafana,
+      # and re-pointing it would re-provision the Prometheus datasource and change
+      # its UID, breaking the panels on the existing dashboards.
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - monitoring_grafana_data:/var/lib/grafana
+    # The Finance dashboard reads Firefly's database (finance-db, which is only
+    # reachable on the finance stack's network) as the read-only grafana_ro.
+    env_file:
+      - ./grafana-finance.env
+      - ./grafana-jellystat.env   # Media Usage dashboard: Jellystat DB read-only login
+      - ./grafana-media.env       # Media Usage dashboard: Seerr/Radarr/Sonarr API keys
+    environment:
+      # JSON API datasource used by Media Usage (Seerr requests, Radarr/Sonarr history)
+      - GF_PLUGINS_PREINSTALL_SYNC=yesoreyeram-infinity-datasource
+    networks:
+      - default
+      - finance
+      - jellyfin   # reaches jellystat-db
+
+  # Host metrics. Runs as root only so the rapl collector can read the CPU's
+  # energy counters (/sys/class/powercap/intel-rapl:*/energy_uj is 0400 root
+  # since the 2020 PLATYPUS fix); those give the measured CPU and RAM watts on
+  # the Power panels. All host mounts stay read-only.
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    network_mode: host      # Prometheus scrapes 192.168.0.10:9100
+    user: root
+    restart: unless-stopped
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($|/)'
+      - '--collector.hwmon'
+      - '--collector.thermal_zone'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1  # Do not use 'latest'
+    container_name: cadvisor
+    ports:
+      - 8082:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    privileged: true
+    restart: unless-stopped
+
+  # S.M.A.R.T. web UI + historical trends (own InfluxDB, bundled in the omnibus image).
+  scrutiny:
+    image: ghcr.io/analogj/scrutiny:v0.9.4-omnibus
+    container_name: scrutiny
+    ports:
+      - 8083:8080
+    restart: unless-stopped
+    cap_add:
+      - SYS_RAWIO   # ATA/SCSI passthrough
+      - SYS_ADMIN   # required for NVMe
+    devices:
+      - /dev/sda
+      - /dev/sdb
+      - /dev/nvme0
+      - /dev/nvme0n1
+    environment:
+      COLLECTOR_CRON_SCHEDULE: "0 */6 * * *"   # collect SMART every 6 hours
+    volumes:
+      - /run/udev:/run/udev:ro
+      - ./scrutiny/config:/opt/scrutiny/config
+      - ./scrutiny/influxdb:/opt/scrutiny/influxdb
+
+  # Same SMART data as Prometheus metrics, for the Grafana dashboard.
+  # Device types are pinned here for the same reason as in scrutiny/config/collector.yaml.
+  smartctl-exporter:
+    image: quay.io/prometheuscommunity/smartctl-exporter:v0.14.0
+    container_name: smartctl-exporter
+    user: root          # image defaults to a non-root user, which cannot open the devices
+    ports:
+      - 9633:9633
+    restart: unless-stopped
+    cap_add:
+      - SYS_RAWIO
+      - SYS_ADMIN
+    devices:
+      - /dev/sda
+      - /dev/sdb
+      - /dev/nvme0
+      - /dev/nvme0n1
+    volumes:
+      - /run/udev:/run/udev:ro
+    command:
+      - '--smartctl.device=/dev/sda;scsi'
+      - '--smartctl.device=/dev/sdb;sat'
+      - '--smartctl.device=/dev/nvme0;nvme'
+      - '--smartctl.interval=360m'            # re-read SMART every 6 hours
+      - '--smartctl.powermode-check=standby'   # never spin a sleeping disk up just to poll it
+
+networks:
+  finance:
+    name: finance_default
+    external: true
+  jellyfin:
+    name: jellyfin_default
+    external: true
+
+volumes:
+  monitoring_prometheus_data:
+    external: true
+  monitoring_grafana_data:
+    external: true

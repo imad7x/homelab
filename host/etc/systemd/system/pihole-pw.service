@@ -1,0 +1,12 @@
+[Unit]
+Description=pihole reset password
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/home/imad7x/pihole-pw.sh
+
+[Install]
+WantedBy=multi-user.target
+

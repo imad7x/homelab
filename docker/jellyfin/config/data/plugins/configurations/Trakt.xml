@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PluginConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TraktUsers>
+    <TraktUser>
+      <AccessToken>[[secret:JELLYFIN_TRAKT_ACCESSTOKEN]]</AccessToken>
+      <RefreshToken>[[secret:JELLYFIN_TRAKT_REFRESHTOKEN]]</RefreshToken>
+      <LinkedMbUserId>bffbcaa5-e89f-4ee3-9766-fba947f0654d</LinkedMbUserId>
+      <SkipUnwatchedImportFromTrakt>true</SkipUnwatchedImportFromTrakt>
+      <SkipPlaybackProgressImportFromTrakt>false</SkipPlaybackProgressImportFromTrakt>
+      <SkipWatchedImportFromTrakt>false</SkipWatchedImportFromTrakt>
+      <PostWatchedHistory>true</PostWatchedHistory>
+      <PostUnwatchedHistory>false</PostUnwatchedHistory>
+      <PostSetWatched>true</PostSetWatched>
+      <PostSetUnwatched>false</PostSetUnwatched>
+      <ExtraLogging>false</ExtraLogging>
+      <ExportMediaInfo>true</ExportMediaInfo>
+      <SynchronizeCollections>true</SynchronizeCollections>
+      <Scrobble>true</Scrobble>
+      <AccessTokenExpiration>2026-01-03T10:18:16.9246553+05:30</AccessTokenExpiration>
+      <DontRemoveItemFromTrakt>true</DontRemoveItemFromTrakt>
+    </TraktUser>
+  </TraktUsers>
+</PluginConfiguration>

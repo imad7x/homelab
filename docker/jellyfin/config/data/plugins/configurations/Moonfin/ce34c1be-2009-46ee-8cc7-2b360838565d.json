@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 2,
+  "lastUpdated": 1790524161229,
+  "lastUpdatedBy": "moonfin-tv",
+  "syncEnabled": true,
+  "global": {},
+  "tv": {
+    "navbarPosition": "top",
+    "mediaBarMode": "gallery",
+    "defaultSubtitleLanguage": "eng",
+    "defaultAudioLanguage": "eng"
+  }
+}

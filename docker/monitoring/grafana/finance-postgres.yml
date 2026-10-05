@@ -1,0 +1,26 @@
+# Firefly III's database, for the Finance dashboard. Grafana reads this file
+# from /etc/grafana/provisioning/datasources (the ./grafana mount).
+#
+# grafana_ro is a read-only login (see /docker/finance/ingest/report.sql): it
+# can run the report.* functions and read the transaction tables, nothing else.
+# Its password comes from ../grafana-finance.env via the container environment.
+apiVersion: 1
+
+datasources:
+  - name: Finance (Firefly)
+    uid: finance-pg
+    type: grafana-postgresql-datasource
+    access: proxy
+    url: finance-db:5432
+    user: grafana_ro
+    jsonData:
+      database: firefly
+      sslmode: disable
+      postgresVersion: 1600
+      timescaledb: false
+      maxOpenConns: 5
+      maxIdleConns: 2
+      connMaxLifetime: 14400
+    secureJsonData:
+      password: ${FINANCE_DB_RO_PASSWORD}
+    editable: false

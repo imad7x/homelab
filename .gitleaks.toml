@@ -1,0 +1,6 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "redaction placeholders"
+regexes = ['''\[\[(secret|private):[A-Z0-9_]+\]\]''']

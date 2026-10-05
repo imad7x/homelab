@@ -1,0 +1,129 @@
+networks:
+  servarrnetwork:
+    name: servarrnetwork
+    ipam:
+      config:
+        - subnet: 172.39.0.0/24
+
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=8080
+    volumes:
+      - ./qbittorrent:/config
+      - /data:/data
+    ports:
+      - 8080:8080  # qbittorrent web interface
+      - 6881:6881  # qbittorrent torrent port
+      - 6881:6881/udp  # qbittorrent torrent port UDP
+    networks:
+      servarrnetwork:
+        ipv4_address: 172.39.0.2
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+    dns:
+      - 192.168.0.10
+      - 1.1.1.1
+    networks:
+      servarrnetwork:
+        ipv4_address: 172.39.0.8
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./sonarr:/config
+      - ./scripts:/scripts:ro
+      - /data:/data
+    ports:
+      - 8989:8989
+    dns:
+      - 172.20.0.2
+      - 1.1.1.1
+    networks:
+      servarrnetwork:
+        ipv4_address: 172.39.0.3
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./radarr:/config
+      - ./scripts:/scripts:ro
+      - /data:/data
+    ports:
+      - 7878:7878
+    dns:
+      - 172.20.0.2
+      - 1.1.1.1
+    networks:
+      servarrnetwork:
+        ipv4_address: 172.39.0.4
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./bazarr:/config
+      - /data:/data
+    ports:
+      - 6767:6767
+    dns:
+      - 172.20.0.2
+      - 1.1.1.1
+    networks:
+      servarrnetwork:
+        ipv4_address: 172.39.0.6
+
+  jellyseerr:
+    container_name: jellyseerr
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    environment:
+     - PUID=${PUID}
+     - PGID=${PGID}
+     - TZ=${TZ}
+    volumes:
+     - ./jellyseerr:/app/config
+    ports:
+     - 5055:5055
+    networks:
+      servarrnetwork:
+        ipv4_address: 172.39.0.10
+    restart: unless-stopped

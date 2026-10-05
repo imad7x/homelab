@@ -1,0 +1,30 @@
+[
+  {
+    "address": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts",
+    "comment": "Migrated from /etc/pihole/adlists.list",
+    "enabled": 1,
+    "id": 1,
+    "type": 0
+  },
+  {
+    "address": "https://adaway.org/hosts.txt",
+    "comment": "Adaway",
+    "enabled": 1,
+    "id": 3,
+    "type": 0
+  },
+  {
+    "address": "https://perflyst.github.io/PiHoleBlocklist/android-tracking.txt",
+    "comment": "droid",
+    "enabled": 1,
+    "id": 7,
+    "type": 0
+  },
+  {
+    "address": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/ultimate.txt",
+    "comment": "hagezi u",
+    "enabled": 1,
+    "id": 10,
+    "type": 0
+  }
+]

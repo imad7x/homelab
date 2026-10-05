@@ -1,0 +1,56 @@
+[
+  {
+    "Id": "a629c0dafac54c7e931a7174223f14c8",
+    "Name": "AudioDB",
+    "Status": "Active",
+    "Version": "12.1.0.0"
+  },
+  {
+    "Id": "5e87cc92571a4d8d8d98d2d4147f9f90",
+    "Name": "File Transformation",
+    "Status": "Active",
+    "Version": "3.0.1.0"
+  },
+  {
+    "Id": "a5b2e8c19d4f4a3b8c7e6f1a2b3c4d5e",
+    "Name": "ListenBrainz Similarity Provider",
+    "Status": "Active",
+    "Version": "12.1.0.0"
+  },
+  {
+    "Id": "8c5d0e914f2a4b6d9e3f1a7c8d9e0f2b",
+    "Name": "Moonbase",
+    "Status": "Active",
+    "Version": "2.3.0.0"
+  },
+  {
+    "Id": "8c95c4d2e50c4fb0a4f36c06ff0f9a1a",
+    "Name": "MusicBrainz",
+    "Status": "Active",
+    "Version": "12.1.0.0"
+  },
+  {
+    "Id": "a628c0dafac54c7e9d1a7134223f14c8",
+    "Name": "OMDb",
+    "Status": "Active",
+    "Version": "12.1.0.0"
+  },
+  {
+    "Id": "5c53438191a343cb907a35aa02eb9d2c",
+    "Name": "Playback Reporting",
+    "Status": "Active",
+    "Version": "19.0.0.0"
+  },
+  {
+    "Id": "872a78491171458da6fb3de3d442ad30",
+    "Name": "Studio Images",
+    "Status": "Active",
+    "Version": "12.1.0.0"
+  },
+  {
+    "Id": "b8715ed16c4745289ad3f72deb539cd4",
+    "Name": "TMDb",
+    "Status": "Active",
+    "Version": "12.1.0.0"
+  }
+]

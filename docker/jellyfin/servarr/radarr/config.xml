@@ -1,0 +1,19 @@
+<Config>
+  <BindAddress>*</BindAddress>
+  <Port>7878</Port>
+  <SslPort>9898</SslPort>
+  <EnableSsl>False</EnableSsl>
+  <LaunchBrowser>True</LaunchBrowser>
+  <ApiKey>[[secret:RADARR_APIKEY]]</ApiKey>
+  <AuthenticationMethod>Forms</AuthenticationMethod>
+  <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
+  <Branch>master</Branch>
+  <LogLevel>debug</LogLevel>
+  <SslCertPath></SslCertPath>
+  <SslCertPassword></SslCertPassword>
+  <UrlBase></UrlBase>
+  <InstanceName>Radarr</InstanceName>
+  <UpdateMechanism>Docker</UpdateMechanism>
+  <AllowedHosts>localhost,127.0.0.1,192.168.0.10,[[private:TAILSCALE_IP_SERVER]],lab,lab7x,lab7x.[[private:TAILNET]],radarr.[[private:DOMAIN]],radarr,172.39.0.4</AllowedHosts>
+  <TrustedNetworks></TrustedNetworks>
+</Config>

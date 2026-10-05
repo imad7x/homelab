@@ -1,0 +1,63 @@
+[
+  {
+    "configContract": "CustomScriptSettings",
+    "fields": [
+      {
+        "advanced": false,
+        "isFloat": false,
+        "label": "Path",
+        "name": "path",
+        "order": 0,
+        "privacy": "normal",
+        "type": "filePath",
+        "value": "/scripts/jellyfin-prewarm.sh"
+      },
+      {
+        "advanced": false,
+        "helpText": "Arguments to pass to the script",
+        "hidden": "hiddenIfNotSet",
+        "isFloat": false,
+        "label": "Arguments",
+        "name": "arguments",
+        "order": 1,
+        "privacy": "normal",
+        "type": "textbox"
+      }
+    ],
+    "id": 1,
+    "implementation": "CustomScript",
+    "implementationName": "Custom Script",
+    "includeHealthWarnings": false,
+    "infoLink": "https://wiki.servarr.com/radarr/supported#customscript",
+    "message": {
+      "message": "Testing will execute the script with the EventType set to Test, ensure your script handles this correctly",
+      "type": "warning"
+    },
+    "name": "Jellyfin prewarm",
+    "onApplicationUpdate": false,
+    "onDownload": true,
+    "onGrab": false,
+    "onHealthIssue": false,
+    "onHealthRestored": false,
+    "onManualInteractionRequired": false,
+    "onMovieAdded": false,
+    "onMovieDelete": false,
+    "onMovieFileDelete": false,
+    "onMovieFileDeleteForUpgrade": false,
+    "onRename": false,
+    "onUpgrade": true,
+    "supportsOnApplicationUpdate": true,
+    "supportsOnDownload": true,
+    "supportsOnGrab": true,
+    "supportsOnHealthIssue": true,
+    "supportsOnHealthRestored": true,
+    "supportsOnManualInteractionRequired": true,
+    "supportsOnMovieAdded": true,
+    "supportsOnMovieDelete": true,
+    "supportsOnMovieFileDelete": true,
+    "supportsOnMovieFileDeleteForUpgrade": true,
+    "supportsOnRename": true,
+    "supportsOnUpgrade": true,
+    "tags": []
+  }
+]
