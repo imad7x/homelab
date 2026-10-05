@@ -20,6 +20,22 @@ pending.
 - **Drift note** - warns when a Compose file has changed since the container started,
   comparing the rendered config's hash with the container's label. A rollback reverts
   the image only, not Compose edits.
+- **Release notes** - after each check, every waiting update gets the GitHub release notes
+  between the running and the new version, expandable under its row. Lines that usually
+  mean work for you ("breaking", "action required", "deprecated", "renamed", "no longer
+  supported" ...) are listed above the notes, and a **possible breaking changes** badge
+  shows on the row and in the *Update all* dialog. It is a word match, not a verdict.
+  - The repository comes from the image's `org.opencontainers.image.source` label, or a
+    short map in `notes.py` for images that don't name one (Firefly, Jellystat, cAdvisor,
+    smartctl-exporter). Official images (postgres, redis, alpine) have none.
+  - Versions are matched to release tags. Images without a version label (Grafana,
+    Prometheus, cloudflared) are placed by build date: an image holds the newest release
+    published before it was built. Pre-releases are skipped unless the new version is one.
+  - LinuxServer images use their `docker-*` repository, whose releases carry both the
+    image changes and the upstream app's changes.
+  - GitHub is asked anonymously (60 requests an hour). Release lists are cached in
+    `state/releases.json` for 6 hours and re-asked with their ETag. A failure only shows
+    "couldn't fetch them" on that row; checks and updates never depend on it.
 
 ## API
 
@@ -29,6 +45,7 @@ pending.
 | `GET /api/status` | everything the page shows |
 | `GET /api/summary` | counts for the Homepage widget |
 | `GET /api/jobs/<id>` | one update job, with its log |
+| `GET /api/notes/<name>` | release notes and flagged lines for one waiting update |
 | `POST /api/check` | start a check now |
 | `POST /api/update` | `{"containers": [...]}` or `{"all": true}`, optionally `"dry_run": true` |
 
@@ -39,6 +56,7 @@ CORS preflight, which this server never approves.
 
 - `app/` - the code, mounted read-only (restart the container after an edit):
   `server.py` (HTTP and background threads), `checks.py`, `registry.py`, `versions.py`,
-  `dockerops.py`, `jobs.py`, `store.py`, `index.html`.
-- `state/` - `state.json` with the last check and the job history; runtime state, so it is
-  not in git.
+  `dockerops.py`, `jobs.py`, `store.py`, `notes.py` (release notes), `index.html`.
+- `state/` - `state.json` with the last check and the job history, `notes.json` with the
+  release notes of waiting updates, and `releases.json` caching GitHub's release lists;
+  runtime state, so it is not in git.

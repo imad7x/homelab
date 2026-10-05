@@ -25,12 +25,17 @@ _LINUXSERVER = re.compile(r"Linuxserver\.io version:-\s*(\S+)(?:\s+Build-date:-\
 def version_info(labels, created):
     """Describe an image's version from its labels and created timestamp.
 
-    Returns {"display": "12.0", "full": "12.0ubu2604-ls48", "date": "2026-09-08"}.
+    Returns {"display": "12.0", "full": "12.0ubu2604-ls48", "date": "2026-09-08",
+             "versioned": True, "created": "2026-09-08T02:30:49Z",
+             "source": "https://github.com/linuxserver/docker-jellyfin"}.
     "display" is what the page shows, "full" goes in the tooltip, and "date"
-    is the build date used for "12.0 · new build 2026-09-15".
+    is the build date used for "12.0 · new build 2026-09-15". "versioned" says
+    whether a label named the version; "created" and "source" (the image's
+    source-code label) are what the release notes are looked up by.
     """
     labels = labels or {}
     date = local_date(created)
+    source = labels.get("org.opencontainers.image.source") or labels.get("org.label-schema.vcs-url")
     raw = (
         labels.get("org.opencontainers.image.version")
         or _linuxserver_version(labels.get("build_version"))
@@ -38,9 +43,11 @@ def version_info(labels, created):
     )
     if raw:
         raw = raw.strip()
-        return {"display": clean(raw), "full": raw, "date": date}
+        return {"display": clean(raw), "full": raw, "date": date,
+                "versioned": True, "created": created, "source": source}
     # Nothing announces a version: the build date is the best we can say.
-    return {"display": date or "unknown", "full": f"built {date}" if date else "", "date": date}
+    return {"display": date or "unknown", "full": f"built {date}" if date else "", "date": date,
+            "versioned": False, "created": created, "source": source}
 
 
 def _linuxserver_version(build_version):

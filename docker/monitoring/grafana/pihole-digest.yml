@@ -1,0 +1,15 @@
+# Pi-hole weekly digest, for the Pi-hole Weekly dashboard. digest.db is written by
+# /docker/monitoring/pihole-digest/pihole_digest.py and mounted read-only into the container;
+# the SQLite plugin (frser-sqlite-datasource) is installed by GF_PLUGINS_PREINSTALL_SYNC.
+apiVersion: 1
+
+datasources:
+  - name: Pi-hole Digest
+    uid: pihole-digest
+    type: frser-sqlite-datasource
+    access: proxy
+    jsonData:
+      path: /var/lib/pihole-digest/digest.db
+      pathPrefix: 'file:'
+      pathOptions: mode=ro
+    editable: false

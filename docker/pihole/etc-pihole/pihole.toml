@@ -1,7 +1,7 @@
 # Pi-hole configuration file (v6.7.1)
 # Encoding: UTF-8
 # This file is managed by pihole-FTL
-# Last updated on 2026-09-28 04:09:08 IST
+# Last updated on 2026-10-06 00:39:49 IST
 
 [dns]
   # Upstream DNS Servers to be used by Pi-hole. If this is not set, Pi-hole will not
@@ -560,7 +560,7 @@
   #
   # Allowed values are:
   #     A valid IPv4 address, or empty string ("")
-  start = "192.168.0.10" ### CHANGED, default = ""
+  start = "192.168.0.100" ### CHANGED, default = ""
 
   # End address of the DHCP address pool
   #
@@ -1237,7 +1237,11 @@
     #
     # Allowed values are:
     #     An array of regular expressions describing domains
-    excludeDomains = []
+    excludeDomains = [
+      "^www\\.belkin\\.com$",
+      "^156\\.153\\.64\\.172\\.in-addr\\.arpa$",
+      "^100\\.34\\.18\\.104\\.in-addr\\.arpa$"
+    ] ### CHANGED, default = []
 
     # How much history should be imported from the database and returned by the API
     # [seconds]? (max 24hrs = 86400)
@@ -1763,6 +1767,6 @@
   all = false
 
 # Configuration statistics:
-# 167 total entries out of which 149 entries are default
-# --> 18 entries are modified
+# 167 total entries out of which 148 entries are default
+# --> 19 entries are modified
 

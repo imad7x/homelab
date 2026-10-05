@@ -4,6 +4,7 @@
   GET  /api/status      everything the page shows
   GET  /api/summary     counts for the Homepage widget
   GET  /api/jobs/<id>   one update job, with its log
+  GET  /api/notes/<name> release notes between a container's running and new version
   POST /api/check       start a check now
   POST /api/update      {"containers": [...]} or {"all": true}, optional "dry_run": true
 
@@ -29,6 +30,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import checks
 import jobs
+import notes
 import store
 
 PORT = int(os.environ.get("PORT", "8084"))
@@ -63,7 +65,9 @@ def status_payload():
             "next_check": checks.next_check().isoformat(timespec="seconds"),
             "checking": checks.checking,
             "check_error": store.data["check_error"],
-            "containers": [dict(r, job=_job_brief(active.get(r["name"]))) for r in results],
+            "containers": [dict(r, job=_job_brief(active.get(r["name"])),
+                                notes=notes.brief(r["name"]) if r["status"] in notes.PENDING else None)
+                           for r in results],
             "counts": _counts(results),
             "current": dict(current, log=list(current["log"])) if current else None,
             "queue": [_job_brief(j) for j in all_jobs if j["status"] == "queued"],
@@ -121,6 +125,12 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(200, status_payload())
         if path == "/api/summary":
             return self._json(200, summary_payload())
+        match = re.fullmatch(r"/api/notes/([A-Za-z0-9_.-]{1,128})", path)
+        if match:
+            found = notes.full(match.group(1))
+            if not found:
+                return self._json(404, {"error": "no release notes for that container"})
+            return self._json(200, found)
         match = re.fullmatch(r"/api/jobs/([0-9a-f]{1,32})", path)
         if match:
             job = store.find_job(match.group(1))
@@ -250,10 +260,12 @@ def main():
     # host's ~/.docker is deliberately not mounted, so pulls stay anonymous.
     os.makedirs(os.environ.get("DOCKER_CONFIG", "/state/docker-config"), exist_ok=True)
     store.load()
+    notes.load()
     log.info("updater starting on port %d; checks %s", PORT, checks.schedule_text())
 
     threading.Thread(target=checks.scheduler, name="scheduler", daemon=True).start()
     threading.Thread(target=jobs.worker, name="worker", daemon=True).start()
+    notes.refresh_async()  # notes for updates found before a restart
 
     server = ThreadingHTTPServer(("0.0.0.0", PORT), Handler)
     server.daemon_threads = True

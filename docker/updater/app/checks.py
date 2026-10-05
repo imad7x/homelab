@@ -23,6 +23,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 
 import dockerops
+import notes
 import registry
 import store
 import versions
@@ -91,6 +92,7 @@ def _check(names):
     results.update(_compare_with_registries(to_query, arch))
     _mark_drift(to_query, results)
     _save(results, full=names is None, running={c["name"] for c in everything})
+    notes.refresh_async()  # release notes for what's waiting, in the background
 
     counts = {}
     for result in results.values():

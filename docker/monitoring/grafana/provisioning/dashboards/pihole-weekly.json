@@ -1,0 +1,1851 @@
+{
+  "uid": "pihole-weekly",
+  "title": "Pi-hole Weekly",
+  "description": "Weekly DNS digest from Pi-hole's long-term database: blocking, new sites, devices, encrypted-DNS bypass and LAN lookups leaking upstream.",
+  "tags": [
+    "pihole",
+    "dns",
+    "homelab"
+  ],
+  "timezone": "browser",
+  "weekStart": "monday",
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "",
+  "time": {
+    "from": "now-1w/w",
+    "to": "now-1w/w"
+  },
+  "timepicker": {
+    "hidden": true
+  },
+  "schemaVersion": 41,
+  "version": 1,
+  "links": [
+    {
+      "title": "Pi-hole",
+      "type": "link",
+      "url": "http://192.168.0.10:8081/admin/",
+      "targetBlank": true,
+      "icon": "external link"
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "type": "query",
+        "name": "week",
+        "label": "Week",
+        "datasource": {
+          "type": "frser-sqlite-datasource",
+          "uid": "pihole-digest"
+        },
+        "query": "SELECT 'last' AS __value, 'Last full week (' || (SELECT label FROM weeks WHERE complete = 1 ORDER BY week_start DESC LIMIT 1) || ')' AS __text\nUNION ALL SELECT 'current', 'This week so far'\nUNION ALL SELECT * FROM (SELECT week_start, label FROM weeks ORDER BY week_start DESC)",
+        "definition": "Weeks in the digest",
+        "multi": false,
+        "includeAll": false,
+        "current": {
+          "text": "Last full week",
+          "value": "last"
+        },
+        "refresh": 1,
+        "sort": 0,
+        "options": []
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "type": "row",
+      "id": 1,
+      "title": "${week:text}",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "Queries",
+      "description": "Every DNS query Pi-hole answered this week, and the change against the week before.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.queries AS \"Queries\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.queries AS \"Queries\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "0",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": true,
+        "percentChangeColorMode": "same_as_value"
+      },
+      "id": 2,
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Blocked",
+      "description": "Share of queries answered from the blocklists (gravity, regex, deny lists, special domains such as iCloud Private Relay).",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.pct_blocked AS \"Blocked\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.pct_blocked AS \"Blocked\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "0",
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": true,
+        "percentChangeColorMode": "same_as_value"
+      },
+      "id": 3,
+      "gridPos": {
+        "x": 3,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "From cache",
+      "description": "Share answered from Pi-hole's cache, including stale entries served while refreshing.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.pct_cached AS \"From cache\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.pct_cached AS \"From cache\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "0",
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": true,
+        "percentChangeColorMode": "same_as_value"
+      },
+      "id": 4,
+      "gridPos": {
+        "x": 6,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Upstream reply",
+      "description": "Average time the upstream (cloudflared DoH proxy) took to answer forwarded queries. Lower is better.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.reply_avg_ms AS \"Upstream reply\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.reply_avg_ms AS \"Upstream reply\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "0",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": true,
+        "percentChangeColorMode": "inverted"
+      },
+      "id": 5,
+      "gridPos": {
+        "x": 9,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Devices",
+      "description": "Distinct client addresses. While the router hands out its own address as DNS, every device behind it counts as one (the router).",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.clients AS \"Devices\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.clients AS \"Devices\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "0",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": true,
+        "percentChangeColorMode": "same_as_value"
+      },
+      "id": 6,
+      "gridPos": {
+        "x": 12,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "New sites",
+      "description": "Sites (registrable domains) looked up this week that were not seen in the four weeks before. Needs four complete weeks of Pi-hole history.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.new_sites AS \"New sites\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.new_sites AS \"New sites\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "Needs 4 weeks",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": true,
+        "percentChangeColorMode": "same_as_value"
+      },
+      "id": 7,
+      "gridPos": {
+        "x": 15,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Encrypted DNS",
+      "description": "Lookups of DNS-over-HTTPS / DNS-over-TLS resolver names. A device that finds one can resolve around Pi-hole, so ads and trackers are not blocked for it.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.bypass_lookups AS \"Encrypted DNS\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.bypass_lookups AS \"Encrypted DNS\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "0",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": true,
+        "percentChangeColorMode": "inverted"
+      },
+      "id": 8,
+      "gridPos": {
+        "x": 18,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "LAN reverse lookups out",
+      "description": "Reverse lookups of private (LAN, Docker, Tailscale) addresses that Pi-hole forwarded to the public upstream. They cannot be answered there and reveal LAN addresses.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.ptr_private_upstream AS \"LAN reverse lookups out\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT CAST(strftime('%s', w.week_start) AS INTEGER) AS time, w.ptr_private_upstream AS \"LAN reverse lookups out\"\nFROM weeks w, sel WHERE w.week_start IN (sel.wk, date(sel.wk, '-7 days')) ORDER BY w.week_start",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "0",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": true,
+        "percentChangeColorMode": "inverted"
+      },
+      "id": 9,
+      "gridPos": {
+        "x": 21,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      }
+    },
+    {
+      "type": "barchart",
+      "title": "Day by day",
+      "description": "Queries per day of the selected week (Asia/Kolkata days).",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT substr('SunMonTueWedThuFriSat', 1 + 3 * CAST(strftime('%w', day) AS INTEGER), 3) || ' ' || CAST(strftime('%d', day) AS INTEGER) AS \"Day\", queries - blocked AS \"Allowed\", blocked AS \"Blocked\"\nFROM days, sel WHERE days.week_start = sel.wk ORDER BY day",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT substr('SunMonTueWedThuFriSat', 1 + 3 * CAST(strftime('%w', day) AS INTEGER), 3) || ' ' || CAST(strftime('%d', day) AS INTEGER) AS \"Day\", queries - blocked AS \"Allowed\", blocked AS \"Blocked\"\nFROM days, sel WHERE days.week_start = sel.wk ORDER BY day",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 90,
+            "lineWidth": 0,
+            "gradientMode": "none",
+            "axisSoftMin": 0,
+            "axisBorderShow": false,
+            "axisGridShow": true
+          },
+          "noValue": "Nothing yet"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Allowed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3987e5"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d95926"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "xField": "Day",
+        "orientation": "vertical",
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "barRadius": 0.1,
+        "showValue": "never",
+        "stacking": "normal",
+        "xTickLabelRotation": 0,
+        "fullHighlight": false,
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 10,
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "type": "barchart",
+      "title": "Week by week",
+      "description": "Every week in the digest. Pi-hole itself keeps 91 days; the digest keeps older weeks.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "SELECT CAST(strftime('%d', week_start) AS INTEGER) || ' ' || substr('JanFebMarAprMayJunJulAugSepOctNovDec', 1 + 3 * (CAST(strftime('%m', week_start) AS INTEGER) - 1), 3) || CASE complete WHEN 1 THEN '' ELSE ' (so far)' END AS \"Week of\", queries - blocked AS \"Allowed\", blocked AS \"Blocked\"\nFROM weeks ORDER BY week_start",
+          "rawQueryText": "SELECT CAST(strftime('%d', week_start) AS INTEGER) || ' ' || substr('JanFebMarAprMayJunJulAugSepOctNovDec', 1 + 3 * (CAST(strftime('%m', week_start) AS INTEGER) - 1), 3) || CASE complete WHEN 1 THEN '' ELSE ' (so far)' END AS \"Week of\", queries - blocked AS \"Allowed\", blocked AS \"Blocked\"\nFROM weeks ORDER BY week_start",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 90,
+            "lineWidth": 0,
+            "gradientMode": "none",
+            "axisSoftMin": 0,
+            "axisBorderShow": false,
+            "axisGridShow": true
+          },
+          "noValue": "Nothing yet"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Allowed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3987e5"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d95926"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "xField": "Week of",
+        "orientation": "vertical",
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "barRadius": 0.1,
+        "showValue": "never",
+        "stacking": "normal",
+        "xTickLabelRotation": 0,
+        "fullHighlight": false,
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 11,
+      "gridPos": {
+        "x": 12,
+        "y": 5,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "type": "row",
+      "id": 12,
+      "title": "Domains",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "table",
+      "title": "Top blocked",
+      "description": "Most-blocked domains. The router's health checks (www.belkin.com and two reverse lookups) are left out of every top list but counted in the totals.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT rank AS \"#\", domain AS \"Domain\", queries AS \"Blocked\", clients AS \"Devices\"\nFROM top_domains, sel WHERE week_start = sel.wk AND kind = 'blocked' ORDER BY rank",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT rank AS \"#\", domain AS \"Domain\", queries AS \"Blocked\", clients AS \"Devices\"\nFROM top_domains, sel WHERE week_start = sel.wk AND kind = 'blocked' ORDER BY rank",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "Nothing this week"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "#"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 40
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Devices"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "basic",
+                  "valueDisplayMode": "text"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d95926"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": []
+        }
+      },
+      "id": 13,
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 8,
+        "h": 13
+      }
+    },
+    {
+      "type": "table",
+      "title": "Top allowed",
+      "description": "Most-answered domains that were not blocked (forwarded or from cache).",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT rank AS \"#\", domain AS \"Domain\", queries AS \"Allowed\", clients AS \"Devices\"\nFROM top_domains, sel WHERE week_start = sel.wk AND kind = 'allowed' ORDER BY rank",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT rank AS \"#\", domain AS \"Domain\", queries AS \"Allowed\", clients AS \"Devices\"\nFROM top_domains, sel WHERE week_start = sel.wk AND kind = 'allowed' ORDER BY rank",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "Nothing this week"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "#"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 40
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Devices"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Allowed"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "basic",
+                  "valueDisplayMode": "text"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3987e5"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": []
+        }
+      },
+      "id": 14,
+      "gridPos": {
+        "x": 8,
+        "y": 14,
+        "w": 8,
+        "h": 13
+      }
+    },
+    {
+      "type": "table",
+      "title": "New this week",
+      "description": "Sites first seen this week (not in the four weeks before), busiest first, top 40. Worth a glance for new apps, devices or trackers. Reverse lookups are left out.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT site AS \"Site\", queries AS \"Queries\", blocked AS \"Blocked\", hosts AS \"Hosts\", example AS \"Busiest host\", clients AS \"Devices\"\nFROM new_sites, sel WHERE week_start = sel.wk ORDER BY rank",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT site AS \"Site\", queries AS \"Queries\", blocked AS \"Blocked\", hosts AS \"Hosts\", example AS \"Busiest host\", clients AS \"Devices\"\nFROM new_sites, sel WHERE week_start = sel.wk ORDER BY rank",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "Needs 4 weeks of history"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Queries"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hosts"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 55
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Devices"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 65
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": []
+        }
+      },
+      "id": 15,
+      "gridPos": {
+        "x": 16,
+        "y": 14,
+        "w": 8,
+        "h": 13
+      }
+    },
+    {
+      "type": "row",
+      "id": 16,
+      "title": "Devices and leaks",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 27,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "table",
+      "title": "Devices",
+      "description": "Who asked. Until the router hands out Pi-hole (192.168.0.10) as the DNS server, every device on the Wi-Fi shows up as the router, LinksysMX5500.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT name AS \"Device\", ip AS \"Address\", queries AS \"Queries\", blocked AS \"Blocked\", pct_blocked AS \"Blocked %\"\nFROM clients, sel WHERE week_start = sel.wk ORDER BY rank",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT name AS \"Device\", ip AS \"Address\", queries AS \"Queries\", blocked AS \"Blocked\", pct_blocked AS \"Blocked %\"\nFROM clients, sel WHERE week_start = sel.wk ORDER BY rank",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "Nothing this week"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Address"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Queries"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 140
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "basic",
+                  "valueDisplayMode": "text"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3987e5"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked %"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.width",
+                "value": 85
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": []
+        }
+      },
+      "id": 17,
+      "gridPos": {
+        "x": 0,
+        "y": 28,
+        "w": 10,
+        "h": 9
+      }
+    },
+    {
+      "type": "table",
+      "title": "Encrypted DNS and relay lookups",
+      "description": "Encrypted DNS resolver: a browser or phone (Secure DNS, Android Private DNS) looking up a DoH/DoT server; once connected it bypasses Pi-hole. iCloud Private Relay: Pi-hole answers mask.icloud.com with NXDOMAIN so Apple devices fall back to normal DNS. Firefox DoH check: Pi-hole's answer tells Firefox not to switch on DoH. Blocked = answered by Pi-hole's blocking.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT name AS \"Device\", ip AS \"Address\", kind AS \"Kind\", domain AS \"Name looked up\", queries AS \"Lookups\", blocked AS \"Blocked\"\nFROM bypass, sel WHERE week_start = sel.wk ORDER BY queries DESC",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT name AS \"Device\", ip AS \"Address\", kind AS \"Kind\", domain AS \"Name looked up\", queries AS \"Lookups\", blocked AS \"Blocked\"\nFROM bypass, sel WHERE week_start = sel.wk ORDER BY queries DESC",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "None this week"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Address"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Kind"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lookups"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": []
+        }
+      },
+      "id": 18,
+      "gridPos": {
+        "x": 10,
+        "y": 28,
+        "w": 8,
+        "h": 9
+      }
+    },
+    {
+      "type": "table",
+      "title": "LAN reverse lookups sent upstream",
+      "description": "Reverse (PTR) lookups of private addresses that went to the public upstream. Pi-hole answers them locally when bogusPriv is on, or asks the router with conditional forwarding.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT name AS \"Device\", ip AS \"Address\", queries AS \"Lookups\", addresses AS \"Addresses\"\nFROM ptr_upstream, sel WHERE week_start = sel.wk ORDER BY queries DESC",
+          "rawQueryText": "WITH sel AS (SELECT (SELECT CASE '$week' WHEN 'last' THEN (SELECT max(week_start) FROM weeks WHERE complete = 1) WHEN 'current' THEN (SELECT max(week_start) FROM weeks) ELSE '$week' END) AS wk)\nSELECT name AS \"Device\", ip AS \"Address\", queries AS \"Lookups\", addresses AS \"Addresses\"\nFROM ptr_upstream, sel WHERE week_start = sel.wk ORDER BY queries DESC",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "None this week"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Address"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lookups"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Addresses"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": []
+        }
+      },
+      "id": 19,
+      "gridPos": {
+        "x": 18,
+        "y": 28,
+        "w": 6,
+        "h": 9
+      }
+    },
+    {
+      "type": "row",
+      "id": 20,
+      "title": "Blocklists (as of the last digest run)",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 37,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "table",
+      "title": "Lists",
+      "description": "Enabled adlists, their size and how the weekly gravity update (Sunday 03:16) went. Changed is when the list's content last changed.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "SELECT address AS \"List\", comment AS \"Comment\", domains AS \"Domains\", invalid AS \"Invalid lines\", status AS \"Last refresh\", updated AS \"Changed\"\nFROM lists WHERE enabled = 1 ORDER BY domains DESC",
+          "rawQueryText": "SELECT address AS \"List\", comment AS \"Comment\", domains AS \"Domains\", invalid AS \"Invalid lines\", status AS \"Last refresh\", updated AS \"Changed\"\nFROM lists WHERE enabled = 1 ORDER BY domains DESC",
+          "timeColumns": [
+            "Changed"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "Nothing this week"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Comment"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Domains"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "basic",
+                  "valueDisplayMode": "text"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d95926"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Invalid lines"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last refresh"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Changed"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeFromNow"
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "countRows": false,
+          "fields": []
+        }
+      },
+      "id": 21,
+      "gridPos": {
+        "x": 0,
+        "y": 38,
+        "w": 16,
+        "h": 6
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Blocked domains",
+      "description": "Distinct entries across all lists (gravity).",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "SELECT CAST(value AS INTEGER) AS \"Blocked domains\" FROM meta WHERE key = 'gravity_domains'",
+          "rawQueryText": "SELECT CAST(value AS INTEGER) AS \"Blocked domains\" FROM meta WHERE key = 'gravity_domains'",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "0",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false,
+        "percentChangeColorMode": "standard"
+      },
+      "id": 22,
+      "gridPos": {
+        "x": 16,
+        "y": 38,
+        "w": 4,
+        "h": 6
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Digest updated",
+      "description": "When pihole_digest.py last ran (cron, daily at 05:10).",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "pihole-digest"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "pihole-digest"
+          },
+          "queryType": "table",
+          "queryText": "SELECT CAST(strftime('%s', value) AS INTEGER) * 1000 AS \"Digest updated\" FROM meta WHERE key = 'updated_at'",
+          "rawQueryText": "SELECT CAST(strftime('%s', value) AS INTEGER) * 1000 AS \"Digest updated\" FROM meta WHERE key = 'updated_at'",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dateTimeFromNow",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false,
+        "percentChangeColorMode": "standard"
+      },
+      "id": 23,
+      "gridPos": {
+        "x": 20,
+        "y": 38,
+        "w": 4,
+        "h": 6
+      }
+    }
+  ]
+}

@@ -43,5 +43,25 @@ everything else is in the encrypted `BUNDLE_FINANCE_*` secrets and comes back wi
 | `firefly.env` | Firefly's `APP_KEY`, database connection, cron token, locale |
 | `secrets/firefly.env` | API URL and the access token the worker uses |
 | `secrets/mail.env` | mailbox login and the statement PDF passwords |
+| `secrets/ask.env` | the *Ask my finances* login password and cookie signing key |
 
 The `*.env.example` files list the keys; the values are in the bundle.
+
+## Ask my finances
+
+A LAN page on port `8085` (`finance/ask/`) that answers plain-language questions about
+the ledger: "how much did I spend on food last month?", "what's left on each loan?".
+
+- It is a small standard-library Python server on the host, not a container, because it
+  runs an AI command-line tool that is logged in on the host (headless, tools disabled,
+  system prompt replaced, nothing saved as a session) on a subscription rather than API
+  keys. Cron starts it `@reboot` through `start.sh`; run `start.sh` again after editing it.
+- A question takes two calls: one turns it into a single SQL `SELECT` over the `report.*`
+  functions, the other turns the rows into a short answer. The SQL runs as `grafana_ro`
+  inside a read-only transaction with a 15 s timeout, so it can read exactly what the
+  Grafana dashboard reads and can change nothing.
+- Every call's token counts go to `ask/state/usage.jsonl` and onto the page, next to what
+  the same tokens would cost on an API model, to size a move from the subscription to API
+  keys. A question costs about 4,000 tokens in and 350 out.
+- One password (`ASK_PASSWORD` in `secrets/ask.env`, created on first run), a signed
+  30-day cookie, and every POST needs the header `X-Ask: 1`. Not on the tunnel.

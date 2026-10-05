@@ -54,6 +54,8 @@ Generated from `docker ps` on every sync.
 | jellyfin | jellyfin | `lscr.io/linuxserver/jellyfin:latest` | 1900, 7359, 8096 |
 | jellyfin | jellystat | `cyfershepard/jellystat:latest` | 3003 |
 | jellyfin | jellystat-db | `postgres:16-alpine` | - |
+| jellyfin/discover | jellylook | `jellylook-local:latest` | 3045 |
+| jellyfin/discover | tmdb-via-seerr | `tmdb-via-seerr:latest` | - |
 | jellyfin/music | navidrome | `deluan/navidrome:latest` | 4533 |
 | jellyfin/music | slskd | `slskd/slskd:latest` | 5030, 50300 |
 | jellyfin/servarr | bazarr | `lscr.io/linuxserver/bazarr:latest` | 6767 |

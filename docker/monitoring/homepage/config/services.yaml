@@ -44,6 +44,13 @@
         server: my-docker
         container: jellystat
 
+    - Jellylook:
+        icon: mdi-movie-search-outline
+        href: http://192.168.0.10:3045
+        description: Per-viewer picks from watch history
+        server: my-docker
+        container: jellylook
+
     - Navidrome:
         icon: navidrome.png
         href: https://navidrome.[[private:DOMAIN]]
@@ -262,6 +269,12 @@
         icon: grafana.png
         href: https://grafana.[[private:DOMAIN]]/d/finance/finance
         description: Net Worth, EMIs & Spending
+
+    - Ask My Finances:
+        icon: mdi-chat-question-outline
+        href: http://192.168.0.10:8085
+        description: Plain-language questions, read-only
+        siteMonitor: http://192.168.0.10:8085
 
     - Bank Mail Importer:
         icon: mdi-email-sync-outline

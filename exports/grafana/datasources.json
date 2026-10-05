@@ -53,6 +53,27 @@
     "access": "proxy",
     "basicAuth": false,
     "database": "",
+    "id": 8,
+    "isDefault": false,
+    "jsonData": {
+      "path": "/var/lib/pihole-digest/digest.db",
+      "pathOptions": "mode=ro",
+      "pathPrefix": "file:"
+    },
+    "name": "Pi-hole Digest",
+    "orgId": 1,
+    "readOnly": true,
+    "type": "frser-sqlite-datasource",
+    "typeLogoUrl": "public/plugins/frser-sqlite-datasource/img/logo.svg",
+    "typeName": "SQLite",
+    "uid": "pihole-digest",
+    "url": "",
+    "user": ""
+  },
+  {
+    "access": "proxy",
+    "basicAuth": false,
+    "database": "",
     "id": 1,
     "isDefault": true,
     "jsonData": {},
