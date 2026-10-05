@@ -3,3 +3,7 @@
 # Catch anything the Sonarr/Radarr import hooks missed (manual copies, failed hooks).
 */30 * * * * /docker/jellyfin/servarr/scripts/jellyfin-prewarm.sh --all >> /docker/jellyfin/logs/prewarm.log 2>&1
 17 4 * * * $HOME/github/homelab/tools/sync.sh >> $HOME/.local/state/homelab-sync.log 2>&1
+# Ask my finances (/docker/finance/ask): LAN page on :8085; AI answers on the subscription, not API keys.
+@reboot sleep 60 && /docker/finance/ask/start.sh
+# Pi-hole weekly digest for Grafana (/docker/monitoring/pihole-digest): finalises last week, refreshes this week.
+10 5 * * * /usr/bin/python3 /docker/monitoring/pihole-digest/pihole_digest.py >> $HOME/.local/state/pihole-digest.log 2>&1

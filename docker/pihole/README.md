@@ -20,3 +20,8 @@ All four sit on `pihole_net` (172.20.0.0/24) with fixed IPs. The *arr apps use P
 - At boot, `pihole-pw.service` runs `host/home/pihole-pw.sh`, which calls
   `pihole setpassword`.
 - There are no local DNS overrides: at home, apps are opened as `192.168.0.10:<port>`.
+- The router's own health checks (`www.belkin.com` and reverse lookups of two Cloudflare
+  addresses, about 14% of all queries) are hidden from the query log and top lists with
+  `webserver.api.excludeDomains`; they still count in the totals.
+- Pi-hole's DHCP server is off. Its range is kept at `.100`-`.200` so that switching it on
+  can never hand out the server's own `.10`.

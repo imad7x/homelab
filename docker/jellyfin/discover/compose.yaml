@@ -1,0 +1,30 @@
+# What to watch / download next. No login of its own: LAN and Tailscale only,
+# never on the tunnel.
+services:
+  # Per-viewer suggestions from Jellystat watch history, one AI call per scan,
+  # IMDb ratings from OMDb, "Add to Seerr" on every card. Keys in jellylook.env.
+  # Built locally: the upstream image with its TMDb calls sent to tmdb-via-seerr.
+  jellylook:
+    build:
+      context: .
+      target: jellylook
+    image: jellylook-local:latest
+    container_name: jellylook
+    env_file: ./jellylook.env
+    ports:
+      - "3045:8000"
+    volumes:
+      - ./jellylook-data:/app/data
+    depends_on:
+      - tmdb-via-seerr
+    restart: unless-stopped
+
+  # Answers jellylook's TMDb lookups from Seerr (see Dockerfile). Internal only.
+  tmdb-via-seerr:
+    build:
+      context: .
+      target: tmdb-via-seerr
+    image: tmdb-via-seerr:latest
+    container_name: tmdb-via-seerr
+    env_file: ./jellylook.env
+    restart: unless-stopped
