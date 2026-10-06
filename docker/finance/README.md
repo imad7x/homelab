@@ -65,3 +65,13 @@ the ledger: "how much did I spend on food last month?", "what's left on each loa
   keys. A question costs about 4,000 tokens in and 350 out.
 - One password (`ASK_PASSWORD` in `secrets/ask.env`, created on first run), a signed
   30-day cookie, and every POST needs the header `X-Ask: 1`. Not on the tunnel.
+- **Categorise** (`/categorise` on the same port and login) is for labelling payments by
+  hand: pick dates (or presets - this month, last FY...), types, account, a search, and
+  "uncategorised only"; see payments one by one or grouped by payee, and set a category
+  on one row, on the ticked rows, or on all of a payee's payments at once. It writes
+  through Firefly's API, exactly like an edit in Firefly, so the category learner treats
+  the result as set by hand and never changes it. The Grafana Finance dashboard links to
+  it with its current date range. Every edit is logged to `ask/state/categorise.jsonl`.
+- Its code (`ask/*.py`, `ask/*.html`, `ask/*.sh`) names family members in its prompts, so it
+  travels in the encrypted finance bundle like the worker's; `ask/state/` (the usage log)
+  is not backed up.

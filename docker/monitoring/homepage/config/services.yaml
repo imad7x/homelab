@@ -276,11 +276,39 @@
         description: Plain-language questions, read-only
         siteMonitor: http://192.168.0.10:8085
 
+    - Categorise Payments:
+        icon: mdi-tag-multiple-outline
+        href: http://192.168.0.10:8085/categorise
+        description: Filter by dates, set categories in bulk
+
     - Bank Mail Importer:
         icon: mdi-email-sync-outline
         description: Reads Bank Mail Every 15 Min
         server: my-docker
         container: finance-ingest
+
+- Health:
+    # Gym (/docker/gym): workout program, set logger, progress charts and the
+    # watch's data. The link is the LAN address until the tunnel has a public
+    # hostname for it. Its summary only changes when a workout is logged, so a
+    # 5-minute refresh (the unit is ms) is plenty.
+    - Gym:
+        icon: mdi-dumbbell
+        href: http://192.168.0.10:8086
+        description: Workouts, Progress & Watch Data
+        server: my-docker
+        container: gym
+        widget:
+          type: customapi
+          url: http://192.168.0.10:8086/api/summary
+          refreshInterval: 300000
+          mappings:
+            - field: week_done
+              label: Days This Week
+              format: number
+            - field: streak_weeks
+              label: Week Streak
+              format: number
 
 - Documents:
     - Paperless:

@@ -54,6 +54,7 @@ PRIVATE = [
     '**/*.env', '**/.env', 'finance/secrets/*',
     'finance/ingest/*.py', 'finance/ingest/*.yaml', 'finance/ingest/*.sql',
     'finance/grafana_dashboard.py', 'finance/FORMATS.md',
+    'finance/ask/*.py', 'finance/ask/*.html', 'finance/ask/*.sh',   # Ask my finances: prompts name family
     'homeassistant/config/secrets.yaml', 'homeassistant/config/.storage/*',
     'monitoring/grafana/provisioning/dashboards/finance.json',   # names banks, cards and loans
 ]
@@ -64,6 +65,7 @@ PUBLIC = [
     'monitoring/prometheus/prometheus.yml', 'monitoring/prometheus/rules/*.yml',
     'monitoring/grafana/*.yml', 'monitoring/grafana/provisioning/**/*.yml',
     'monitoring/grafana/provisioning/**/*.json', 'monitoring/dashboards-src/*.py',
+    'monitoring/pihole-digest/*.py',
     'monitoring/homepage/config/*.yaml', 'monitoring/homepage/config/*.css',
     'monitoring/homepage/config/*.js', 'monitoring/scrutiny/config/*.yaml',
     'pihole/config.yml', 'pihole/etc-pihole/pihole.toml',
@@ -96,7 +98,7 @@ PRUNE = {   # big data folders never worth walking
     'jellyfin/jellystat/db', 'jellyfin/jellystat/backup-data', 'monitoring/scrutiny/influxdb',
     'paperless/data', 'finance/mail', 'finance/samples', 'finance/backups', 'finance/state',
     'homeassistant/config/deps', 'homeassistant/config/.cache', 'pihole/etc-pihole/listsCache',
-    'updater/state', 'jellyfin/logs',
+    'updater/state', 'jellyfin/logs', 'finance/ask/state',
 }
 PRUNE_NAMES = {'__pycache__', 'MediaCover', 'Backups', 'logs', 'log', 'node_modules', '.git'}
 HOST = [    # (source, repo path)
