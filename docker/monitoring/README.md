@@ -39,6 +39,8 @@ reads Pi-hole's long-term query database read-only through
 `docker exec pihole pihole-FTL sqlite3 -readonly` and writes `pihole-digest/digest.db`: one
 snapshot per Monday-Sunday week (Asia/Kolkata) plus one row per day. Grafana mounts the
 folder read-only.
+The script is published here; `digest.db` is data and is not backed up (a re-run rebuilds
+whatever Pi-hole still holds).
 
 - Every week still in Pi-hole's database is rebuilt on each run, so the first run backfills
   and re-runs are safe. Pi-hole keeps 91 days; a week it has started to prune is left as

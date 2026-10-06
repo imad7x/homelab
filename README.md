@@ -37,6 +37,7 @@ kept encrypted - see [Secrets](#secrets).
 | `docker/finance` | Firefly III with a mail-driven ingest worker | [README](docker/finance) |
 | `docker/paperless` | Paperless-ngx document archive | [README](docker/paperless) |
 | `docker/updater` | One-click container updater (custom app) | [README](docker/updater) |
+| `docker/gym` | Workout program, set logger and watch data (custom app) | [README](docker/gym) |
 | `docker/homeassistant` | Home Assistant | [README](docker/homeassistant) |
 
 ### Containers
@@ -50,6 +51,7 @@ Generated from `docker ps` on every sync.
 | finance | finance-ingest | `finance-ingest:latest` | - |
 | finance | firefly | `fireflyiii/core:latest` | 3002 |
 | finance | firefly-cron | `alpine:3` | - |
+| gym | gym | `gym:latest` | 8086 |
 | homeassistant | homeassistant | `ghcr.io/home-assistant/home-assistant:stable` | - |
 | jellyfin | jellyfin | `lscr.io/linuxserver/jellyfin:latest` | 1900, 7359, 8096 |
 | jellyfin | jellystat | `cyfershepard/jellystat:latest` | 3003 |
