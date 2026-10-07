@@ -75,10 +75,15 @@
       "service": "http://192.168.0.10:3002"
     },
     {
+      "hostname": "gym.[[private:DOMAIN]]",
+      "originRequest": {},
+      "service": "http://192.168.0.10:8086"
+    },
+    {
       "service": "http_status:404"
     }
   ],
-  "version": 28,
+  "version": 29,
   "warp-routing": {
     "enabled": false
   }

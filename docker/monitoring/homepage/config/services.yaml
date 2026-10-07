@@ -146,12 +146,6 @@
         server: my-docker
         container: flaresolverr
 
-    - Byparr:
-        icon: mdi-shield-key-outline
-        description: Cloudflare Solver (alt)
-        server: my-docker
-        container: byparr
-
 - Infrastructure:
     # Container updater (/docker/updater). Home-only: it is deliberately kept
     # off the tunnel, so both the link and the widget use the LAN IP.
@@ -209,45 +203,12 @@
         server: my-docker
         container: grafana
 
-    - Media Usage:
-        icon: grafana.png
-        href: https://grafana.[[private:DOMAIN]]/d/media-usage/media-usage
-        description: Watching, requests & downloads
-        server: my-docker
-        container: grafana
-
-    - Disk Health:
-        icon: grafana.png
-        href: https://grafana.[[private:DOMAIN]]/d/disk-health/disk-health-s-m-a-r-t
-        description: S.M.A.R.T. Dashboard
-
     - Scrutiny:
         icon: scrutiny.png
         href: http://192.168.0.10:8083
         description: Disk S.M.A.R.T. Health
         server: my-docker
         container: scrutiny
-
-    - Prometheus:
-        icon: prometheus.png
-        href: https://p8s.[[private:DOMAIN]]
-        description: Metrics
-        server: my-docker
-        container: prometheus
-
-    - cAdvisor:
-        icon: cadvisor.png
-        href: https://cadvisor.[[private:DOMAIN]]
-        description: Container Metrics
-        server: my-docker
-        container: cadvisor
-
-    - Node Exporter:
-        icon: mdi-server
-        href: http://192.168.0.10:9100/metrics
-        description: Host Metrics
-        server: my-docker
-        container: node-exporter
 
     - SMART Exporter:
         icon: mdi-harddisk
@@ -264,11 +225,6 @@
         server: my-docker
         container: firefly
         siteMonitor: http://192.168.0.10:3002
-
-    - Finance Dashboard:
-        icon: grafana.png
-        href: https://grafana.[[private:DOMAIN]]/d/finance/finance
-        description: Net Worth, EMIs & Spending
 
     - Ask My Finances:
         icon: mdi-chat-question-outline
@@ -289,12 +245,13 @@
 
 - Health:
     # Gym (/docker/gym): workout program, set logger, progress charts and the
-    # watch's data. The link is the LAN address until the tunnel has a public
-    # hostname for it. Its summary only changes when a workout is logged, so a
-    # 5-minute refresh (the unit is ms) is plenty.
+    # watch's data. Public through the tunnel behind Cloudflare Access; the widget
+    # reads the LAN address. Its summary only changes when a workout is logged, so
+    # a 5-minute refresh (the unit is ms) is plenty.
     - Gym:
         icon: mdi-dumbbell
-        href: http://192.168.0.10:8086
+        href: https://gym.[[private:DOMAIN]]
+        siteMonitor: http://192.168.0.10:8086/api/ping
         description: Workouts, Progress & Watch Data
         server: my-docker
         container: gym

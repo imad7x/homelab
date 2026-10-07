@@ -1,0 +1,2054 @@
+{
+  "uid": "gym-health",
+  "title": "Health & Training",
+  "description": "Huawei watch data via Gadgetbridge and the gym app's logged workouts: recovery against your own baseline, sleep, activity with wear-time gaps, training load and lifts.",
+  "tags": [
+    "health",
+    "gym",
+    "homelab"
+  ],
+  "timezone": "browser",
+  "weekStart": "monday",
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "15m",
+  "time": {
+    "from": "now-30d",
+    "to": "now"
+  },
+  "schemaVersion": 41,
+  "version": 1,
+  "links": [
+    {
+      "title": "Gym app",
+      "type": "link",
+      "url": "http://192.168.0.10:8086/#/health",
+      "targetBlank": true,
+      "icon": "external link"
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "type": "row",
+      "id": 1,
+      "title": "Latest",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "Recovery",
+      "description": "HRV 7-day average vs your normal range (60 days before), resting HR vs its 30-day average, and last night's sleep. Good / Normal = train as planned; Take it easier = go lighter; Rest = resting HR up two days running with low HRV. Guidance from a wrist sensor, not a diagnosis.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, readiness_score AS \"Recovery\" FROM days WHERE readiness_score IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
+          "rawQueryText": "SELECT time, readiness_score AS \"Recovery\" FROM days WHERE readiness_score IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "3": {
+                  "text": "Good to train",
+                  "color": "#0ca30c",
+                  "index": 0
+                },
+                "2": {
+                  "text": "Normal",
+                  "color": "#3987e5",
+                  "index": 1
+                },
+                "1": {
+                  "text": "Take it easier",
+                  "color": "#fab219",
+                  "index": 2
+                },
+                "0": {
+                  "text": "Rest today",
+                  "color": "#d03b3b",
+                  "index": 3
+                }
+              }
+            }
+          ],
+          "noValue": "\u2013"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 2,
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Last night's sleep",
+      "description": "Hours asleep in the main sleep that ended that morning. Nights under 3 h of recorded sleep don't count.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, sleep_h AS \"Sleep\" FROM days WHERE sleep_h IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
+          "rawQueryText": "SELECT time, sleep_h AS \"Sleep\" FROM days WHERE sleep_h IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix: h",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "\u2013",
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 3,
+      "gridPos": {
+        "x": 4,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Resting HR",
+      "description": "",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, rhr AS \"Resting HR\" FROM days WHERE rhr IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
+          "rawQueryText": "SELECT time, rhr AS \"Resting HR\" FROM days WHERE rhr IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bpm",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "\u2013"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 4,
+      "gridPos": {
+        "x": 8,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Usual resting HR",
+      "description": "Average of the 30 days before.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, rhr_base AS \"Usual\" FROM days WHERE rhr_base IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
+          "rawQueryText": "SELECT time, rhr_base AS \"Usual\" FROM days WHERE rhr_base IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bpm",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "\u2013",
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 5,
+      "gridPos": {
+        "x": 11,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "HRV, 7-day",
+      "description": "7-day average of nightly HRV (rMSSD).",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, hrv7 AS \"HRV 7-day\" FROM days WHERE hrv7 IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
+          "rawQueryText": "SELECT time, hrv7 AS \"HRV 7-day\" FROM days WHERE hrv7 IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "\u2013",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 6,
+      "gridPos": {
+        "x": 14,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Active minutes this week",
+      "description": "Moderate (64-76% of max HR) plus vigorous (77%+) x 2, Monday to now. WHO: 150-300 a week.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT max(time) AS time, sum(coalesce(mod_min, 0) + 2 * coalesce(vig_min, 0)) AS \"WHO minutes\" FROM days WHERE time >= CAST(strftime('%s', date('now', '+330 minutes', 'weekday 0', '-6 days')) AS INTEGER) - 19800",
+          "rawQueryText": "SELECT max(time) AS time, sum(coalesce(mod_min, 0) + 2 * coalesce(vig_min, 0)) AS \"WHO minutes\" FROM days WHERE time >= CAST(strftime('%s', date('now', '+330 minutes', 'weekday 0', '-6 days')) AS INTEGER) - 19800",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "\u2013"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 7,
+      "gridPos": {
+        "x": 17,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Data updated",
+      "description": "When the gym app last rewrote health.db (a minute after new data, and every 15 min).",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT CAST(strftime('%s', value) AS INTEGER) * 1000 AS \"Updated\" FROM meta WHERE key = 'updated_at'",
+          "rawQueryText": "SELECT CAST(strftime('%s', value) AS INTEGER) * 1000 AS \"Updated\" FROM meta WHERE key = 'updated_at'",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dateTimeFromNow",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "mappings": [],
+          "noValue": "\u2013"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 8,
+      "gridPos": {
+        "x": 21,
+        "y": 1,
+        "w": 3,
+        "h": 4
+      }
+    },
+    {
+      "type": "row",
+      "id": 9,
+      "title": "Recovery",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Resting heart rate",
+      "description": "Drifting down over months = fitter. 5+ above usual for a few days often means poor sleep, stress or illness.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, rhr AS \"Resting HR\", rhr_base AS \"Usual (30-day)\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, rhr AS \"Resting HR\", rhr_base AS \"Usual (30-day)\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bpm",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 6,
+            "spanNulls": false,
+            "insertNulls": 172800000,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          },
+          "noValue": "No data",
+          "decimals": 0
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Usual (30-day)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#898781"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "transformations": [],
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 10,
+      "gridPos": {
+        "x": 0,
+        "y": 6,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "HRV (rMSSD)",
+      "description": "Your normal range is the mean +/- half a standard deviation of ln(rMSSD) over the 60 days before. A 7-day average below it means recover more.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, hrv AS \"Each night\", hrv7 AS \"7-day average\", hrv_lo AS \"Normal low\", hrv_hi AS \"Normal high\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, hrv AS \"Each night\", hrv7 AS \"7-day average\", hrv_lo AS \"Normal low\", hrv_hi AS \"Normal high\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 6,
+            "spanNulls": false,
+            "insertNulls": 172800000,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          },
+          "noValue": "No data",
+          "decimals": 0
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Each night"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#898781"
+                }
+              },
+              {
+                "id": "custom.drawStyle",
+                "value": "points"
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 5
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Normal low"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#898781"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Normal high"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#898781"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.fillBelowTo",
+                "value": "Normal low"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 12
+              }
+            ]
+          }
+        ]
+      },
+      "transformations": [],
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 11,
+      "gridPos": {
+        "x": 12,
+        "y": 6,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "type": "state-timeline",
+      "title": "Recovery by day",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, readiness_score AS \"Recovery\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, readiness_score AS \"Recovery\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "3": {
+                  "text": "Good to train",
+                  "color": "#0ca30c",
+                  "index": 0
+                },
+                "2": {
+                  "text": "Normal",
+                  "color": "#3987e5",
+                  "index": 1
+                },
+                "1": {
+                  "text": "Take it easier",
+                  "color": "#fab219",
+                  "index": 2
+                },
+                "0": {
+                  "text": "Rest today",
+                  "color": "#d03b3b",
+                  "index": 3
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#898781",
+                "value": null
+              }
+            ]
+          },
+          "custom": {
+            "fillOpacity": 85,
+            "lineWidth": 0
+          },
+          "noValue": "Building baseline"
+        },
+        "overrides": []
+      },
+      "options": {
+        "showValue": "never",
+        "rowHeight": 0.8,
+        "mergeValues": false,
+        "alignValue": "left",
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "id": 12,
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 24,
+        "h": 4
+      }
+    },
+    {
+      "type": "row",
+      "id": 13,
+      "title": "Sleep",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Sleep stages per night",
+      "description": "Credited to the morning you woke up. Nights without the watch are blank. Line = 7 h.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, deep_h AS \"Deep\", light_h AS \"Light\", rem_h AS \"REM\", awake_h AS \"Awake\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, deep_h AS \"Deep\", light_h AS \"Light\", rem_h AS \"REM\", awake_h AS \"Awake\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix: h",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 2,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 6,
+            "spanNulls": false,
+            "insertNulls": 172800000,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "noValue": "No data",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "#898781",
+                "value": 7
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Deep"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3987e5"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Light"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d95926"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "REM"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#199e70"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Awake"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#c98500"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "transformations": [],
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 14,
+      "gridPos": {
+        "x": 0,
+        "y": 19,
+        "w": 14,
+        "h": 8
+      }
+    },
+    {
+      "type": "table",
+      "title": "Recent nights",
+      "description": "",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT date AS Night, sleep_h AS Asleep, substr(time(bedtime + 19800, 'unixepoch'), 1, 5) AS Bed, substr(time(waketime + 19800, 'unixepoch'), 1, 5) AS Wake, round(100.0 * deep_h / sleep_h) AS \"Deep %\", round(100.0 * rem_h / sleep_h) AS \"REM %\", hrv AS HRV, spo2_min AS \"SpO2 low\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 AND sleep_h IS NOT NULL ORDER BY time DESC",
+          "rawQueryText": "SELECT date AS Night, sleep_h AS Asleep, substr(time(bedtime + 19800, 'unixepoch'), 1, 5) AS Bed, substr(time(waketime + 19800, 'unixepoch'), 1, 5) AS Wake, round(100.0 * deep_h / sleep_h) AS \"Deep %\", round(100.0 * rem_h / sleep_h) AS \"REM %\", hrv AS HRV, spo2_min AS \"SpO2 low\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 AND sleep_h IS NOT NULL ORDER BY time DESC",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "noValue": "Nothing in this range"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Asleep"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "suffix: h"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "HRV"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "ms"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SpO2 low"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "fields": []
+        }
+      },
+      "id": 15,
+      "gridPos": {
+        "x": 14,
+        "y": 19,
+        "w": 10,
+        "h": 8
+      }
+    },
+    {
+      "type": "row",
+      "id": 16,
+      "title": "Activity",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 27,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Steps per day",
+      "description": "A day counts only with 10+ hours worn between 7:00 and 23:00; partial days are grey and left out of averages. Line = 8,000.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, steps_valid AS \"Full day\", steps_partial AS \"Partial day (not averaged)\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, steps_valid AS \"Full day\", steps_partial AS \"Partial day (not averaged)\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 2,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 6,
+            "spanNulls": false,
+            "insertNulls": 172800000,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "noValue": "No data",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "#898781",
+                "value": 8000
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Partial day (not averaged)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#898781"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "transformations": [],
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 17,
+      "gridPos": {
+        "x": 0,
+        "y": 28,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Hours worn per day",
+      "description": "A 15-minute slot counts as worn if it has a heart-rate reading or steps.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, wear_h AS \"Worn (24 h)\", wake_wear_h AS \"Worn 7:00-23:00\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, wear_h AS \"Worn (24 h)\", wake_wear_h AS \"Worn 7:00-23:00\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix: h",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "showPoints": "always",
+            "pointSize": 6,
+            "spanNulls": false,
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          },
+          "noValue": "No data",
+          "decimals": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Worn 7:00-23:00"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#898781"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "transformations": [],
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 18,
+      "gridPos": {
+        "x": 12,
+        "y": 28,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Heart rate (last 2 days)",
+      "description": "Per minute. Gaps are the times the watch was off your wrist.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, bpm AS \"Heart rate\" FROM hr WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, bpm AS \"Heart rate\" FROM hr WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bpm",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 6,
+            "spanNulls": false,
+            "insertNulls": 900000,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          },
+          "noValue": "No data",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "transformations": [],
+      "options": {
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "timeFrom": "2d",
+      "id": 19,
+      "gridPos": {
+        "x": 0,
+        "y": 36,
+        "w": 16,
+        "h": 8
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Active minutes per week",
+      "description": "Moderate + vigorous x 2, from heart rate. Line = 150 (WHO minimum).",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, activity_min AS \"WHO minutes\" FROM weeks WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, activity_min AS \"WHO minutes\" FROM weeks WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 2,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 6,
+            "spanNulls": false,
+            "insertNulls": 172800000,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "noValue": "No data",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "#898781",
+                "value": 150
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "transformations": [],
+      "options": {
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 20,
+      "gridPos": {
+        "x": 16,
+        "y": 36,
+        "w": 8,
+        "h": 8
+      }
+    },
+    {
+      "type": "row",
+      "id": 21,
+      "title": "Training",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 44,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Days trained per week",
+      "description": "Lifting sessions and Cult classes. Line = the 5-day weekly goal.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, days_trained AS \"Days trained\" FROM weeks WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, days_trained AS \"Days trained\" FROM weeks WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 2,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 6,
+            "spanNulls": false,
+            "insertNulls": 172800000,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisSoftMin": 0,
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "noValue": "No data",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "#898781",
+                "value": 5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "transformations": [],
+      "options": {
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 22,
+      "gridPos": {
+        "x": 0,
+        "y": 45,
+        "w": 8,
+        "h": 8
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Hard sets per week",
+      "description": "Ticked working sets in the gym app.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, hard_sets AS \"Hard sets\" FROM weeks WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, hard_sets AS \"Hard sets\" FROM weeks WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 2,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 6,
+            "spanNulls": false,
+            "insertNulls": 172800000,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisSoftMin": 0
+          },
+          "noValue": "No data",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "transformations": [],
+      "options": {
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 23,
+      "gridPos": {
+        "x": 8,
+        "y": 45,
+        "w": 8,
+        "h": 8
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Heart-rate load per day (TRIMP)",
+      "description": "Edwards' TRIMP: minutes in heart-rate zones 1-5 weighted 1-5. Lifting reads low on heart rate.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, trimp AS \"Load\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, trimp AS \"Load\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 2,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 6,
+            "spanNulls": false,
+            "insertNulls": 172800000,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisSoftMin": 0
+          },
+          "noValue": "No data",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "transformations": [],
+      "options": {
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 24,
+      "gridPos": {
+        "x": 16,
+        "y": 45,
+        "w": 8,
+        "h": 8
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Main lifts: estimated 1-rep max",
+      "description": "Epley estimate from the best set of each session.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, max(CASE WHEN exercise = 'Barbell Bench Press' THEN e1rm END) AS \"Bench press\", max(CASE WHEN exercise = 'Barbell Back Squat' THEN e1rm END) AS \"Back squat\", max(CASE WHEN exercise = 'Romanian Deadlift (RDL)' THEN e1rm END) AS \"Romanian deadlift\", max(CASE WHEN exercise = 'Lat Pulldown' THEN e1rm END) AS \"Lat pulldown\" FROM lifts WHERE time >= $__from / 1000 AND time <= $__to / 1000 GROUP BY time ORDER BY time",
+          "rawQueryText": "SELECT time, max(CASE WHEN exercise = 'Barbell Bench Press' THEN e1rm END) AS \"Bench press\", max(CASE WHEN exercise = 'Barbell Back Squat' THEN e1rm END) AS \"Back squat\", max(CASE WHEN exercise = 'Romanian Deadlift (RDL)' THEN e1rm END) AS \"Romanian deadlift\", max(CASE WHEN exercise = 'Lat Pulldown' THEN e1rm END) AS \"Lat pulldown\" FROM lifts WHERE time >= $__from / 1000 AND time <= $__to / 1000 GROUP BY time ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kg",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "showPoints": "always",
+            "pointSize": 6,
+            "spanNulls": true,
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          },
+          "noValue": "No data",
+          "decimals": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bench press"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3987e5"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Back squat"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d95926"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Romanian deadlift"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#199e70"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lat pulldown"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#c98500"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "transformations": [],
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 25,
+      "gridPos": {
+        "x": 0,
+        "y": 53,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "type": "table",
+      "title": "Workouts",
+      "description": "Watch-recorded and logged sessions, merged when they overlap. Z1-Z5: minutes in each zone.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT date AS Date, coalesce(name, type) AS Workout, minutes AS Min, avg_hr AS \"Avg HR\", max_hr AS \"Max HR\", trimp AS Load, z1 AS Z1, z2 AS Z2, z3 AS Z3, z4 AS Z4, z5 AS Z5 FROM workouts WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time DESC",
+          "rawQueryText": "SELECT date AS Date, coalesce(name, type) AS Workout, minutes AS Min, avg_hr AS \"Avg HR\", max_hr AS \"Max HR\", trimp AS Load, z1 AS Z1, z2 AS Z2, z3 AS Z3, z4 AS Z4, z5 AS Z5 FROM workouts WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time DESC",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "noValue": "Nothing in this range"
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "fields": []
+        }
+      },
+      "id": 26,
+      "gridPos": {
+        "x": 12,
+        "y": 53,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "type": "row",
+      "id": 27,
+      "title": "Body",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 61,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Weight",
+      "description": "In a recomp the scale can sit still while you lose fat and gain muscle; watch the trend with your lifts.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, weight AS \"Weigh-in\", weight7 AS \"7-day average\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, weight AS \"Weigh-in\", weight7 AS \"7-day average\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kg",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 6,
+            "spanNulls": true,
+            "insertNulls": 172800000,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          },
+          "noValue": "No data",
+          "decimals": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Weigh-in"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#898781"
+                }
+              },
+              {
+                "id": "custom.drawStyle",
+                "value": "points"
+              },
+              {
+                "id": "custom.pointSize",
+                "value": 5
+              }
+            ]
+          }
+        ]
+      },
+      "transformations": [],
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 28,
+      "gridPos": {
+        "x": 0,
+        "y": 62,
+        "w": 24,
+        "h": 7
+      }
+    }
+  ]
+}

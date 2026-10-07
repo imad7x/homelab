@@ -28,6 +28,27 @@
     "access": "proxy",
     "basicAuth": false,
     "database": "",
+    "id": 9,
+    "isDefault": false,
+    "jsonData": {
+      "path": "/var/lib/gym/health.db",
+      "pathOptions": "mode=ro",
+      "pathPrefix": "file:"
+    },
+    "name": "Gym Health",
+    "orgId": 1,
+    "readOnly": true,
+    "type": "frser-sqlite-datasource",
+    "typeLogoUrl": "public/plugins/frser-sqlite-datasource/img/logo.svg",
+    "typeName": "SQLite",
+    "uid": "gym-health",
+    "url": "",
+    "user": ""
+  },
+  {
+    "access": "proxy",
+    "basicAuth": false,
+    "database": "",
     "id": 4,
     "isDefault": false,
     "jsonData": {

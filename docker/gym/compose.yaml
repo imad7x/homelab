@@ -23,7 +23,11 @@ services:
       - TZ=Asia/Kolkata
       # Names (besides IPs and localhost) the page may be opened under.
       - ALLOWED_HOSTS=gym.[[private:DOMAIN]]
-      # Shown in the watch setup steps as places the phone can post to.
+      # The address through the tunnel; the phone posts watch data to <this>/api/health.
+      # Cloudflare Access must let /api/health through (a Bypass app for that path);
+      # the endpoint itself checks its own key.
+      - PUBLIC_URL=https://gym.[[private:DOMAIN]]
+      # The home Wi-Fi address, for the alternative settings file.
       - INGEST_URLS=http://192.168.0.10:8086/api/health
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1

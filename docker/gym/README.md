@@ -31,11 +31,31 @@ the streak.
   (5 of 6 by default), estimated 1-rep-max charts for the main lifts, and hard sets per
   muscle this week against the plan.
 - **Body** - weigh-ins with a 7-day average, waist, and InBody scans.
-- **Watch** - the phone app *HC Webhook* posts Android Health Connect data to
-  `POST /api/health` with an `X-Api-Key` header. The data gets there either from Huawei
-  Health through *Health Sync*, or from Gadgetbridge for a setup with no Huawei cloud. The
-  page shows steps, sleep, resting HR and HRV, the watch's own workouts, and the heart rate
-  during each logged session. The setup steps and the key are on the Watch tab.
+- **Watch** - the Huawei watch pairs with *Gadgetbridge* (no Huawei app or cloud), which
+  writes to Android Health Connect; the phone app *HC Webhook* posts that data hourly to
+  `POST /api/health` with an `X-Api-Key` header (the key and setup steps are on the Health
+  tab). Payloads marked `"test": true` are checked but never stored. `GET /api/hc-webhook.json`
+  hands the phone a file in HC Webhook's own settings-export format (URL, key, data types,
+  resolutions, hourly sync) to import under Settings -> Settings Backup -> Import.
+- **Access from outside** - the tunnel hostname (`PUBLIC_URL`) sits behind Cloudflare Access
+  (email one-time PIN) like the other apps, with a second Access application that bypasses
+  login for two paths only: `/api/health` (the phone's exporter can't log in; the endpoint
+  checks its own key) and `/icons` (Android fetches the app icon without the login cookie).
+- **Analysis** (`app/analysis.py`) - wear time per 15-minute slot (a heart-rate reading or
+  steps); hours without the watch stay blank, a day's steps count toward averages only with
+  10+ worn hours between 7:00 and 23:00, and a night only with 3+ hours of recorded sleep.
+  Recovery each day from the 7-day mean of ln(rMSSD) against the 60 days before (mean +/-
+  half a standard deviation), resting HR against its 30-day mean, and last night's sleep.
+  Heart-rate zones and Edwards' TRIMP per workout, and WHO-style intensity minutes.
+- **Reports and questions** (`app/ai.py`) - a weekly report every Monday from 06:30 and a
+  monthly one on the 1st from 06:45, a 7-day report on demand, and free-text questions on
+  the Health tab. Jobs queue in the app; a worker on the host (`ai/worker.py`, started
+  `@reboot` from cron by `ai/start.sh`) long-polls `GET /api/ai/next` with the key in
+  `state/worker.key`, runs the prompt and posts the answer back. Its provider is set in
+  `ai/config.json`: an AI command-line tool logged in on the host, or the OpenAI Responses
+  API with `OPENAI_API_KEY` in `ai/secrets.env`. Usage goes to `ai/state/usage.jsonl`.
+- **Grafana** - the app rewrites `state/grafana/health.db` (a minute after new data, and
+  every 15 minutes) for the *Health & Training* dashboard in the monitoring stack.
 
 ## API
 
@@ -48,6 +68,10 @@ the streak.
 | `POST /api/sync` | `{"docs": [...]}` records changed on a device |
 | `POST /api/token` | make a new key for the watch-data exporter |
 | `POST /api/health` | HC Webhook JSON payload, needs `X-Api-Key` |
+| `GET /api/reports`, `/api/reports/<id>` | reports with their statistics |
+| `POST /api/reports` | report on the last 7 days now |
+| `POST /api/ask`, `GET /api/ai/job/<id>` | queue a question, then poll for the answer |
+| `GET /api/ai/next`, `POST /api/ai/result` | the host worker's calls, need `X-Worker-Key` |
 
 POSTs from the page need the header `X-Gym: 1`, which browsers will not send cross-site
 without a CORS preflight that this server never approves. Every request must be addressed
@@ -59,6 +83,8 @@ to an IP, localhost or a name in `ALLOWED_HOSTS`, which blocks DNS rebinding.
   `server.py` (HTTP), `store.py` (SQLite), `health.py` (watch data), `index.html`,
   `app.js`, `style.css`, `sw.js`, `program.json`, `icons/`, and `img/` (exercise photos
   from Free Exercise DB, public domain).
-- `state/gym.db` - workouts, measurements, settings, watch data and the exporter key.
+- `state/gym.db` - workouts, measurements, settings, watch data, AI jobs and both keys.
+- `state/grafana/health.db` - Grafana's read-only copy, rebuilt from `gym.db`.
+- `ai/` - the host worker: `worker.py`, `start.sh`, `config.json`, `state/` (log, usage).
 
 Logs: `docker logs gym` (one line per sync and per batch of watch data).

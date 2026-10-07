@@ -1,0 +1,15 @@
+# Health & Training dashboard: health.db is written by the gym app (/docker/gym/app/analysis.py)
+# into /docker/gym/state/grafana and mounted read-only into the container; the SQLite plugin
+# (frser-sqlite-datasource) is installed by GF_PLUGINS_PREINSTALL_SYNC.
+apiVersion: 1
+
+datasources:
+  - name: Gym Health
+    uid: gym-health
+    type: frser-sqlite-datasource
+    access: proxy
+    jsonData:
+      path: /var/lib/gym/health.db
+      pathPrefix: 'file:'
+      pathOptions: mode=ro
+    editable: false
