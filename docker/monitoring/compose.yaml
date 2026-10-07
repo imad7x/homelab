@@ -29,6 +29,8 @@ services:
       - monitoring_grafana_data:/var/lib/grafana
       # Pi-hole Weekly dashboard: digest.db written by pihole-digest/pihole_digest.py
       - ./pihole-digest:/var/lib/pihole-digest:ro
+      # Health & Training dashboard: health.db written by the gym app (/docker/gym/app/analysis.py)
+      - /docker/gym/state/grafana:/var/lib/gym:ro
     # The Finance dashboard reads Firefly's database (finance-db, which is only
     # reachable on the finance stack's network) as the read-only grafana_ro.
     env_file:
@@ -37,7 +39,7 @@ services:
       - ./grafana-media.env       # Media Usage dashboard: Seerr/Radarr/Sonarr API keys
     environment:
       # Infinity: JSON API datasource used by Media Usage (Seerr requests, Radarr/Sonarr history)
-      # SQLite: reads the Pi-hole weekly digest (pihole-digest/digest.db)
+      # SQLite: reads the Pi-hole weekly digest (pihole-digest/digest.db) and the gym app's health.db
       - GF_PLUGINS_PREINSTALL_SYNC=yesoreyeram-infinity-datasource,frser-sqlite-datasource
     networks:
       - default

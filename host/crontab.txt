@@ -7,3 +7,5 @@
 @reboot sleep 60 && /docker/finance/ask/start.sh
 # Pi-hole weekly digest for Grafana (/docker/monitoring/pihole-digest): finalises last week, refreshes this week.
 10 5 * * * /usr/bin/python3 /docker/monitoring/pihole-digest/pihole_digest.py >> $HOME/.local/state/pihole-digest.log 2>&1
+# Gym AI worker (/docker/gym/ai): runs reports and questions for the gym app on the subscription.
+@reboot sleep 70 && /docker/gym/ai/start.sh
