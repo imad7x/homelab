@@ -1,0 +1,31 @@
+services:
+  # Home-only start page: every link is a 192.168.0.10 address, and it keeps the
+  # widgets (API keys), Docker stats and disk usage. Deliberately NOT routed through
+  # the Cloudflare tunnel - the public page on port 3000 is /docker/landing.
+  homepage-lan:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage-lan
+    ports:
+      - 3010:3000
+    volumes:
+      - /data:/data:ro
+      - ./config:/app/config
+      # settings.yaml's background is /images/bg.jpg; Homepage serves /images/
+      # from public/images, not from config/.
+      - ./config/images:/app/public/images:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kolkata
+      # Only these Host headers are served. Blocks DNS-rebinding pages from reading
+      # the dashboard through a browser on the LAN; add a name here if you reach it
+      # by another one.
+      - HOMEPAGE_ALLOWED_HOSTS=192.168.0.10:3010,lab:3010,localhost:3010
+      - LOG_TARGETS=stdout
+    # Same docker.sock arrangement as ../homepage had: run as the app's own uid and
+    # join the host's docker group (gid 988) instead of `privileged: true`.
+    user: "1000:1000"
+    group_add:
+      - "988"
+    restart: unless-stopped

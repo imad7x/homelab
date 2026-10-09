@@ -2,288 +2,103 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/configs/services
 #
-# Every tile declares `server: my-docker` + `container:` so it shows a live
-# running/stopped dot and CPU/RAM usage (see docker.yaml).
+# PUBLIC start page: served to the internet at the bare domain through the
+# Cloudflare tunnel with no login in front of it. Keep it to plain links:
+#   - only tunnel hostnames, never a 192.168.0.10 address (a siteMonitor URL is
+#     sent to the browser too);
+#   - no `widget:` (anyone can call /api/services/proxy and get the widget's
+#     data - the Radarr/Sonarr ones return the whole library);
+#   - no `server:`/`container:` (/api/docker/stats lists every container).
+# The full dashboard with widgets and LAN links is homepage-lan on port 3010.
 
 - Media:
     - Jellyfin:
         icon: jellyfin.png
         href: https://jellyfin.[[private:DOMAIN]]
         description: Media Server
-        server: my-docker
-        container: jellyfin
-        siteMonitor: http://192.168.0.10:8096
-        # WIDGET DISABLED - Jellyfin 12.0 removed the legacy /emby/ route prefix
-        # and ?api_key= query auth. homepage v1.13.2 hardcodes
-        # "emby/Sessions?api_key={key}", so this 404'd every refresh and spammed
-        # the logs. The API key below is still VALID (header auth works); the
-        # gap is upstream - both fixes (PR #7138, #7150) were closed unmerged,
-        # so no homepage release fixes it yet. Re-enable when one lands.
-        # widget:
-        #   type: jellyfin
-        #   url: http://192.168.0.10:8096
-        #   key: [[secret:SEERR_APIKEY_2]]
-        #   enableBlocks: true
-        #   enableNowPlaying: true
-        #   enableUser: true
-        #   enableMediaControl: true
-        #   showEpisodeNumber: true
-        #   expandOneStreamToTwoRows: false
 
     - Jellyseerr:
         icon: jellyseerr.png
         href: https://jellyseerr.[[private:DOMAIN]]
         description: Request Management
-        server: my-docker
-        container: jellyseerr
-
-    - Jellystat:
-        icon: jellystat.png
-        href: http://192.168.0.10:3003
-        description: Jellyfin watch history & stats
-        server: my-docker
-        container: jellystat
-
-    - Jellylook:
-        icon: mdi-movie-search-outline
-        href: http://192.168.0.10:3045
-        description: Per-viewer picks from watch history
-        server: my-docker
-        container: jellylook
 
     - Navidrome:
         icon: navidrome.png
         href: https://navidrome.[[private:DOMAIN]]
         description: Music Server
-        server: my-docker
-        container: navidrome
-        widget:
-          type: navidrome
-          url: http://192.168.0.10:4533
-          user: imad7x
-          salt: [[secret:HOMEPAGE_SALT]]
-          token: [[secret:HOMEPAGE_TOKEN]]
-
-- Smart Home:
-    - Home Assistant:
-        icon: home-assistant.png
-        href: http://192.168.0.10:8123
-        description: Home Automation
-        server: my-docker
-        container: homeassistant
-        siteMonitor: http://192.168.0.10:8123
 
 - Arr:
     - Sonarr:
         icon: sonarr.png
         href: https://sonarr.[[private:DOMAIN]]
         description: TV Shows
-        server: my-docker
-        container: sonarr
-        siteMonitor: http://192.168.0.10:8989
-        widget:
-          type: sonarr
-          url: http://192.168.0.10:8989
-          key: [[secret:HOMEPAGE_KEY]]
 
     - Radarr:
         icon: radarr.png
         href: https://radarr.[[private:DOMAIN]]
         description: Movies
-        server: my-docker
-        container: radarr
-        widget:
-          type: radarr
-          url: http://192.168.0.10:7878
-          key: [[secret:HOMEPAGE_KEY_2]]
 
     - Bazarr:
         icon: bazarr.png
         href: https://bazarr.[[private:DOMAIN]]
         description: Subtitles
-        server: my-docker
-        container: bazarr
-        widget:
-          type: bazarr
-          url: http://192.168.0.10:6767
-          key: [[secret:HOMEPAGE_KEY_3]]
 
 - Downloads:
     - qBittorrent:
         icon: qbittorrent.png
-        href: http://qb.[[private:DOMAIN]]
+        href: https://qb.[[private:DOMAIN]]
         description: Torrent Client
-        server: my-docker
-        container: qbittorrent
-        widget:
-          type: qbittorrent
-          url: http://192.168.0.10:8080
-          username: imad7x
-          password: [[secret:HOMEPAGE_PASSWORD]]
 
     - Prowlarr:
         icon: prowlarr.png
         href: https://prowlarr.[[private:DOMAIN]]
         description: Index Manager
-        server: my-docker
-        container: prowlarr
-        widget:
-          type: prowlarr
-          url: http://192.168.0.10:9696
-          key: [[secret:HOMEPAGE_KEY_4]]
 
     - Soulseek:
         icon: slskd.png
-        href: http://192.168.0.10:5030
+        href: https://soulseek.[[private:DOMAIN]]
         description: P2P File Sharing
-        server: my-docker
-        container: slskd
-
-    - FlareSolverr:
-        icon: flaresolverr.png
-        href: http://192.168.0.10:8191
-        description: Cloudflare Solver
-        server: my-docker
-        container: flaresolverr
 
 - Infrastructure:
-    # Container updater (/docker/updater). Home-only: it is deliberately kept
-    # off the tunnel, so both the link and the widget use the LAN IP.
-    # Checks run once a day, so a 5-minute refresh (the unit is ms) is plenty.
-    - Updates:
-        icon: mdi-package-up
-        href: http://192.168.0.10:8084
-        description: Container Updates · Checks Daily
-        server: my-docker
-        container: updater
-        widget:
-          type: customapi
-          url: http://192.168.0.10:8084/api/summary
-          refreshInterval: 300000
-          mappings:
-            - field: available
-              label: Available
-              format: number
-            - field: last_check
-              label: Checked
-              format: relativeDate
-
     - Pi-hole:
         icon: pi-hole.png
         href: https://pihole.[[private:DOMAIN]]/admin
         description: DNS & Ad Blocking
-        server: my-docker
-        container: pihole
 
     - Cloudflare Tunnel:
         icon: cloudflare-zero-trust.png
         href: https://one.dash.cloudflare.com
         description: Public Ingress
-        server: my-docker
-        container: cloudflared_tunnel
-
-    - Cloudflared DoH:
-        icon: cloudflare.png
-        description: DNS-over-HTTPS Resolver
-        server: my-docker
-        container: cloudflared
-
-    - Homepage:
-        icon: homepage.png
-        href: http://192.168.0.10:3000
-        description: This Dashboard
-        server: my-docker
-        container: homepage
 
 - Monitoring:
     - Grafana:
         icon: grafana.png
         href: https://grafana.[[private:DOMAIN]]/d/7xlab/my-lab
         description: Dashboards
-        server: my-docker
-        container: grafana
 
-    - Scrutiny:
-        icon: scrutiny.png
-        href: http://192.168.0.10:8083
-        description: Disk S.M.A.R.T. Health
-        server: my-docker
-        container: scrutiny
+    - Prometheus:
+        icon: prometheus.png
+        href: https://p8s.[[private:DOMAIN]]
+        description: Metrics Store
 
-    - SMART Exporter:
-        icon: mdi-harddisk
-        href: http://192.168.0.10:9633/metrics
-        description: Disk Metrics
-        server: my-docker
-        container: smartctl-exporter
+    - cAdvisor:
+        icon: cadvisor.png
+        href: https://cadvisor.[[private:DOMAIN]]
+        description: Container Metrics
 
 - Finance:
     - Firefly III:
         icon: firefly-iii.png
         href: https://finance.[[private:DOMAIN]]
         description: Household Ledger
-        server: my-docker
-        container: firefly
-        siteMonitor: http://192.168.0.10:3002
 
-    - Ask My Finances:
-        icon: mdi-chat-question-outline
-        href: http://192.168.0.10:8085
-        description: Plain-language questions, read-only
-        siteMonitor: http://192.168.0.10:8085
-
-    - Categorise Payments:
-        icon: mdi-tag-multiple-outline
-        href: http://192.168.0.10:8085/categorise
-        description: Filter by dates, set categories in bulk
-
-    - Bank Mail Importer:
-        icon: mdi-email-sync-outline
-        description: Reads Bank Mail Every 15 Min
-        server: my-docker
-        container: finance-ingest
+    - Finance Dashboard:
+        icon: grafana.png
+        href: https://grafana.[[private:DOMAIN]]/d/finance/finance
+        description: Spending & Balances
 
 - Health:
-    # Gym (/docker/gym): workout program, set logger, progress charts and the
-    # watch's data. Public through the tunnel behind Cloudflare Access; the widget
-    # reads the LAN address. Its summary only changes when a workout is logged, so
-    # a 5-minute refresh (the unit is ms) is plenty.
     - Gym:
         icon: mdi-dumbbell
         href: https://gym.[[private:DOMAIN]]
-        siteMonitor: http://192.168.0.10:8086/api/ping
         description: Workouts, Progress & Watch Data
-        server: my-docker
-        container: gym
-        widget:
-          type: customapi
-          url: http://192.168.0.10:8086/api/summary
-          refreshInterval: 300000
-          mappings:
-            - field: week_done
-              label: Days This Week
-              format: number
-            - field: streak_weeks
-              label: Week Streak
-              format: number
-
-- Documents:
-    - Paperless:
-        icon: paperless-ngx.png
-        href: http://192.168.0.10:8000
-        description: OCR Document Archive
-        server: my-docker
-        container: paperless
-        siteMonitor: http://192.168.0.10:8000
-        # For the doc-count widget, create a token in Paperless
-        # (top-right menu -> My Profile -> API Auth Token) and add:
-        #   widget:
-        #     type: paperlessngx
-        #     url: http://192.168.0.10:8000
-        #     key: <token>
-
-    - Paperless DB:
-        icon: postgres.png
-        description: Document Index
-        server: my-docker
-        container: paperless-db

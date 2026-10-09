@@ -1,28 +1,15 @@
 ---
 # For configuration options and examples, please see:
 # https://gethomepage.dev/configs/info-widgets/
+#
+# Public page: no `resources` widget (host CPU, RAM, network and disk usage
+# would be readable by anyone). Those stay on homepage-lan (port 3010).
 
 # Filter services as you type, or search the web with the same box.
 - search:
     provider: duckduckgo
     focus: false
     target: _blank
-
-- resources:
-    label: System
-    cpu: true
-    memory: true     # was commented out - the header had a CPU bar and no RAM bar
-    uptime: true
-    network: true
-
-- resources:
-    label: Storage
-    # Only paths mounted into the homepage container can be read. compose.yaml
-    # mounts /data (the mergerfs pool spanning disk1 + disk2), so that is the
-    # meaningful number here - "/" would report the container's own overlayfs,
-    # not the host root.
-    disk:
-      - /data
 
 - datetime:
     text_size: xl
