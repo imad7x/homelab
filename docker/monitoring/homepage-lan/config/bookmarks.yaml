@@ -1,0 +1,7 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/bookmarks
+#
+# Empty on purpose: every tile on this page already links to its 192.168.0.10
+# address, so the old "(local)" shortcut groups would only repeat them.
+[]

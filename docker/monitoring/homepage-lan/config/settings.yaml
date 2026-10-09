@@ -2,7 +2,7 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/configs/settings/
 
-title: iMad7x Homelab
+title: iMad7x Homelab (LAN)
 favicon: https://johnbwoodruff.com/img/homelab.png
 
 headerStyle: boxedWidgets
@@ -58,3 +58,9 @@ layout:
     style: row
     columns: 4
     icon: mdi-cash-multiple
+
+providers:
+  # NOTE: unused - there is no weather widget configured in widgets.yaml. Add
+  # latitude/longitude to an openweathermap widget there to make use of it, or
+  # drop this key. It is also stored in plaintext; see HOMEPAGE_VAR_* in the docs.
+  openweathermap: [[secret:HOMEPAGE_OPENWEATHERMAP]]

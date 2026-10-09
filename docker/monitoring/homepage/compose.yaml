@@ -1,27 +1,30 @@
 services:
+  # PUBLIC start page: the tunnel serves it at the bare domain with no login in
+  # front, so it holds links to tunnel hostnames only (see config/services.yaml).
+  # The full dashboard - widgets, Docker stats, disk usage, LAN links - is
+  # ../homepage-lan on port 3010, which is not routed through the tunnel.
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     ports:
       - 3000:3000
     volumes:
-      - /data:/data:ro
-      - ./config:/app/config
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Read-only: nothing on this page needs to write its config, and logs go to
+      # stdout (LOG_TARGETS below) instead of config/logs.
+      - ./config:/app/config:ro
+      # settings.yaml's background is /images/bg.jpg; Homepage serves /images/
+      # from public/images, not from config/.
+      - ./config/images:/app/public/images:ro
+      # No /var/run/docker.sock (root-equivalent on the host) and no /data: this
+      # page shows no container status or disk usage.
     environment:
-      - PUID=1000
-      - PGID=1000
       - TZ=Asia/Kolkata
-      - HOMEPAGE_ALLOWED_HOSTS=*
-    # `privileged: true` was removed. It was load-bearing only by accident: the
-    # app runs as the unprivileged `node` user, and privileged granted
-    # CAP_DAC_OVERRIDE, which let it bypass the permissions on docker.sock.
-    # Joining the host's docker group (gid 988, owner of /var/run/docker.sock)
-    # grants exactly that one access instead of every capability on the host.
-    # Start directly as the app's own uid/gid. The entrypoint only drops
-    # privileges when it starts as root, and that drop resets supplementary
-    # groups - which is why group_add alone did not reach the server process.
+      # Only these Host headers are served: the tunnel hostname and the LAN address.
+      - HOMEPAGE_ALLOWED_HOSTS=[[private:DOMAIN]],192.168.0.10:3000
+      - LOG_TARGETS=stdout
     user: "1000:1000"
-    group_add:
-      - "988"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     restart: unless-stopped

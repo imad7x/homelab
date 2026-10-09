@@ -8,7 +8,8 @@
 | cAdvisor | 8082 | per-container metrics (pinned to v0.49.1) |
 | Scrutiny | 8083 | S.M.A.R.T. history web UI, collects every 6 hours |
 | smartctl-exporter | 9633 | S.M.A.R.T. metrics for Prometheus; never spins up a sleeping disk to poll it |
-| Homepage | 3000 | the start page (`homepage/`, its own Compose project) |
+| Homepage | - | the old public start page (`homepage/`), stopped: replaced by `docker/landing` on port 3000 and kept only for rollback |
+| Homepage (LAN) | 3010 | home-only start page with widgets, Docker stats and LAN links; not on the tunnel (`homepage-lan/`) |
 
 ## Grafana
 
@@ -54,6 +55,18 @@ whatever Pi-hole still holds).
 - The router's own health checks are counted in the totals but left out of the top lists.
 - The database is rebuilt in a copy and swapped in with a rename, so Grafana never reads a
   half-written file. `digest.db` is data and is not in this repo; neither is the script.
+
+## Homepage
+
+`homepage-lan/` (3010) is the full dashboard: every link is a `192.168.0.10` address, with
+the widgets, Docker status and disk usage. It must never get a tunnel route: the widget
+proxy hands a widget's data to anyone who asks (the Radarr and Sonarr ones return the whole
+library) and `/api/docker/stats` lists every container.
+
+The public page on port 3000 is `docker/landing`. `homepage/` was a links-only Homepage that
+served it before; it is stopped and kept only so it can be brought back with
+`docker compose down` in `docker/landing` and `docker compose up -d` here. Homepage serves
+`/images/` from `public/images`, so both mount `config/images` there for the background.
 
 ## Power and cost model
 

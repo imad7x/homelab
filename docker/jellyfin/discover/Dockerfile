@@ -21,7 +21,7 @@ import json, os, re, sys, urllib.error, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 SEERR = os.environ["SEERR_URL"].rstrip("/")
-KEY = [[secret:JELLYFIN_KEY]]
+KEY = [[secret:JELLYFIN_KEY_2]]
 KINDS = ("flatrate", "free", "ads", "rent", "buy")
 
 

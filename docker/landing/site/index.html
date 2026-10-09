@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>imad7x · homelab</title>
+<meta name="description" content="imad7x's self-hosted homelab: media, music, ad-free DNS, monitoring and home-grown apps, with live vitals.">
+<meta name="author" content="imad7x">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://[[private:DOMAIN]]/">
+<meta property="og:title" content="imad7x · homelab">
+<meta property="og:description" content="My corner of the internet: movies, music, Pi-hole and everything else I would rather own than rent.">
+<meta name="theme-color" content="#0b0c0f" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f4f4f1" media="(prefers-color-scheme: light)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css?v=de63d62add">
+<script src="/theme.js?v=165254b487"></script>
+<script src="/app.js?v=4be75bccd8" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="/" aria-label="imad7x, home">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8"/><path d="M9 11l5 5-5 5M16 22h7"/></svg>
+      <span>imad7x</span>
+    </a>
+    <nav class="links" aria-label="Sections">
+      <a href="#apps">Apps</a><a href="#vitals">Vitals</a><a href="#bangalore">Bangalore</a>
+    </nav>
+    <div class="nav-right">
+      <span class="clock" id="clock" title="Time in Bangalore">--:-- IST</span>
+      <button class="icon-btn" id="theme" type="button" aria-label="Switch to light theme">
+        <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow"><span class="prompt">~/</span>[[private:DOMAIN]]</p>
+      <h1 class="wordmark">imad7x<span class="caret" aria-hidden="true"></span></h1>
+      <p class="lede">My corner of the internet: movies, music, Pi-hole and everything else I would rather own than rent.</p>
+      <div class="hero-row" aria-live="polite">
+        <span class="pill status" id="overall" data-state="unknown"><span class="si" aria-hidden="true"></span><span class="txt">Checking apps…</span></span>
+        <span class="pill" id="hero-apps">15 apps</span>
+        <span class="pill" id="hero-containers">— containers</span>
+      </div>
+      <div class="hero-cta">
+        <a class="btn primary" href="#apps">Browse the apps</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section" id="apps" aria-labelledby="apps-h">
+    <div class="section-head">
+      <h2 id="apps-h">Apps</h2>
+      <p class="muted">Most ask for a sign-in</p>
+    </div>
+    <div class="groups">
+      <article class="card group">
+        <header class="group-head">
+          <span class="gi" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg></span>
+          <div><h3>Media</h3><p class="muted">Watch and listen</p></div>
+        </header>
+        <div class="app-list">
+          <a class="app" data-id="jellyfin" href="https://jellyfin.[[private:DOMAIN]]" rel="noopener"><img src="/icons/jellyfin.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">Jellyfin</span><span class="app-desc">Stream movies &amp; TV</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+          <a class="app" data-id="jellyseerr" href="https://jellyseerr.[[private:DOMAIN]]" rel="noopener"><img src="/icons/jellyseerr.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">Jellyseerr</span><span class="app-desc">Ask for a film or show</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+          <a class="app" data-id="navidrome" href="https://navidrome.[[private:DOMAIN]]" rel="noopener"><img src="/icons/navidrome.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">Navidrome</span><span class="app-desc">Stream music</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+        </div>
+      </article>
+
+      <article class="card group">
+        <header class="group-head">
+          <span class="gi" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 0 1 13.2-4.9M19.5 12a7.5 7.5 0 0 1-13.2 4.9M18 3.5v4h-4M6 20.5v-4h4"/></svg></span>
+          <div><h3>Library automation</h3><p class="muted">Finds, fetches and tidies</p></div>
+        </header>
+        <div class="app-list">
+          <a class="app" data-id="sonarr" href="https://sonarr.[[private:DOMAIN]]" rel="noopener"><img src="/icons/sonarr.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">Sonarr</span><span class="app-desc">TV series</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+          <a class="app" data-id="radarr" href="https://radarr.[[private:DOMAIN]]" rel="noopener"><img src="/icons/radarr.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">Radarr</span><span class="app-desc">Movies</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+          <a class="app" data-id="bazarr" href="https://bazarr.[[private:DOMAIN]]" rel="noopener"><img src="/icons/bazarr.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">Bazarr</span><span class="app-desc">Subtitles</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+          <a class="app" data-id="prowlarr" href="https://prowlarr.[[private:DOMAIN]]" rel="noopener"><img src="/icons/prowlarr.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">Prowlarr</span><span class="app-desc">Indexer manager</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+        </div>
+      </article>
+
+      <article class="card group">
+        <header class="group-head">
+          <span class="gi" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg></span>
+          <div><h3>Downloads</h3><p class="muted">Where new things arrive</p></div>
+        </header>
+        <div class="app-list">
+          <a class="app" data-id="qbittorrent" href="https://qb.[[private:DOMAIN]]" rel="noopener"><img src="/icons/qbittorrent.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">qBittorrent</span><span class="app-desc">Download client</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+          <a class="app" data-id="soulseek" href="https://soulseek.[[private:DOMAIN]]" rel="noopener"><img src="/icons/slskd.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">Soulseek</span><span class="app-desc">Music sharing</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+        </div>
+      </article>
+
+      <article class="card group">
+        <header class="group-head">
+          <span class="gi" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></span>
+          <div><h3>Network &amp; monitoring</h3><p class="muted">Keeps the lab healthy</p></div>
+        </header>
+        <div class="app-list">
+          <a class="app" data-id="pihole" href="https://pihole.[[private:DOMAIN]]/admin" rel="noopener"><img src="/icons/pi-hole.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">Pi-hole</span><span class="app-desc">Ad-free DNS</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+          <a class="app" data-id="grafana" href="https://grafana.[[private:DOMAIN]]/d/7xlab/my-lab" rel="noopener"><img src="/icons/grafana.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">Grafana</span><span class="app-desc">Dashboards</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+          <a class="app" data-id="prometheus" href="https://p8s.[[private:DOMAIN]]" rel="noopener"><img src="/icons/prometheus.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">Prometheus</span><span class="app-desc">Metrics database</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+          <a class="app" data-id="cadvisor" href="https://cadvisor.[[private:DOMAIN]]" rel="noopener"><img src="/icons/cadvisor.png" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">cAdvisor</span><span class="app-desc">Container metrics</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+        </div>
+      </article>
+
+      <article class="card group">
+        <header class="group-head">
+          <span class="gi" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg></span>
+          <div><h3>Personal</h3><p class="muted">Home-grown, just for me</p></div>
+        </header>
+        <div class="app-list">
+          <a class="app" data-id="finance" href="https://finance.[[private:DOMAIN]]" rel="noopener"><img src="/icons/firefly-iii.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">Firefly III</span><span class="app-desc">Household budget</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+          <a class="app" data-id="gym" href="https://gym.[[private:DOMAIN]]" rel="noopener"><img src="/icons/gym.svg" alt="" width="40" height="40"><span class="app-txt"><span class="app-name">Health Tracker</span><span class="app-desc">Workouts &amp; watch data</span></span><span class="app-st"></span><svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5"/></svg></a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap section" id="vitals" aria-labelledby="vitals-h">
+    <div class="section-head">
+      <h2 id="vitals-h">Server vitals</h2>
+      <p class="muted">Now, with the last 24 hours behind it</p>
+    </div>
+    <div class="tiles">
+      <article class="tile" id="t-cpu"><p class="t-label">CPU</p><p class="t-value">—</p><p class="t-sub"></p><div class="spark"></div></article>
+      <article class="tile" id="t-mem"><p class="t-label">Memory</p><p class="t-value">—</p><p class="t-sub"></p><div class="spark"></div></article>
+      <article class="tile" id="t-temp"><p class="t-label">CPU temperature</p><p class="t-value">—</p><p class="t-sub"></p><div class="spark"></div></article>
+      <article class="tile" id="t-pool"><p class="t-label">Storage pool</p><p class="t-value">—</p><p class="t-sub"></p><div class="meter" role="meter" aria-label="Storage pool used" aria-valuemin="0" aria-valuemax="100"><span></span></div></article>
+      <article class="tile" id="t-ctr"><p class="t-label">Containers</p><p class="t-value">—</p><p class="t-sub"></p></article>
+    </div>
+  </section>
+
+  <section class="wrap section grid-3" id="around">
+    <article class="card weather" id="bangalore" aria-labelledby="wx-h">
+      <header class="card-head">
+        <div><h2 id="wx-h">Bangalore</h2><p class="muted" id="wx-sub">Weather</p></div>
+        <span class="wx-icon" id="wx-icon" aria-hidden="true"></span>
+      </header>
+      <div class="wx-now">
+        <p class="wx-temp" id="wx-temp">—</p>
+        <div>
+          <p class="wx-label" id="wx-label"></p>
+          <p class="muted" id="wx-feels"></p>
+        </div>
+      </div>
+      <p class="mini-h">Rain, next 24 hours</p>
+      <p class="rain-sum" id="rain-sum"></p>
+      <div class="chart" id="rain-chart" data-h="78"></div>
+    </article>
+
+    <article class="card media" aria-labelledby="media-h">
+      <header class="card-head">
+        <div><h2 id="media-h">Media library</h2><p class="muted">Jellyfin and Navidrome</p></div>
+        <span class="live" id="streaming" data-on="0"><span class="dot" aria-hidden="true"></span><span class="txt">—</span></span>
+      </header>
+      <dl class="counts" id="media-counts"></dl>
+    </article>
+
+    <article class="card fx" aria-labelledby="fx-h">
+      <header class="card-head">
+        <div><h2 id="fx-h">USD → INR</h2><p class="muted" id="fx-sub">Reference rate</p></div>
+        <button class="tbl-btn" type="button" data-for="fx">Table</button>
+      </header>
+      <p class="big" id="fx-rate">—</p>
+      <p class="delta" id="fx-delta"></p>
+      <div class="chart" id="fx-chart" data-h="110"></div>
+      <div class="tbl" id="fx-table" hidden></div>
+    </article>
+  </section>
+
+  <section class="wrap section" id="dns">
+    <article class="card pihole" aria-labelledby="dns-h">
+      <header class="card-head">
+        <div><h2 id="dns-h">DNS filtering</h2><p class="muted">Pi-hole, last 30 days</p></div>
+        <button class="tbl-btn" type="button" data-for="dns">Table</button>
+      </header>
+      <div class="dns-grid">
+        <dl class="facts dns-facts" id="dns-facts"></dl>
+        <div>
+          <ul class="legend inline" aria-label="Chart key">
+            <li><span class="sw" data-s="s1"></span>Allowed</li>
+            <li><span class="sw" data-s="s2"></span>Blocked</li>
+          </ul>
+          <div class="chart" id="dns-chart" data-h="190"></div>
+          <div class="tbl" id="dns-table" hidden></div>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<footer class="wrap footer" id="footer">
+  <form class="ask" id="ask" hidden>
+    <label class="ask-label" for="ask-email">Need access to one of the apps? Drop your email.</label>
+    <span class="ask-row">
+      <input class="ask-input" id="ask-email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="254" placeholder="you@example.com" required>
+      <button class="btn small" type="submit">Send</button>
+    </span>
+    <span class="ask-msg" id="ask-msg" role="status" aria-live="polite"></span>
+  </form>
+  <p>© <span id="year">2026</span> imad7x · hosted at home in Bangalore</p>
+  <p class="muted"><a href="https://github.com/imad7x/homelab" rel="noopener">Source</a> · <span id="generated">Snapshot —</span></p>
+</footer>
+
+<div class="tooltip" id="tip" role="tooltip" hidden></div>
+</body>
+</html>

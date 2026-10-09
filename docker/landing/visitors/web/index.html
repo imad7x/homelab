@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Visitors</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css">
+<script src="/app.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <div class="title">
+      <h1>Visitors</h1>
+      <p class="muted">Who opened the public landing page · LAN only</p>
+    </div>
+    <div class="seg" role="group" aria-label="Time range">
+      <button type="button" data-range="7" aria-pressed="true">7 days</button>
+      <button type="button" data-range="30" aria-pressed="false">30 days</button>
+      <button type="button" data-range="90" aria-pressed="false">90 days</button>
+      <button type="button" data-range="all" aria-pressed="false">All</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="banner" id="banner" role="status" hidden><span class="si" aria-hidden="true"></span><span class="txt"></span></p>
+
+  <section class="tiles" id="tiles" aria-label="Totals"></section>
+
+  <section class="grid-2">
+    <article class="card" aria-labelledby="bydev-h">
+      <header class="card-head">
+        <div><h2 id="bydev-h">Visits by device</h2><p class="muted" id="bydev-sub"></p></div>
+        <div class="legend"><span><i class="key s1"></i>Yours</span><span><i class="key s2"></i>Unknown</span></div>
+      </header>
+      <div class="chart" id="bydev"></div>
+      <p class="note">The Devices table below lists every device with its numbers.</p>
+    </article>
+    <article class="card" aria-labelledby="perday-h">
+      <header class="card-head">
+        <div><h2 id="perday-h">Visits per day</h2><p class="muted">IST days</p></div>
+        <div class="head-right">
+          <div class="legend"><span><i class="key s1"></i>Yours</span><span><i class="key s2"></i>Unknown</span></div>
+          <button class="btn small" type="button" id="perday-toggle" aria-pressed="false">Table</button>
+        </div>
+      </header>
+      <div class="chart" id="perday" data-h="210"></div>
+      <div class="table-wrap" id="perday-table" hidden></div>
+    </article>
+  </section>
+
+  <section class="card" aria-labelledby="dev-h">
+    <header class="card-head">
+      <div><h2 id="dev-h">Devices</h2><p class="muted">Click a device to see everything it did. Mark your own as yours so anything else stands out.</p></div>
+    </header>
+    <p class="form-msg" id="dev-msg" role="status" hidden></p>
+    <div class="table-wrap"><table class="tbl" id="devices"></table></div>
+    <p class="empty" id="devices-empty" hidden>No visits in this period.</p>
+  </section>
+
+  <section class="card" aria-labelledby="vis-h">
+    <header class="card-head">
+      <div><h2 id="vis-h">Recent activity</h2><p class="muted" id="vis-sub"></p></div>
+      <div class="chips" role="group" aria-label="Show">
+        <button type="button" data-show="people" aria-pressed="true">Visits</button>
+        <button type="button" data-show="unknown" aria-pressed="false">Unknown only</button>
+        <button type="button" data-show="attempts" aria-pressed="false">Blocked attempts</button>
+        <button type="button" data-show="others" aria-pressed="false">Bots &amp; scanners</button>
+      </div>
+    </header>
+    <div class="table-wrap"><table class="tbl" id="activity"></table></div>
+    <p class="empty" id="activity-empty" hidden>Nothing here in this period.</p>
+  </section>
+
+  <section class="grid-2">
+    <article class="card" aria-labelledby="req-h">
+      <header class="card-head">
+        <div><h2 id="req-h">Access requests</h2><p class="muted">Emails left in the page's footer box</p></div>
+      </header>
+      <div class="table-wrap"><table class="tbl" id="requests"></table></div>
+      <p class="empty" id="requests-empty" hidden>No requests in this period.</p>
+    </article>
+    <article class="card" aria-labelledby="bl-h">
+      <header class="card-head">
+        <div><h2 id="bl-h">Blocklist</h2><p class="muted">Blocked devices and IPs get "Not available" instead of the page, within seconds.</p></div>
+      </header>
+      <form class="block-form" id="block-form">
+        <label class="sr" for="block-ip">IP address or range</label>
+        <input id="block-ip" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="IP or range, e.g. 49.36.12.4 or 49.36.12.0/24" maxlength="64">
+        <button class="btn small" type="submit">Block</button>
+      </form>
+      <p class="form-msg" id="block-msg" role="status"></p>
+      <ul class="blocklist" id="blocklist"></ul>
+      <p class="empty" id="blocklist-empty" hidden>Nothing blocked.</p>
+    </article>
+  </section>
+
+  <section class="card" aria-labelledby="rep-h">
+    <header class="card-head">
+      <div><h2 id="rep-h">Weekly reports</h2><p class="muted">Monday to Sunday, written early every Monday. Your SSH login brief says when a new one is ready.</p></div>
+    </header>
+    <div id="reports"></div>
+    <p class="empty" id="reports-empty" hidden>The first report comes the Monday after logging began.</p>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p>Locations are Cloudflare's estimate for the IP address (usually city level), not where the device actually is. Mobile networks can be off by hundreds of km.</p>
+  <p id="generated"></p>
+</footer>
+
+<div class="drawer" id="drawer" hidden>
+  <div class="scrim" id="scrim"></div>
+  <aside class="panel" role="dialog" aria-modal="true" aria-labelledby="dr-title">
+    <header class="panel-head">
+      <div class="panel-title"><h2 id="dr-title"></h2><p class="muted" id="dr-sub"></p></div>
+      <button class="btn small" type="button" id="dr-close">Close</button>
+    </header>
+    <div class="panel-body" id="dr-body"></div>
+  </aside>
+</div>
+
+<div class="tooltip" id="tip" role="tooltip" hidden></div>
+</body>
+</html>

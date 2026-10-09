@@ -1,0 +1,137 @@
+/* ------------------------------------------------------------------ *
+ *  iMad7x Homelab - visual polish
+ *  Targets homepage's own classes (.service-card, .bookmark-list,
+ *  .widget-container, ...). Safe to delete this file to go back to stock.
+ * ------------------------------------------------------------------ */
+
+:root {
+  --hl-accent: 56 189 248;   /* sky-400 */
+  --hl-panel: 15 23 42;      /* slate-900 */
+}
+
+/* --- Service cards ------------------------------------------------- */
+/* The stock card is dark:bg-white/5 with a flat shadow, which washes out
+   against a photo background. This gives it a frosted panel instead.     */
+.service-card {
+  background-color: rgb(var(--hl-panel) / 0.52) !important;
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 14px !important;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+  transition: transform 0.18s ease, border-color 0.18s ease,
+              box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.service-card:hover {
+  background-color: rgb(var(--hl-panel) / 0.70) !important;
+  border-color: rgb(var(--hl-accent) / 0.50);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -8px rgb(0 0 0 / 0.60),
+              0 0 0 1px rgb(var(--hl-accent) / 0.22);
+}
+
+/* --- Typography inside cards --------------------------------------- */
+.service-name {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.service-description {
+  opacity: 0.70;
+  font-size: 0.78rem;
+}
+
+.service-icon {
+  transition: transform 0.18s ease;
+}
+
+.service-card:hover .service-icon {
+  transform: scale(1.07);
+}
+
+/* --- Group headings ------------------------------------------------- */
+/* Turns a plain text label into a proper section header, which is most of
+   what makes a long dashboard scannable.                                 */
+.service-group-name,
+.bookmark-group-name {
+  font-size: 0.78rem !important;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.92;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.45rem;
+  border-bottom: 1px solid rgb(255 255 255 / 0.10);
+}
+
+/* --- Bookmarks: match the service card treatment -------------------- */
+.bookmark-list a {
+  border-radius: 12px !important;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.07);
+  background-color: rgb(var(--hl-panel) / 0.45);
+  transition: transform 0.16s ease, border-color 0.16s ease,
+              background-color 0.16s ease;
+}
+
+.bookmark-list a:hover {
+  transform: translateX(2px);
+  border-color: rgb(var(--hl-accent) / 0.45);
+  background-color: rgb(var(--hl-panel) / 0.65);
+}
+
+.bookmark-icon {
+  border-radius: 11px 0 0 11px !important;
+}
+
+/* --- Header info widgets -------------------------------------------- */
+.widget-container {
+  border-radius: 12px;
+}
+
+.information-widget-resource {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+/* --- Status dots ---------------------------------------------------- */
+/* The stock dot is easy to miss at a glance; a soft halo makes red pop.  */
+.status-dot {
+  box-shadow: 0 0 7px currentColor;
+}
+
+/* --- Scrollbar ------------------------------------------------------ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.16);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(255 255 255 / 0.30);
+}
+
+/* --- Accessibility --------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .service-card,
+  .service-icon,
+  .bookmark-list a {
+    transition: none;
+  }
+  .service-card:hover,
+  .bookmark-list a:hover {
+    transform: none;
+  }
+  .service-card:hover .service-icon {
+    transform: none;
+  }
+}

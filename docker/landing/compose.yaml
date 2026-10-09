@@ -1,0 +1,113 @@
+# Public landing page for the bare domain (the tunnel's route for it points at
+# port 3000). Two containers, so the one the internet talks to holds nothing:
+#
+#   landing            nginx serving ./site and one JSON file. No secrets, no
+#                      proxying, read-only filesystem, no capabilities.
+#   landing-collector  no published port. Every minute it reads Prometheus, the media
+#                      servers, the Pi-hole digest and a few public APIs, and writes
+#                      ./state/public/snapshot.json - counts and percentages only.
+#
+#   landing-visitors   LAN-only dashboard (port 3011) over the visitor log: visits per
+#                      device, marking your own devices, the blocklist nginx enforces,
+#                      weekly reports. Also on the command line: `visitors`.
+#
+#   log:  docker logs landing-collector
+#
+# The full dashboard with LAN links and widgets is homepage-lan on port 3010.
+
+services:
+  landing:
+    image: nginxinc/nginx-unprivileged:alpine
+    container_name: landing
+    restart: unless-stopped
+    ports:
+      - "3000:8080"     # the tunnel routes the bare domain here
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - ./site:/usr/share/nginx/html:ro
+      # The whole folder, so an editor that replaces default.conf (sed -i) is still seen.
+      - ./nginx:/etc/nginx/conf.d:ro
+      # Only the public half of the state: the collector's database stays out of reach.
+      - ./state/public:/srv/public:ro
+      # Visitor log (writable): one JSON line per page view, read by ./visitors.
+      - ./logs:/var/log/visitors
+      # Blocklist written by the dashboard; the script reloads nginx when it changes.
+      - ./blocklist:/etc/nginx/blocklist:ro
+      - ./nginx/reload-on-blocklist.sh:/docker-entrypoint.d/90-reload-on-blocklist.sh:ro
+    # nginx runs as uid 101; the extra group lets it write to ./logs (owned by
+    # imad7x, group-writable, setgid so new files stay in that group).
+    group_add:
+      - "1000"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  landing-collector:
+    build: .
+    image: landing-collector:latest
+    container_name: landing-collector
+    restart: unless-stopped
+    user: "1000:1000"
+    env_file:
+      - collector.env   # Jellyfin and Navidrome read keys
+    environment:
+      - TZ=Asia/Kolkata
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - ./state:/state
+      # The code is mounted read-only so an edit takes effect on the next restart.
+      - ./collector:/app:ro
+      # Daily DNS totals written by monitoring/pihole-digest (read-only).
+      - /docker/monitoring/pihole-digest:/pihole-digest:ro
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  landing-visitors:
+    image: python:3.13-alpine
+    container_name: landing-visitors
+    restart: unless-stopped
+    command: ["python", "/app/server.py"]
+    ports:
+      - "3011:8080"     # LAN only: never give this a tunnel route
+    user: "1000:1000"
+    environment:
+      - TZ=Asia/Kolkata
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      # Host headers it answers to (blocks DNS-rebinding pages on the LAN).
+      - ALLOWED_HOSTS=192.168.0.10:3011,lab:3011,localhost:3011
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - ./visitors:/app:ro
+      - ./logs:/logs:ro
+      # The public page, read for app names ("Tapped Jellyfin").
+      - ./site:/site:ro
+      # Names, "this is mine" marks, the blocklist source and the weekly reports.
+      - ./visitors-state:/visitors-state
+      # nginx's include files, regenerated from visitors-state/blocklist.json.
+      - ./blocklist:/blocklist
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen(u.Request('http://127.0.0.1:8080/', headers={'Host': 'localhost:3011'}), timeout=4)"]
+      interval: 60s
+      timeout: 5s
+      retries: 3

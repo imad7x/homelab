@@ -38,6 +38,7 @@ kept encrypted - see [Secrets](#secrets).
 | `docker/paperless` | Paperless-ngx document archive | [README](docker/paperless) |
 | `docker/updater` | One-click container updater (custom app) | [README](docker/updater) |
 | `docker/gym` | Workout program, set logger and watch data (custom app) | [README](docker/gym) |
+| `docker/landing` | Public landing page: app launcher, live vitals, weather and rates (custom app) | [README](docker/landing) |
 | `docker/homeassistant` | Home Assistant | [README](docker/homeassistant) |
 
 ### Containers
@@ -66,13 +67,16 @@ Generated from `docker ps` on every sync.
 | jellyfin/servarr | qbittorrent | `lscr.io/linuxserver/qbittorrent:latest` | 6881, 8080 |
 | jellyfin/servarr | radarr | `lscr.io/linuxserver/radarr:latest` | 7878 |
 | jellyfin/servarr | sonarr | `lscr.io/linuxserver/sonarr:latest` | 8989 |
+| landing | landing | `nginxinc/nginx-unprivileged:alpine` | 3000 |
+| landing | landing-collector | `landing-collector:latest` | - |
+| landing | landing-visitors | `python:3.13-alpine` | 3011 |
 | monitoring | cadvisor | `gcr.io/cadvisor/cadvisor:v0.49.1` | 8082 |
 | monitoring | grafana | `grafana/grafana` | 3001 |
 | monitoring | node-exporter | `prom/node-exporter:latest` | - |
 | monitoring | prometheus | `prom/prometheus` | 9090 |
 | monitoring | scrutiny | `ghcr.io/analogj/scrutiny:v0.9.4-omnibus` | 8083 |
 | monitoring | smartctl-exporter | `quay.io/prometheuscommunity/smartctl-exporter:v0.14.0` | 9633 |
-| monitoring/homepage | homepage | `ghcr.io/gethomepage/homepage:latest` | 3000 |
+| monitoring/homepage-lan | homepage-lan | `ghcr.io/gethomepage/homepage:latest` | 3010 |
 | paperless | paperless | `ghcr.io/paperless-ngx/paperless-ngx:latest` | 8000 |
 | paperless | paperless-db | `postgres:16-alpine` | - |
 | paperless | paperless-redis | `redis:7-alpine` | - |
