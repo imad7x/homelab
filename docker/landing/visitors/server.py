@@ -81,7 +81,7 @@ def data(rng):
         'days': [[k, m, u] for k, (m, u) in series.items()],
         'visits': [{'when': iso(v['when']), 'key': v['key'], 'name': v['name'], 'mine': v['mine'],
                     'device': v['device'], 'place': v['place'], 'ip': v.get('ip', ''), 'source': v['source'],
-                    'open_s': v['open_s'], 'language': v['language'], 'colo': v['colo']}
+                    'open_s': v['open_s'], 'open_partial': v.get('open_partial', False), 'language': v['language'], 'colo': v['colo']}
                    for v in a['visits'][-300:][::-1]],
         'others': [{'when': iso(r['when']), 'label': r['device'], 'bot': r['bot'], 'place': r['place'],
                     'ip': r.get('ip', ''), 'path': (r.get('path') or '')[:80], 'status': str(r.get('status', ''))}

@@ -60,6 +60,10 @@ IPHONES = {
     'iPhone17,4': 'iPhone 16 Plus', 'iPhone17,5': 'iPhone 16e', 'iPhone18,1': 'iPhone 17 Pro',
     'iPhone18,2': 'iPhone 17 Pro Max', 'iPhone18,3': 'iPhone 17', 'iPhone18,4': 'iPhone Air',
 }
+# Smart TVs and streaming sticks; their user agents otherwise read as plain Linux/Android.
+TVS = [(r'NetCast|Web0S|webOS', 'LG smart TV'), (r'Tizen.*TV|SMART-TV.*Samsung', 'Samsung smart TV'),
+       (r'BRAVIA', 'Sony Bravia TV'), (r'AFT[A-Z]', 'Fire TV'), (r'CrKey', 'Chromecast'),
+       (r'GoogleTV|Android TV|; TV\b', 'Android TV'), (r'SmartTV|SMART-TV|HbbTV', 'Smart TV')]
 IN_APP = [(r'Instagram', 'Instagram'), (r'FBAN|FBAV', 'Facebook'), (r'LinkedInApp', 'LinkedIn'),
     (r'Snapchat', 'Snapchat'), (r'\bLine/', 'LINE'), (r'GSA/', 'Google app')]
 
@@ -89,7 +93,10 @@ def device(r):
     if bot:
         return bot, True
     model, pver = unquote(r.get('model')), unquote(r.get('platform_version'))
-    if 'iPhone' in ua or 'iPad' in ua:
+    tv = next((name for pattern, name in TVS if re.search(pattern, ua)), None)
+    if tv:
+        system = tv
+    elif 'iPhone' in ua or 'iPad' in ua:
         # In-app browsers add "(iPhone17,2; iOS 26_1; ...)"; Safari freezes its OS version.
         m = re.search(r'\((i(?:Phone|Pad)\d+,\d+); iOS (\d+)[_.](\d+)', ua)
         system = 'iPhone' if 'iPhone' in ua else 'iPad'
@@ -143,7 +150,7 @@ def area(r):
         return {'text': 'Tor network (location hidden)'}
     city = ' '.join(x for x in ((r.get('city') or '').strip(), (r.get('postal') or '').strip()) if x)
     text = ', '.join(x for x in (city, (r.get('region') or '').strip(), (r.get('country') or '').strip()) if x)
-    out = {'text': text or 'Unknown'}
+    out = {'text': (text or 'Unknown') + (f" ({r['geo_note']})" if r.get('geo_note') else '')}
     try:
         lat, lon = float(r.get('lat')), float(r.get('lon'))
         out.update(lat=lat, lon=lon,
@@ -275,7 +282,6 @@ def load(kind='visits'):
                     continue
                 r['ts'] = r['when'].timestamp()
                 r['device'], r['bot'] = device(r)
-                r['place'] = place(r)
                 path_only = (r.get('path') or '/').split('?')[0]
                 r['page'] = path_only in ('/', '/index.html') and str(r.get('status')) in ('200', '304')
                 r['blocked'] = str(r.get('blocked')) == '1'
@@ -283,8 +289,32 @@ def load(kind='visits'):
                 r['source'], r['language'], r['colo'] = source(r), language(r), colo(r)
                 rows.append(r)
     rows.sort(key=lambda r: r['ts'])
+    fill_geo(rows)
+    for r in rows:
+        r['place'] = place(r)
     assign_keys(rows)
     return rows
+
+
+def fill_geo(rows):
+    """Rows from before Cloudflare sent cities (the managed transform went on at ~00:55 on
+    10 Oct): take Cloudflare's answer for the same IP from another row, else a saved
+    lookup in visitors-state/geo.json ({ip: {city, region, country, source}})."""
+    known = {r.get('ip'): r for r in rows if (r.get('city') or '').strip()}
+    saved = read_json(os.path.join(STATE, 'geo.json'), {})
+    for r in rows:
+        if (r.get('city') or '').strip():
+            continue
+        src = known.get(r.get('ip'))
+        if src:
+            for k in ('city', 'region', 'postal', 'lat', 'lon'):
+                r[k] = src.get(k, '')
+            r['geo_note'] = 'from a later Cloudflare answer for this IP'
+        elif r.get('ip') in saved:
+            g = saved[r['ip']]
+            r['city'], r['region'] = g.get('city', ''), g.get('region', '')
+            r['geo_note'] = f"{g.get('source', 'IP database')} estimate; Cloudflare gave no city"
+
 
 
 def assign_keys(rows):
@@ -379,25 +409,31 @@ def analyse(start=None, end=None, rows=None):
             continue
         prev = last.get(r['key'])
         if prev and r['ts'] - prev[0] < REPEAT:
-            prev[0] = r['ts']
+            prev[0] = prev[1]['last_ts'] = r['ts']
             if unquote(r.get('model')) and not unquote(prev[1].get('model')):
                 prev[1]['device'], prev[1]['model'] = r['device'], r.get('model')
             continue
-        v = dict(r)
+        v = dict(r, last_ts=r['ts'])
         last[r['key']] = [r['ts'], v]
         visits.append(v)
-        # Open for: follow the page's minute-by-minute refreshes until they stop.
-        until = r['ts']
-        for ts in sorted(set(refresh.get(r['key'], []) + refresh.get(r['ukey'], []))):
-            if ts < r['ts']:
-                continue
-            if ts - until > GAP:
-                break
-            until = ts
-        v['open_s'] = int(until - r['ts']) if r['ts'] >= measured_from else None
         devices[r['key']]['visits_all'] += 1
         if inside(r):
             devices[r['key']]['visits'] += 1
+    # Open for: a refresh can only come from a page that is still open, so the page loaded
+    # at the start of a visit stayed open until the device's last refresh before its next
+    # page load (gaps are a phone putting the browser to sleep). Visits from before the
+    # refreshes were logged only get a lower bound from their reloads.
+    by_key = {}
+    for v in visits:
+        by_key.setdefault(v['key'], []).append(v)
+    for vs in by_key.values():
+        for i, v in enumerate(vs):
+            stop = vs[i + 1]['ts'] if i + 1 < len(vs) else v['ts'] + 12 * 3600
+            beats = [ts for ts in set(refresh.get(v['key'], []) + refresh.get(v['ukey'], [])) if v['ts'] <= ts < stop]
+            v['open_s'] = int(max([v['last_ts'], *beats]) - v['ts'])
+            v['open_partial'] = v['ts'] < measured_from
+            if v['open_partial'] and v['open_s'] < 60:
+                v['open_s'] = None
     visits = [v for v in visits if inside(v)]
 
     for d in devices.values():
@@ -660,9 +696,11 @@ def stamp(t):
     return t.strftime('%a %d %b  %H:%M')
 
 
-def duration(sec):
+def duration(sec, partial=False):
     if sec is None:
         return '—'
+    if partial:
+        return '≥ ' + duration(sec)
     if sec < 60:
         return '<1 min'
     return f'{sec // 60} min' if sec < 3600 else f'{sec // 3600} h {sec % 3600 // 60} min'
@@ -730,7 +768,7 @@ def main():
                for r in rows[-a.n:][::-1]])
     else:
         table(['TIME (IST)', 'LOCATION', 'DEVICE', 'FROM', 'OPEN', 'IP', ''],
-              [[stamp(v['when']), v['place'], v['name'], v['source'], duration(v['open_s']), v.get('ip', ''),
+              [[stamp(v['when']), v['place'], v['name'], v['source'], duration(v['open_s'], v.get('open_partial')), v.get('ip', ''),
                 'yours' if v['mine'] else ''] for v in res['visits'][-a.n:][::-1]])
 
     day = datetime.now(IST) - timedelta(hours=24)

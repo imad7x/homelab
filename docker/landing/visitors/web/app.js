@@ -379,7 +379,8 @@
       rows = list.slice(0, 150).map((v) => h('tr', { class: 'clickable', 'data-key': v.key },
         h('td', { class: 'nowrap', text: when(v.when) }),
         h('td', {}, h('span', { text: v.name }), ownerBadge(v.mine), v.name !== v.device ? h('span', { class: 'sub', text: v.device }) : null),
-        h('td', { text: v.source }), h('td', { class: 'nowrap', text: span(v.open_s) }),
+        h('td', { text: v.source }), h('td', { class: 'nowrap', title: v.open_partial ? 'At least: the page refreshes were not logged yet at the time' : null,
+          text: v.open_partial && v.open_s != null ? `≥ ${span(v.open_s)}` : span(v.open_s) }),
         h('td', {}, h('span', { text: v.place }), v.colo || v.language ? h('span', { class: 'sub', text: [v.language, v.colo && `via ${v.colo}`].filter(Boolean).join(' · ') }) : null),
         h('td', { class: 'mono', text: v.ip })));
       $('vis-sub').textContent = `${plural(list.length, 'visit')} in ${RANGE[range]}${list.length > 150 ? ', latest 150 shown' : ''}`;

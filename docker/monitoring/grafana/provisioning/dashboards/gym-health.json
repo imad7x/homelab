@@ -50,7 +50,7 @@
     {
       "type": "stat",
       "title": "Recovery",
-      "description": "HRV 7-day average vs your normal range (60 days before), resting HR vs its 30-day average, and last night's sleep. Good / Normal = train as planned; Take it easier = go lighter; Rest = resting HR up two days running with low HRV. Guidance from a wrist sensor, not a diagnosis.",
+      "description": "From the recovery score: 70+ good to train, 55-69 normal, below 55 take it easier. Rest = resting HR up 5+ bpm two nights running, which often comes before illness. Guidance, not a diagnosis.",
       "datasource": {
         "type": "frser-sqlite-datasource",
         "uid": "gym-health"
@@ -345,8 +345,8 @@
     },
     {
       "type": "stat",
-      "title": "HRV, 7-day",
-      "description": "7-day average of nightly HRV (rMSSD).",
+      "title": "Recovery score",
+      "description": "0-100. Resting HR and average heart rate asleep against your 30 nights before, last night's sleep, 3-night sleep debt against 7.5 h, and the last 3 days' load against your 4-week average. The watch doesn't share HRV through Gadgetbridge; HRV joins the score if it ever does.",
       "datasource": {
         "type": "frser-sqlite-datasource",
         "uid": "gym-health"
@@ -359,8 +359,8 @@
             "uid": "gym-health"
           },
           "queryType": "table",
-          "queryText": "SELECT time, hrv7 AS \"HRV 7-day\" FROM days WHERE hrv7 IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
-          "rawQueryText": "SELECT time, hrv7 AS \"HRV 7-day\" FROM days WHERE hrv7 IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
+          "queryText": "SELECT time, readiness_pct AS \"Recovery score\" FROM days WHERE readiness_pct IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
+          "rawQueryText": "SELECT time, readiness_pct AS \"Recovery score\" FROM days WHERE readiness_pct IS NOT NULL AND time <= $__to / 1000 ORDER BY time DESC LIMIT 1",
           "timeColumns": [
             "time"
           ]
@@ -368,7 +368,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "ms",
+          "unit": "none",
           "color": {
             "mode": "thresholds"
           },
@@ -558,8 +558,8 @@
     },
     {
       "type": "timeseries",
-      "title": "Resting heart rate",
-      "description": "Drifting down over months = fitter. 5+ above usual for a few days often means poor sleep, stress or illness.",
+      "title": "Night heart rate",
+      "description": "Resting HR is the lowest 30-minute average while asleep (the watch's own value isn't shared through Gadgetbridge). Drifting down over months = fitter. 5+ above usual for a few nights often means poor sleep, stress or illness.",
       "datasource": {
         "type": "frser-sqlite-datasource",
         "uid": "gym-health"
@@ -572,8 +572,8 @@
             "uid": "gym-health"
           },
           "queryType": "table",
-          "queryText": "SELECT time, rhr AS \"Resting HR\", rhr_base AS \"Usual (30-day)\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
-          "rawQueryText": "SELECT time, rhr AS \"Resting HR\", rhr_base AS \"Usual (30-day)\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "queryText": "SELECT time, rhr AS \"Resting (lowest 30 min asleep)\", sleep_hr AS \"Average asleep\", rhr_base AS \"Usual resting (30-day)\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, rhr AS \"Resting (lowest 30 min asleep)\", sleep_hr AS \"Average asleep\", rhr_base AS \"Usual resting (30-day)\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
           "timeColumns": [
             "time"
           ]
@@ -610,7 +610,22 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Usual (30-day)"
+              "options": "Average asleep"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d95926"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Usual resting (30-day)"
             },
             "properties": [
               {
@@ -646,8 +661,8 @@
     },
     {
       "type": "timeseries",
-      "title": "HRV (rMSSD)",
-      "description": "Your normal range is the mean +/- half a standard deviation of ln(rMSSD) over the 60 days before. A 7-day average below it means recover more.",
+      "title": "Recovery score",
+      "description": "0-100, line at 70 (good to train). 55-69 normal, below 55 take it easier. Starts after 10 nights of resting HR.",
       "datasource": {
         "type": "frser-sqlite-datasource",
         "uid": "gym-health"
@@ -660,8 +675,8 @@
             "uid": "gym-health"
           },
           "queryType": "table",
-          "queryText": "SELECT time, hrv AS \"Each night\", hrv7 AS \"7-day average\", hrv_lo AS \"Normal low\", hrv_hi AS \"Normal high\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
-          "rawQueryText": "SELECT time, hrv AS \"Each night\", hrv7 AS \"7-day average\", hrv_lo AS \"Normal low\", hrv_hi AS \"Normal high\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "queryText": "SELECT time, readiness_pct AS \"Recovery score\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, readiness_pct AS \"Recovery score\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
           "timeColumns": [
             "time"
           ]
@@ -669,7 +684,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "ms",
+          "unit": "none",
           "color": {
             "mode": "fixed",
             "fixedColor": "#3987e5"
@@ -679,97 +694,45 @@
             "lineWidth": 2,
             "fillOpacity": 10,
             "gradientMode": "none",
-            "showPoints": "never",
+            "showPoints": "always",
             "pointSize": 6,
             "spanNulls": false,
-            "insertNulls": 172800000,
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "axisBorderShow": false,
             "barAlignment": 0,
             "stacking": {
               "mode": "none",
               "group": "A"
-            }
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            },
+            "axisSoftMin": 0,
+            "axisSoftMax": 100
           },
           "noValue": "No data",
-          "decimals": 0
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Each night"
-            },
-            "properties": [
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
               {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#898781"
-                }
+                "color": "transparent",
+                "value": null
               },
               {
-                "id": "custom.drawStyle",
-                "value": "points"
-              },
-              {
-                "id": "custom.pointSize",
-                "value": 5
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Normal low"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#898781"
-                }
-              },
-              {
-                "id": "custom.lineWidth",
-                "value": 1
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Normal high"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#898781"
-                }
-              },
-              {
-                "id": "custom.lineWidth",
-                "value": 1
-              },
-              {
-                "id": "custom.fillBelowTo",
-                "value": "Normal low"
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 12
+                "color": "#898781",
+                "value": 70
               }
             ]
           }
-        ]
+        },
+        "overrides": []
       },
       "transformations": [],
       "options": {
         "legend": {
-          "showLegend": true,
+          "showLegend": false,
           "displayMode": "list",
           "placement": "bottom"
         },
@@ -1059,8 +1022,8 @@
             "uid": "gym-health"
           },
           "queryType": "table",
-          "queryText": "SELECT date AS Night, sleep_h AS Asleep, substr(time(bedtime + 19800, 'unixepoch'), 1, 5) AS Bed, substr(time(waketime + 19800, 'unixepoch'), 1, 5) AS Wake, round(100.0 * deep_h / sleep_h) AS \"Deep %\", round(100.0 * rem_h / sleep_h) AS \"REM %\", hrv AS HRV, spo2_min AS \"SpO2 low\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 AND sleep_h IS NOT NULL ORDER BY time DESC",
-          "rawQueryText": "SELECT date AS Night, sleep_h AS Asleep, substr(time(bedtime + 19800, 'unixepoch'), 1, 5) AS Bed, substr(time(waketime + 19800, 'unixepoch'), 1, 5) AS Wake, round(100.0 * deep_h / sleep_h) AS \"Deep %\", round(100.0 * rem_h / sleep_h) AS \"REM %\", hrv AS HRV, spo2_min AS \"SpO2 low\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 AND sleep_h IS NOT NULL ORDER BY time DESC",
+          "queryText": "SELECT date AS Night, sleep_h AS Asleep, substr(time(bedtime + 19800, 'unixepoch'), 1, 5) AS Bed, substr(time(waketime + 19800, 'unixepoch'), 1, 5) AS Wake, round(100.0 * deep_h / sleep_h) AS \"Deep %\", round(100.0 * rem_h / sleep_h) AS \"REM %\", rhr AS \"Resting HR\", spo2_min AS \"SpO2 low\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 AND sleep_h IS NOT NULL ORDER BY time DESC",
+          "rawQueryText": "SELECT date AS Night, sleep_h AS Asleep, substr(time(bedtime + 19800, 'unixepoch'), 1, 5) AS Bed, substr(time(waketime + 19800, 'unixepoch'), 1, 5) AS Wake, round(100.0 * deep_h / sleep_h) AS \"Deep %\", round(100.0 * rem_h / sleep_h) AS \"REM %\", rhr AS \"Resting HR\", spo2_min AS \"SpO2 low\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 AND sleep_h IS NOT NULL ORDER BY time DESC",
           "timeColumns": []
         }
       ],
@@ -1095,12 +1058,12 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "HRV"
+              "options": "Resting HR"
             },
             "properties": [
               {
                 "id": "unit",
-                "value": "ms"
+                "value": "bpm"
               },
               {
                 "id": "decimals",
