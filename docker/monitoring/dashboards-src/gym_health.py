@@ -131,16 +131,17 @@ LATEST = "SELECT time, {col} AS \"{name}\" FROM days WHERE {col} IS NOT NULL AND
 row("Latest")
 place(stat("Recovery", sql(LATEST.format(col="readiness_score", name="Recovery")), mappings=READY_MAP,
            color_mode="background",
-           desc="HRV 7-day average vs your normal range (60 days before), resting HR vs its 30-day average, and "
-                "last night's sleep. Good / Normal = train as planned; Take it easier = go lighter; Rest = resting HR "
-                "up two days running with low HRV. Guidance from a wrist sensor, not a diagnosis."), 0, 4, 4)
+           desc="From the recovery score: 70+ good to train, 55-69 normal, below 55 take it easier. Rest = resting HR "
+                "up 5+ bpm two nights running, which often comes before illness. Guidance, not a diagnosis."), 0, 4, 4)
 place(stat("Last night's sleep", sql(LATEST.format(col="sleep_h", name="Sleep")), unit="suffix: h", decimals=1,
            desc="Hours asleep in the main sleep that ended that morning. Nights under 3 h of recorded sleep don't count."), 4, 4, 4)
 place(stat("Resting HR", sql(LATEST.format(col="rhr", name="Resting HR")), unit="bpm"), 8, 3, 4)
 place(stat("Usual resting HR", sql(LATEST.format(col="rhr_base", name="Usual")), unit="bpm", decimals=1,
            desc="Average of the 30 days before."), 11, 3, 4)
-place(stat("HRV, 7-day", sql(LATEST.format(col="hrv7", name="HRV 7-day")), unit="ms", decimals=0,
-           desc="7-day average of nightly HRV (rMSSD)."), 14, 3, 4)
+place(stat("Recovery score", sql(LATEST.format(col="readiness_pct", name="Recovery score")), unit="none", decimals=0,
+           desc="0-100. Resting HR and average heart rate asleep against your 30 nights before, last night's sleep, "
+                "3-night sleep debt against 7.5 h, and the last 3 days' load against your 4-week average. "
+                "The watch doesn't share HRV through Gadgetbridge; HRV joins the score if it ever does."), 14, 3, 4)
 place(stat("Active minutes this week", sql(
     "SELECT max(time) AS time, sum(coalesce(mod_min, 0) + 2 * coalesce(vig_min, 0)) AS \"WHO minutes\" FROM days "
     "WHERE time >= CAST(strftime('%s', date('now', '+330 minutes', 'weekday 0', '-6 days')) AS INTEGER) - 19800"),
@@ -152,20 +153,19 @@ y += 4
 
 # --- Recovery -----------------------------------------------------------------------------
 row("Recovery")
-place(series("Resting heart rate", [sql(f'SELECT time, rhr AS "Resting HR", rhr_base AS "Usual (30-day)" FROM days WHERE {RANGE} ORDER BY time')],
-             unit="bpm", decimals=0, overrides=[color("Usual (30-day)", GREY)],
-             desc="Drifting down over months = fitter. 5+ above usual for a few days often means poor sleep, stress or illness."),
+place(series("Night heart rate", [sql(f'SELECT time, rhr AS "Resting (lowest 30 min asleep)", sleep_hr AS "Average asleep", '
+                                      f'rhr_base AS "Usual resting (30-day)" FROM days WHERE {RANGE} ORDER BY time')],
+             unit="bpm", decimals=0, overrides=[color("Average asleep", ORANGE), color("Usual resting (30-day)", GREY)],
+             desc="Resting HR is the lowest 30-minute average while asleep (the watch's own value isn't shared through "
+                  "Gadgetbridge). Drifting down over months = fitter. 5+ above usual for a few nights often means poor "
+                  "sleep, stress or illness."),
       0, 12, 8)
-place(series("HRV (rMSSD)", [sql(f'SELECT time, hrv AS "Each night", hrv7 AS "7-day average", hrv_lo AS "Normal low", '
-                                 f'hrv_hi AS "Normal high" FROM days WHERE {RANGE} ORDER BY time')],
-             unit="ms", decimals=0,
-             overrides=[color("Each night", GREY, **{"custom.drawStyle": "points", "custom.pointSize": 5}),
-                        color("Normal low", GREY, **{"custom.lineWidth": 1}),
-                        color("Normal high", GREY, **{"custom.lineWidth": 1, "custom.fillBelowTo": "Normal low",
-                                                      "custom.fillOpacity": 12})],
-             desc="Your normal range is the mean +/- half a standard deviation of ln(rMSSD) over the 60 days before. "
-                  "A 7-day average below it means recover more."),
+place(series("Recovery score", [sql(f'SELECT time, readiness_pct AS "Recovery score" FROM days WHERE {RANGE} ORDER BY time')],
+             unit="none", decimals=0, threshold=70, legend=False, points=True,
+             desc="0-100, line at 70 (good to train). 55-69 normal, below 55 take it easier. Starts after 10 nights "
+                  "of resting HR."),
       12, 12, 8)
+panels[-1]["fieldConfig"]["defaults"]["custom"].update(axisSoftMin=0, axisSoftMax=100)
 y += 8
 place({"type": "state-timeline", "title": "Recovery by day", "datasource": DS,
        "targets": [sql(f'SELECT time, readiness_score AS "Recovery" FROM days WHERE {RANGE} ORDER BY time')],
@@ -188,9 +188,9 @@ place(series("Sleep stages per night", [sql(f'SELECT time, deep_h AS "Deep", lig
 place(table("Recent nights", sql(
     f"SELECT date AS Night, sleep_h AS Asleep, substr(time(bedtime + 19800, 'unixepoch'), 1, 5) AS Bed, "
     f"substr(time(waketime + 19800, 'unixepoch'), 1, 5) AS Wake, round(100.0 * deep_h / sleep_h) AS \"Deep %\", "
-    f"round(100.0 * rem_h / sleep_h) AS \"REM %\", hrv AS HRV, spo2_min AS \"SpO2 low\" "
+    f"round(100.0 * rem_h / sleep_h) AS \"REM %\", rhr AS \"Resting HR\", spo2_min AS \"SpO2 low\" "
     f"FROM days WHERE {RANGE} AND sleep_h IS NOT NULL ORDER BY time DESC", time_cols=()),
-    overrides=[ov("Asleep", unit="suffix: h", decimals=1), ov("HRV", unit="ms", decimals=0), ov("SpO2 low", unit="percent")]),
+    overrides=[ov("Asleep", unit="suffix: h", decimals=1), ov("Resting HR", unit="bpm", decimals=0), ov("SpO2 low", unit="percent")]),
       14, 10, 8)
 y += 8
 
