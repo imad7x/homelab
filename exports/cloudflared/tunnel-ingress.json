@@ -50,16 +50,6 @@
       "service": "http://192.168.0.10:3001"
     },
     {
-      "hostname": "p8s.[[private:DOMAIN]]",
-      "originRequest": {},
-      "service": "http://192.168.0.10:9090"
-    },
-    {
-      "hostname": "cadvisor.[[private:DOMAIN]]",
-      "originRequest": {},
-      "service": "http://192.168.0.10:8082"
-    },
-    {
       "hostname": "navidrome.[[private:DOMAIN]]",
       "originRequest": {},
       "service": "http://192.168.0.10:4533"
@@ -83,7 +73,7 @@
       "service": "http_status:404"
     }
   ],
-  "version": 29,
+  "version": 31,
   "warp-routing": {
     "enabled": false
   }
