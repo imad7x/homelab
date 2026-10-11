@@ -1,0 +1,37 @@
+# Plants: every plant photo in ~/plants as a card, sorted by folder (indoor,
+# outdoor, succulent), with a care guide per plant (light, temperature,
+# watering by season, lifespan, size, tips) and a watering log.
+#
+#   on the LAN:  http://192.168.0.10:8087
+#   log:         docker logs plants
+#
+# Add a photo to a folder and refresh the page to see it. The care guide is
+# app/plants.json (a photo is matched by its file name); the watering log and
+# the photo thumbnails live in ./state.
+
+services:
+  plants:
+    build: .
+    image: plants:latest
+    container_name: plants
+    restart: unless-stopped
+    user: "1000:1000"
+    ports:
+      - "8087:8087"
+    environment:
+      - TZ=Asia/Kolkata
+      # Names (besides IPs and localhost) the page may be opened under.
+      - ALLOWED_HOSTS=
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      - /home/imad7x/plants:/plants:ro
+      - ./state:/state
+      # The code is mounted read-only so an edit takes effect on the next
+      # restart, like gym and updater.
+      - ./app:/app:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8087/api/ping', timeout=3)"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
