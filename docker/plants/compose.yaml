@@ -1,13 +1,15 @@
 # Plants: every plant photo in ~/plants as a card, sorted by folder (indoor,
-# outdoor, succulent), with a care guide per plant (light, temperature,
-# watering by season, lifespan, size, tips) and a watering log.
+# outdoor, succulent), with a care guide per plant (pot and spot, watering,
+# feeding with 19:19:19 / 00:52:34 / vermicompost, dos and don'ts, lifespan,
+# size) and a care log. Watering dates follow the Bangalore weather
+# (Open-Meteo, fetched every 3 hours, no key).
 #
 #   on the LAN:  http://192.168.0.10:8087
 #   log:         docker logs plants
 #
 # Add a photo to a folder and refresh the page to see it. The care guide is
-# app/plants.json (a photo is matched by its file name); the watering log and
-# the photo thumbnails live in ./state.
+# app/plants.json (a photo is matched by its file name); the care log, the
+# weather and the photo thumbnails live in ./state.
 
 services:
   plants:
