@@ -14,7 +14,7 @@
   <div class="wrap top-in">
     <div class="title">
       <h1>Visitors</h1>
-      <p class="muted">Who opened the public landing page · LAN only</p>
+      <p class="muted">Who opened the public landing page and your apps · LAN only</p>
     </div>
     <div class="seg" role="group" aria-label="Time range">
       <button type="button" data-range="7" aria-pressed="true">7 days</button>
@@ -75,6 +75,21 @@
     <p class="empty" id="activity-empty" hidden>Nothing here in this period.</p>
   </section>
 
+  <section class="card" aria-labelledby="apps-h">
+    <header class="card-head">
+      <div><h2 id="apps-h">Your apps</h2><p class="muted" id="apps-sub">Visits to the subdomains, from Cloudflare's log</p></div>
+      <div class="chips" role="group" aria-label="Show">
+        <button type="button" data-apps="outsider" aria-pressed="true">Outsiders</button>
+        <button type="button" data-apps="yours" aria-pressed="false">Yours &amp; known</button>
+        <button type="button" data-apps="noise" aria-pressed="false">Cloud, abroad &amp; scanners</button>
+      </div>
+    </header>
+    <p class="form-msg" id="apps-msg" role="status" hidden></p>
+    <div class="table-wrap"><table class="tbl" id="apps"></table></div>
+    <p class="empty" id="apps-empty" hidden>Nothing here in this period.</p>
+    <p class="note" id="apps-note"></p>
+  </section>
+
   <section class="grid-2">
     <article class="card" aria-labelledby="req-h">
       <header class="card-head">
@@ -109,6 +124,7 @@
 
 <footer class="wrap foot">
   <p>Locations are Cloudflare's estimate for the IP address (usually city level), not where the device actually is. Mobile networks can be off by hundreds of km.</p>
+  <p>Networks are the operator each IP belongs to, as Cloudflare reports it. On mobile data an IP is shared by many phones and changes often; home broadband points to one connection.</p>
   <p id="generated"></p>
 </footer>
 

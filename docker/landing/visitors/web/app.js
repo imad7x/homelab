@@ -133,6 +133,7 @@
   let D = null;
   let range = '7';
   let show = 'people';
+  let appsShow = 'outsider';
   let editing = false;
   try { range = localStorage.getItem('range') || '7'; } catch (e) { /* default */ }
   if (!RANGE[range]) range = '7';
@@ -150,6 +151,10 @@
     } else {
       text = `No visits in ${RANGE[range]}.`;
     }
+    if (T.apps_outsiders) {
+      kind = 'warn';
+      text += ` ${plural(T.apps_outsiders, 'outsider visit')} to your apps: see Your apps below.`;
+    }
     b.hidden = false;
     b.dataset.state = kind;
     clear(b.querySelector('.si')).append(statusIcon(kind));
@@ -163,7 +168,7 @@
       ['Devices', T.devices, 'with at least one visit'],
       ['Unknown devices', T.unknown_devices, T.unknown_devices ? 'not marked as yours' : 'none', T.unknown_devices ? 'warn' : 'good'],
       ['Blocked attempts', T.attempts, 'turned away'],
-      ['Bots & scanners', T.bots + T.probes, `${T.bots} bots · ${T.probes} probes`],
+      ['App outsiders', T.apps_outsiders, T.apps_outsiders ? 'visits to your subdomains' : 'none on your subdomains', T.apps_outsiders ? 'warn' : 'good'],
       ['Access requests', T.requests, 'emails left'],
     ];
     clear($('tiles')).append(...tiles.map(([label, value, sub, st]) => h('article', { class: 'tile' },
@@ -272,7 +277,7 @@
 
   // ---------------------------------------------------------------- devices
   function deviceRow(d) {
-    const note = [d.name !== d.auto ? d.auto : '', d.source ? `from ${d.source}` : '', d.language,
+    const note = [d.name !== d.auto ? d.auto : '', d.network ? d.network.name : '', d.source ? `from ${d.source}` : '', d.language,
       d.colo ? `via Cloudflare ${d.colo}` : '', d.cookie ? '' : 'one-off (no device id yet)',
       d.your_network ? 'on a network your devices use' : ''].filter(Boolean).join(' · ');
     const nameCell = h('td', {},
@@ -370,7 +375,7 @@
 
   // ---------------------------------------------------------------- activity
   function renderActivity() {
-    document.querySelectorAll('.chips button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.show === show)));
+    document.querySelectorAll('.chips button[data-show]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.show === show)));
     const t = clear($('activity'));
     let head, rows;
     if (show === 'people' || show === 'unknown') {
@@ -381,7 +386,8 @@
         h('td', {}, h('span', { text: v.name }), ownerBadge(v.mine), v.name !== v.device ? h('span', { class: 'sub', text: v.device }) : null),
         h('td', { text: v.source }), h('td', { class: 'nowrap', title: v.open_partial ? 'At least: the page refreshes were not logged yet at the time' : null,
           text: v.open_partial && v.open_s != null ? `≥ ${span(v.open_s)}` : span(v.open_s) }),
-        h('td', {}, h('span', { text: v.place }), v.colo || v.language ? h('span', { class: 'sub', text: [v.language, v.colo && `via ${v.colo}`].filter(Boolean).join(' · ') }) : null),
+        h('td', {}, h('span', { text: v.place }), v.network || v.colo || v.language
+          ? h('span', { class: 'sub', text: [v.network && v.network.name, v.language, v.colo && `via ${v.colo}`].filter(Boolean).join(' · ') }) : null),
         h('td', { class: 'mono', text: v.ip })));
       $('vis-sub').textContent = `${plural(list.length, 'visit')} in ${RANGE[range]}${list.length > 150 ? ', latest 150 shown' : ''}`;
     } else if (show === 'attempts') {
@@ -402,6 +408,56 @@
     rows.forEach((tr) => { if (tr.dataset.key) tr.addEventListener('click', () => openDevice(tr.dataset.key, tr)); });
     $('activity-empty').hidden = rows.length > 0;
     if (rows.length) t.append(h('thead', {}, h('tr', {}, head.map((x) => h('th', { text: x })))), h('tbody', {}, rows));
+  }
+
+  // ---------------------------------------------------------------- your apps (Cloudflare's log)
+  const APP_NOTES = {
+    outsider: 'Anyone not known to be you. Mark a TV or phone you know as Known and its visits move to the next tab.',
+    yours: 'IPs your marked devices use, browsers you marked as Known, and anyone who got past Cloudflare\'s login on apps that let in only your email.',
+    noise: 'Cloud servers and VPNs, anyone asking for secret files or WordPress pages, and visits from abroad that Cloudflare blocked. Mostly scanners; a person on a VPN or iCloud Private Relay lands here too.',
+  };
+
+  function renderApps() {
+    document.querySelectorAll('.chips button[data-apps]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.apps === appsShow)));
+    const list = D.apps.filter((v) => v.cat === appsShow);
+    const T = D.totals, cf = D.cloudflare || {};
+    const t = clear($('apps'));
+    $('apps-sub').textContent = cf.until
+      ? `${plural(list.length, 'visit')} in ${RANGE[range]} · from Cloudflare's log, copied every hour (up to ${when(cf.until)})`
+      : "Cloudflare's log hasn't been copied yet (the dashboard does it within a minute of starting, then hourly).";
+    $('apps-note').textContent = [APP_NOTES[appsShow], T.apps_bots ? `${plural(T.apps_bots, 'bot visit')} not shown.` : '',
+      cf.error ? `Last problem copying the log: ${cf.error}` : ''].filter(Boolean).join(' ');
+    $('apps-empty').hidden = list.length > 0;
+    if (!list.length) return;
+    const rows = list.slice(0, 200).map((v) => {
+      const name = v.label || (v.page_device ? v.page_device.name : v.device);
+      const dur = (Date.parse(v.until) - Date.parse(v.when)) / 1000;
+      const who = h('td', {}, h('span', { class: 'dev-name', text: name }),
+        v.cat === 'outsider' ? badge('unknown dot', 'Outsider') : v.cat === 'yours' ? badge('mine dot', v.marked ? 'Known' : 'Yours') : null,
+        name !== v.device ? h('span', { class: 'sub', text: v.device }) : null,
+        v.page_device ? h('span', { class: 'sub', text: 'Also opened the landing page: click for its timeline' }) : null,
+        v.like ? h('span', { class: 'sub', text: `Same browser and network as your ${v.like}` }) : null,
+        v.why && v.cat !== 'outsider' ? h('span', { class: 'sub', text: v.why }) : null,
+        v.emails.length ? h('span', { class: 'sub', text: `Cloudflare login: ${v.emails.join(', ')}` }) : null);
+      const net = h('td', {}, h('span', { text: v.network ? v.network.name : '—' }),
+        v.network ? h('span', { class: 'sub', title: `${v.network.org} (AS${v.network.asn})`, text: v.network.what || v.network.org }) : null,
+        v.country && v.country !== 'IN' ? h('span', { class: 'sub', text: `Country: ${v.country}` }) : null);
+      const what = h('td', {}, v.apps.map((x) => h('span', { class: 'app-line', title: x.paths.join('\n') },
+        h('strong', { text: x.name }), ` · ${x.outcome}`)));
+      let btn = null;
+      if (v.marked || v.cat !== 'yours') {
+        btn = h('button', { class: 'btn small', type: 'button', text: v.marked ? 'Not known' : 'Known' });
+        btn.addEventListener('click', () => act(btn, () => api('/api/device', { key: v.key, mine: !v.marked }), 'apps-msg'));
+      }
+      const tr = h('tr', { class: v.page_device ? 'clickable' : null },
+        h('td', { class: 'nowrap' }, h('span', { text: when(v.when) }), dur >= 60 ? h('span', { class: 'sub', text: `for ${span(dur)}` }) : null),
+        who, net, h('td', { class: 'mono', text: v.ip }), what, h('td', { class: 'num', text: String(v.n) }),
+        h('td', {}, h('div', { class: 'actions' }, btn)));
+      if (v.page_device) tr.addEventListener('click', (e) => { if (!e.target.closest('button, a')) openDevice(v.page_device.key, tr); });
+      return tr;
+    });
+    t.append(h('thead', {}, h('tr', {}, ['Time (IST)', 'Who', 'Network', 'IP', 'What happened', 'Requests', ''].map((x, i) => h('th', { class: i === 5 ? 'num' : null, text: x })))),
+      h('tbody', {}, rows));
   }
 
   // ---------------------------------------------------------------- requests, blocklist, reports
@@ -457,6 +513,15 @@
               h('td', { class: 'mono', text: d.ips.join(', ') }),
               h('td', { class: 'nowrap', text: when(d.last) })))))));
       }
+      if (r.apps && r.apps.length) {
+        body.append(h('h3', { text: 'Outsiders on your apps' }),
+          h('div', { class: 'table-wrap' }, h('table', { class: 'tbl' },
+            h('thead', {}, h('tr', {}, ['When', 'Device', 'Network', 'IP', 'What happened'].map((x) => h('th', { text: x })))),
+            h('tbody', {}, r.apps.map((x) => h('tr', {},
+              h('td', { class: 'nowrap', text: when(x.when) }),
+              h('td', {}, h('span', { text: x.page_device || x.device }), x.like ? h('span', { class: 'sub', text: `same browser and network as your ${x.like}` }) : null),
+              h('td', { text: x.network }), h('td', { class: 'mono', text: x.ip }), h('td', { text: x.apps })))))));
+      }
       if (r.mine.length) body.append(h('p', { text: `Yours: ${r.mine.map((m) => `${m.name} (${m.visits})`).join(', ')}` }));
       const extra = [r.blocked_attempts && plural(r.blocked_attempts, 'blocked attempt'), r.bots && plural(r.bots, 'bot request'),
         r.probes && plural(r.probes, 'scanner probe'), r.requests.length && plural(r.requests.length, 'access request')].filter(Boolean);
@@ -511,9 +576,11 @@
       ['Came from', d.source || '—'],
       ['Location', h('span', {}, d.place,
         d.area && d.area.map ? h('span', {}, ' · ', h('a', { href: d.area.map, target: '_blank', rel: 'noopener noreferrer', text: `approx. area (${d.area.text}) ↗` })) : null)],
+      ['Network', d.network ? h('span', {}, `${d.network.name}${d.network.what ? ` · ${d.network.what}` : ''}`,
+        h('span', { class: 'sub', text: `${d.network.org} (AS${d.network.asn})` })) : '— (not in Cloudflare\'s log yet)'],
       ['Language', d.language || '—'],
       ['Cloudflare', d.colo ? `${d.colo} data centre` : '—'],
-      ['IPs', h('span', { class: 'mono' }, d.ips.map((p, i) => [i ? h('br') : null, `${p[0]}  ·  ${ago(p[1])}`]).flat())],
+      ['IPs', h('span', { class: 'mono' }, d.ips.map((p, i) => [i ? h('br') : null, [p[0], p[2], ago(p[1])].filter(Boolean).join('  ·  ')]).flat())],
     ];
     const [mineBtn, blockBtn] = deviceActions(d, 'dr-msg');
     const body = clear($('dr-body'));
@@ -542,7 +609,7 @@
 
   // ---------------------------------------------------------------- load loop
   function render() {
-    for (const f of [renderBanner, renderTiles, renderByDevice, renderPerDay, renderDevices, renderActivity, renderRequests, renderBlocklist, renderReports]) {
+    for (const f of [renderBanner, renderTiles, renderByDevice, renderPerDay, renderDevices, renderActivity, renderApps, renderRequests, renderBlocklist, renderReports]) {
       try { f(); } catch (e) { console.error(f.name, e); }
     }
     $('generated').textContent = `Updated ${fTime.format(new Date(D.generated))} IST · refreshes every minute`;
@@ -564,7 +631,8 @@
     load();
   }));
   document.querySelectorAll('.seg button').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.range === range)));
-  document.querySelectorAll('.chips button').forEach((b) => b.addEventListener('click', () => { show = b.dataset.show; if (D) renderActivity(); }));
+  document.querySelectorAll('.chips button[data-show]').forEach((b) => b.addEventListener('click', () => { show = b.dataset.show; if (D) renderActivity(); }));
+  document.querySelectorAll('.chips button[data-apps]').forEach((b) => b.addEventListener('click', () => { appsShow = b.dataset.apps; if (D) renderApps(); }));
   $('perday-toggle').addEventListener('click', (e) => {
     const on = e.currentTarget.getAttribute('aria-pressed') !== 'true';
     e.currentTarget.setAttribute('aria-pressed', String(on));

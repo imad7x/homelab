@@ -7,13 +7,14 @@ core count, memory or disk sizes), plus a one-line "need access? drop your email
 the footer. The tunnel routes the bare domain to
 port 3000. There is no login in front of it, so it is built to have nothing to give away.
 Every page view is logged with the visitor's location, device and IP, and a LAN-only
-dashboard shows them (see Visitor log).
+dashboard shows them (see Visitor log), together with Cloudflare's own log of every
+subdomain (see Cloudflare's log).
 
 | Container | Port | What |
 |---|---|---|
 | landing | 3000 | nginx (unprivileged) serving `site/` and one JSON file |
 | landing-collector | - | writes `state/public/snapshot.json` every minute |
-| landing-visitors | 3011 (LAN only) | visitor dashboard: visits per device, blocklist, weekly reports |
+| landing-visitors | 3011 (LAN only) | visitor dashboard: visits per device, visits to the apps, blocklist, weekly reports; copies Cloudflare's log hourly |
 
 ## How it is split
 
@@ -95,10 +96,12 @@ the healthcheck, the page's own assets and its snapshot polling are not logged.
 - **Command line** (`visitors/visitors.py`, linked as `visitors` in `~/.local/bin`):
 
   ```sh
-  visitors              # latest visits: time, location, device, IP (bots hidden)
+  visitors              # latest visits: time, location, network, device, IP (bots hidden)
   visitors devices      # one line per device, with visit counts
+  visitors apps         # outsiders on the subdomains (--all: everyone, scanners, bots)
   visitors requests     # emails from the footer box
   visitors report       # the latest weekly report
+  visitors pull         # copy Cloudflare's log now instead of waiting for the hour
   visitors --all        # also bots, link previews, scanners and 404 probes
   ```
 
@@ -112,6 +115,42 @@ the healthcheck, the page's own assets and its snapshot polling are not logged.
   `visitors-state/` and `blocklist/` by the dashboard (uid 1000). None of it is published
   or backed up; delete old log months by hand.
 
+## Cloudflare's log
+
+nginx only sees what reaches it. Cloudflare logs every request to the domain and all
+its subdomains, including the ones it answers itself (its login page in front of the
+admin apps, the block rules), and keeps them 31 days on every plan. Every hour the
+dashboard (`visitors/cloudflare.py`) copies the new ones through the GraphQL analytics
+API into `visitors-state/cloudflare/`, for good:
+
+- `networks.json`: IP -> network number, name and country. The dashboard turns it into
+  plain names: Jio mobile or JioFiber (Jio uses one number for both; the address tells
+  them apart), Airtel mobile or Airtel Xstream Fiber (two numbers), ACT Fibernet, Asianet,
+  Vi, cloud servers and VPNs. Mobile data means a shared IP that changes; home broadband
+  means one connection.
+- `apps-YYYY-MM.jsonl`: requests to the subdomains as bursts per IP + browser + subdomain
+  (30 minutes apart = a new one): how many reached the app, stopped at Cloudflare's login
+  or were blocked, sign-in attempts and their result, up to 8 paths, and the Subsonic
+  username music apps send. Query strings are never kept; they carry app tokens.
+- `access-YYYY-MM.jsonl`: sign-ins at Cloudflare's login page (email, IP, app, allowed),
+  which Cloudflare itself keeps only for a short while.
+- `state.json`: how far it got, the last problem, and which paths and emails each app's
+  login lets through (read from the Access apps), to tell your own sign-ins apart.
+
+The dashboard's "Your apps" card groups the bursts into visits (one IP + browser) with
+what happened per app ("stopped at Cloudflare's login", "opened the sign-in page, didn't
+sign in", "used the app (already signed in) as …"). Yours: IPs your marked devices use,
+browsers you mark as Known, getting past the login on apps that let in one email only,
+and music-app accounts seen on your own visits. Cloud servers, VPNs, anyone asking for
+secret files and anything from abroad go to a separate tab; bots are only counted. A
+visit by the same browser string from the same IP or network within 30 minutes of a
+landing-page visit shows up in that device's timeline ("Went to Navidrome: ..."). The
+login brief mentions outsiders on the apps since you last looked.
+
+The token (`cloudflare.env`, `CF_API_TOKEN=`, see `cloudflare.env.example`) needs read
+access only: Zone Analytics and Zone for the requests, Access apps and audit logs for the
+login rules and sign-ins.
+
 ## Restoring
 
 `logs/`, `visitors-state/` and `blocklist/` are not in the repo. Before the first
@@ -120,7 +159,11 @@ the healthcheck, the page's own assets and its snapshot polling are not logged.
 ```sh
 mkdir -p logs blocklist visitors-state/reports && chmod 2775 logs && chmod 700 visitors-state
 ln -sfn "$PWD/visitors/visitors.py" ~/.local/bin/visitors
+cp cloudflare.env.example cloudflare.env && chmod 600 cloudflare.env   # then add the token
 ```
+
+The first hourly copy after a restore fills in Cloudflare's last 30 days; anything older
+than that is gone unless `visitors-state/cloudflare/` was kept.
 
 ## Rollback
 

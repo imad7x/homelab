@@ -262,3 +262,8 @@ details.report summary span { color: var(--ink-2); font-size: 13px; }
 .hit.clicky { cursor: pointer; }
 .mini-h { font-size: 12.5px; font-weight: 600; color: var(--muted); margin: 4px 0 -6px; }
 .form-msg[hidden] { display: none; }
+#apps { min-width: 880px; }
+.app-line { display: block; }
+.app-line + .app-line { margin-top: 3px; }
+.app-line strong { font-weight: 600; }
+.tl li[data-kind="app"]::before { background: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent); }

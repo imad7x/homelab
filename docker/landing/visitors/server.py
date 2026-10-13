@@ -3,7 +3,8 @@
 
 Serves web/ and a small JSON API over visitors.py: who visited, visits per device,
 marking devices as yours, the blocklist nginx enforces, and the weekly reports, which
-it writes every Monday for the week before.
+it writes every Monday for the week before. Every hour it also copies Cloudflare's log
+(cloudflare.py): the network each visitor came from and the visits to the subdomains.
 
 Only the Host names in ALLOWED_HOSTS are answered (stops DNS-rebinding pages reading it
 through a browser on the LAN), and changes need the page's own header and origin.
@@ -13,6 +14,7 @@ from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
 
+import cloudflare
 import visitors as V
 
 WEB = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'web')
@@ -33,15 +35,30 @@ def iso(t):
     return t.isoformat(timespec='seconds') if t else None
 
 
+def net_json(n):
+    return {k: n[k] for k in ('name', 'kind', 'what', 'org', 'asn')} if n else None
+
+
 def device_json(x):
     return {
         'key': x['key'], 'name': x['name'], 'auto': x['auto'], 'mine': x['mine'], 'cookie': x['cookie'],
         'visits': x['visits'], 'visits_all': x['visits_all'], 'attempts': x['attempts'],
         'first': iso(x['first']), 'last': iso(x['last']), 'active': iso(x['active']), 'ip': x['ip'],
         'place': x['place'], 'area': x['area'], 'source': x['source'], 'language': x['language'], 'colo': x['colo'],
-        'ips': sorted(([ip, iso(t)] for ip, t in x['ips'].items()), key=lambda p: p[1], reverse=True),
+        'ips': sorted(([ip, iso(t), (x['networks'].get(ip) or {}).get('name', '')] for ip, t in x['ips'].items()),
+                      key=lambda p: p[1], reverse=True),
         'places': list(x['places']), 'blocked': x['blocked'], 'your_network': x['your_network'],
+        'network': net_json(x['network']),
     }
+
+
+def app_json(v):
+    return {'when': iso(v['when']), 'until': iso(v['until']), 'ip': v['ip'], 'country': v['cc'],
+            'network': net_json(v['network']), 'device': v['device'], 'page_device': v['page_device'],
+            'cat': v['cat'], 'why': v['why'], 'like': v['like'], 'emails': v['emails'], 'key': v['ukey'],
+            'label': v['label'].get('name', ''), 'marked': bool(v['label'].get('mine')), 'n': v['n'],
+            'apps': [{'name': x['name'], 'host': x['host'], 'outcome': x['outcome'], 'n': x['n'],
+                      'paths': x['paths'][:6], 'when': iso(x['when'])} for x in v['apps']]}
 
 
 def data(rng):
@@ -65,6 +82,7 @@ def data(rng):
             series[k][0 if v['mine'] else 1] += 1
 
     asks = V.requests(start)
+    apps = V.app_visits(a, start)
     return {
         'generated': iso(now), 'range': rng, 'tz': 'Asia/Kolkata',
         'totals': {
@@ -76,11 +94,17 @@ def data(rng):
             'bots': sum(1 for r in a['others'] if r['bot']),
             'probes': sum(1 for r in a['others'] if not r['bot']),
             'requests': sum(1 for r in asks if r['valid']),
+            'apps_outsiders': sum(1 for v in apps if v['cat'] == 'outsider'),
+            'apps_like': sum(1 for v in apps if v['cat'] == 'outsider' and v['like']),
+            'apps_yours': sum(1 for v in apps if v['cat'] == 'yours'),
+            'apps_noise': sum(1 for v in apps if v['cat'] == 'noise'),
+            'apps_bots': sum(1 for v in apps if v['cat'] == 'bot'),
         },
         'devices': [device_json(x) for x in devices],
         'days': [[k, m, u] for k, (m, u) in series.items()],
         'visits': [{'when': iso(v['when']), 'key': v['key'], 'name': v['name'], 'mine': v['mine'],
                     'device': v['device'], 'place': v['place'], 'ip': v.get('ip', ''), 'source': v['source'],
+                    'network': net_json(v['network']),
                     'open_s': v['open_s'], 'open_partial': v.get('open_partial', False), 'language': v['language'], 'colo': v['colo']}
                    for v in a['visits'][-300:][::-1]],
         'others': [{'when': iso(r['when']), 'label': r['device'], 'bot': r['bot'], 'place': r['place'],
@@ -93,6 +117,8 @@ def data(rng):
                       'device': r['device'], 'ip': r.get('ip', '')} for r in asks[::-1]],
         'blocklist': a['blocklist'],
         'reports': V.reports()[:12],
+        'apps': [app_json(v) for cat in ('outsider', 'yours', 'noise') for v in [x for x in apps if x['cat'] == cat][:200]],
+        'cloudflare': V.pulled(),
     }
 
 
@@ -234,7 +260,18 @@ def reporter():
         time.sleep(600)
 
 
+def puller():
+    """Copy Cloudflare's log every hour (the first run fills in the last 30 days)."""
+    while True:
+        try:
+            print(f'{datetime.now(V.IST):%Y-%m-%d %H:%M} cloudflare: {cloudflare.pull()}', flush=True)
+        except Exception as e:  # keep the dashboard up whatever Cloudflare's API does
+            print(f'cloudflare pull failed: {e!r}', flush=True)
+        time.sleep(3600)
+
+
 if __name__ == '__main__':
     threading.Thread(target=reporter, daemon=True).start()
+    threading.Thread(target=puller, daemon=True).start()
     print(f'visitors dashboard on :8080 for {sorted(ALLOWED)}', flush=True)
     ThreadingHTTPServer(('0.0.0.0', 8080), Handler).serve_forever()

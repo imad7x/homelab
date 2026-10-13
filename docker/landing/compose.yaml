@@ -90,6 +90,8 @@ services:
       - PYTHONDONTWRITEBYTECODE=1
       # Host headers it answers to (blocks DNS-rebinding pages on the LAN).
       - ALLOWED_HOSTS=192.168.0.10:3011,lab:3011,localhost:3011
+    env_file:
+      - cloudflare.env   # CF_API_TOKEN, read-only: copies Cloudflare's log every hour
     read_only: true
     tmpfs:
       - /tmp

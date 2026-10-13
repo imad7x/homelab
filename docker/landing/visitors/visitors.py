@@ -9,8 +9,10 @@ and the engine behind the LAN dashboard (server.py, port 3011).
   visitors             latest visits, newest first (bots and scanners hidden)
   visitors -n 100      more of them
   visitors devices     one line per device, with visit counts
+  visitors apps        visits to the subdomains, from Cloudflare's log (cloudflare.py)
   visitors requests    emails left in the footer's "need access?" box
   visitors report      the latest weekly report (Monday to Sunday)
+  visitors pull        fetch Cloudflare's log now (the dashboard does it every hour)
   visitors --all       include bots, link previews, scanners and 404 probes
 
 A device is a browser: the random `vid` cookie the page hands out or, for a browser that
@@ -18,7 +20,9 @@ never sends it back (a one-off visit, a private window, a bot), its IP + user ag
 Names and "this is me" marks live in ../visitors-state/labels.json; the blocklist in
 ../visitors-state/blocklist.json, from which ../blocklist/*.conf is written for nginx.
 Location is Cloudflare's estimate for the IP address (city level), never the device's
-real position.
+real position. The network (Jio mobile, Airtel Xstream Fiber, ...) and the visits to the
+subdomains come from Cloudflare's own log, which cloudflare.py copies into
+../visitors-state/cloudflare/ every hour.
 """
 import argparse, glob, hashlib, ipaddress, json, os, re, sys, urllib.parse
 from datetime import datetime, timedelta, timezone
@@ -42,7 +46,7 @@ PREVIEWS = [('whatsapp', 'WhatsApp'), ('telegrambot', 'Telegram'), ('slack', 'Sl
     ('googleother', 'Google')]
 BOT = re.compile(r'bot|crawl|spider|slurp|scan|curl|wget|python|go-http|java/|okhttp|httpclient|'
     r'headless|zgrab|masscan|nmap|nikto|censys|expanse|libwww|axios|node-fetch|preview|fetch|monitor|'
-    r'selftest', re.I)
+    r'selftest|cve-|probes', re.I)
 BROWSERS = [(r'EdgA?/(\d+)|EdgiOS/(\d+)', 'Edge'), (r'OPR/(\d+)|OPiOS/(\d+)', 'Opera'),
     (r'SamsungBrowser/(\d+)', 'Samsung Internet'), (r'Firefox/(\d+)|FxiOS/(\d+)', 'Firefox'),
     (r'CriOS/(\d+)', 'Chrome'), (r'Chrome/(\d+)', 'Chrome'), (r'Version/(\d+)[\d.]* (?:Mobile/\w+ )?Safari/', 'Safari')]
@@ -61,11 +65,14 @@ IPHONES = {
     'iPhone18,2': 'iPhone 17 Pro Max', 'iPhone18,3': 'iPhone 17', 'iPhone18,4': 'iPhone Air',
 }
 # Smart TVs and streaming sticks; their user agents otherwise read as plain Linux/Android.
-TVS = [(r'NetCast|Web0S|webOS', 'LG smart TV'), (r'Tizen.*TV|SMART-TV.*Samsung', 'Samsung smart TV'),
+TVS = [(r'NetCast|Web0S|webOS', 'LG smart TV'), (r'Tizen.*TV|SMART-TV.*Samsung|TizenClient', 'Samsung smart TV'),
        (r'BRAVIA', 'Sony Bravia TV'), (r'AFT[A-Z]', 'Fire TV'), (r'CrKey', 'Chromecast'),
        (r'GoogleTV|Android TV|; TV\b', 'Android TV'), (r'SmartTV|SMART-TV|HbbTV', 'Smart TV')]
 IN_APP = [(r'Instagram', 'Instagram'), (r'FBAN|FBAV', 'Facebook'), (r'LinkedInApp', 'LinkedIn'),
-    (r'Snapchat', 'Snapchat'), (r'\bLine/', 'LINE'), (r'GSA/', 'Google app')]
+    (r'Snapchat', 'Snapchat'), (r'\bLine/', 'LINE'), (r'GSA/', 'Google app'),
+    # Media apps talking to the subdomains (Cloudflare's log)
+    (r'Jellyfin', 'Jellyfin'), (r'Moonfin', 'Moonfin'), (r'Symfonium', 'Symfonium'), (r'Finamp', 'Finamp'),
+    (r'Substreamer', 'Substreamer')]
 
 
 def unquote(v):
@@ -189,6 +196,69 @@ def colo(r):
     """Cloudflare data centre that served the visit (from the CF-Ray id, e.g. BLR, BOM)."""
     m = re.search(r'-([A-Z]{3})$', r.get('ray') or '')
     return m.group(1) if m else ''
+
+
+# ---------------------------------------------------------------- networks
+# Cloudflare tags every request with the network it came from: its AS number and the
+# name it is registered under (cloudflare.py keeps them in networks.json). Plain names for
+# the usual Indian ones; where an operator runs mobile data and home broadband as separate
+# networks, the number tells them apart.
+NETWORKS = {
+    45609: ('Airtel mobile', 'mobile'), 24560: ('Airtel Xstream Fiber', 'home'),
+    24309: ('ACT Fibernet', 'home'), 17465: ('Asianet Broadband', 'home'),
+    38266: ('Vi mobile', 'mobile'), 55410: ('Vi mobile', 'mobile'), 9829: ('BSNL', ''),
+    17488: ('Hathway', 'home'), 133982: ('Excitel', 'home'),
+}
+# Jio runs both on one number (55836); the address says which. 152.56.0.0/14 is its mobile
+# data pool (shared by many phones at once).
+JIO = 55836
+JIO_FIBER = [ipaddress.ip_network('2405:201::/32')]
+JIO_MOBILE = [ipaddress.ip_network('2409:4000::/22'), ipaddress.ip_network('152.56.0.0/14')]
+# Apple's iCloud Private Relay leaves through these, so a Safari user can show up here.
+RELAY = re.compile(r'akamai|cloudflare|fastly', re.I)
+CLOUD = re.compile(r'google|amazon|microsoft|digitalocean|oracle|linode|ovh|hetzner|contabo|alibaba|tencent|'
+                   r'vultr|choopa|leaseweb|m247|datacamp|hostroyale|hostinger|scaleway|hosting|datacenter|'
+                   r'data center|vps', re.I)
+KINDS = {'mobile': 'mobile data', 'home': 'home or office broadband', 'cloud': 'cloud server or VPN'}
+
+
+def short_org(org):
+    name = re.split(r',| AS for | - ', org or '')[0]
+    name = re.sub(r'\b(LLC|L\.L\.C\.|Inc\.?|Ltd\.?|Limited|Corporation|Corp\.?|Pvt\.?|Private|GmbH|B\.V\.|SAS|S\.A\.)(?=\s|$)',
+                  '', name).strip(' .')
+    return re.sub(r'\.com$', '', name)[:40] or 'Unknown network'
+
+
+def networks():
+    return read_json(os.path.join(STATE, 'cloudflare', 'networks.json'), {})
+
+
+def network(ip, nets):
+    """{'name': 'Jio mobile', 'kind': 'mobile', 'org': ..., 'asn': 55836} for an IP
+    Cloudflare has seen, else None."""
+    rec = nets.get(ip or '')
+    if not rec:
+        return None
+    asn, org = int(rec[0] or 0), rec[1] or ''
+    name, kind = NETWORKS.get(asn, (None, ''))
+    if asn == JIO:
+        try:
+            addr = ipaddress.ip_address(ip)
+        except ValueError:
+            addr = None
+        if addr and any(addr in n for n in JIO_FIBER):
+            name, kind = 'JioFiber', 'home'
+        elif addr and any(addr in n for n in JIO_MOBILE):
+            name, kind = 'Jio mobile', 'mobile'
+        else:
+            name = 'Jio'
+    elif name is None:
+        name = short_org(org)
+        if RELAY.search(org):
+            name, kind = f'{name} (iCloud Private Relay or VPN)', 'cloud'
+        elif CLOUD.search(org):
+            kind = 'cloud'
+    return {'name': name, 'kind': kind, 'what': KINDS.get(kind, ''), 'org': org, 'asn': asn}
 
 
 # ---------------------------------------------------------------- state files
@@ -449,18 +519,22 @@ def analyse(start=None, end=None, rows=None):
         d['blocked'] = is_blocked(blocks, d['key'][2:] if d['cookie'] else None, d['ip'])
         if d['mine']:
             mine_ips.update(d['ips'])
+    nets = networks()
     for d in devices.values():
         d['your_network'] = not d['mine'] and bool(mine_ips & set(d['ips']))
+        d['network'] = network(d['ip'], nets)
+        d['networks'] = {ip: network(ip, nets) for ip in d['ips']}
     for v in visits:
         d = devices[v['key']]
         v['name'], v['mine'] = d['name'], d['mine']
+        v['network'] = network(v.get('ip'), nets)
 
     shown = [d for d in devices.values() if d['visits'] or d['attempts']]
     shown.sort(key=lambda d: d['last'], reverse=True)
     others = [r for r in rows if inside(r) and not r['blocked'] and (r['bot'] or not r['page'])]
     attempts = [r for r in rows if inside(r) and r['blocked']]
     return {'devices': shown, 'visits': visits, 'others': others, 'attempts': attempts,
-            'all_devices': devices, 'blocklist': blocks}
+            'all_devices': devices, 'blocklist': blocks, 'mine_ips': mine_ips, 'rows': rows, 'nets': nets}
 
 
 SECTIONS = {'apps': 'Looked at the apps', 'vitals': 'Scrolled to server vitals',
@@ -533,6 +607,13 @@ def activity(key):
         else:
             runs.append([p['ts'], p['ts'], 1])
     steps += [(a, b, 'alive', n, None) for a, b, n in runs if b - a >= 60]   # text slot carries the count
+    # The same browser on the subdomains (Cloudflare's log): tapping an app tile, or typing one in.
+    for v in app_visits(a):
+        if v['page_device'] and v['page_device']['key'] == key:
+            net = v['network']['name'] if v['network'] else ''
+            for app in v['apps']:
+                steps.append((app['when'].timestamp(), None, 'app', f"Went to {app['name']} ({app['host']}): {app['outcome']}",
+                              {'ip': v['ip'], 'place': net}))
     steps.sort(key=lambda x: x[0])
 
     sessions, cur = [], None
@@ -556,8 +637,8 @@ def activity(key):
         cur['items'].append({'t': datetime.fromtimestamp(ts, IST).isoformat(timespec='seconds'),
                              'end': datetime.fromtimestamp(end, IST).isoformat(timespec='seconds') if end else None,
                              'kind': kind, 'text': text,
-                             'where': r['place'] if r is not None and kind == 'load' else None,
-                             'ip': r.get('ip') if r is not None and kind == 'load' else None})
+                             'where': r['place'] if r is not None and kind in ('load', 'app') else None,
+                             'ip': r.get('ip') if r is not None and kind in ('load', 'app') else None})
     out = []
     for c in reversed(sessions[-50:]):
         out.append({'start': datetime.fromtimestamp(c['start_ts'], IST).isoformat(timespec='seconds'),
@@ -577,6 +658,222 @@ def requests(start=None, end=None):
     return out
 
 
+# ---------------------------------------------------------------- the apps (subdomains)
+# What cloudflare.py pulled: bursts of requests per IP + browser + subdomain. Grouped here
+# into app visits (one IP + browser, any subdomains, 30 min gap) and matched to a device
+# from the page's own log when the same browser came from the same IP or network.
+APP_GAP = 1800
+# Asking for these is never a person: secret files, WordPress, PHP.
+PROBE = re.compile(r'/\.(env|git|aws|ssh|docker|npmrc|svn|htpasswd)|wp-(admin|login|content|includes)|'
+                   r'phpmyadmin|xmlrpc|\.php', re.I)
+SIGNED_IN = re.compile(r'authenticatebyname|/auth/login$|/api/v2/auth/login', re.I)
+
+
+def cf_rows(kind):
+    """Rows cloudflare.py saved; a window pulled twice (a run that died before saving its
+    progress) gives identical lines, which are read once."""
+    out, seen_lines = [], set()
+    for path in sorted(glob.glob(os.path.join(STATE, 'cloudflare', f'{kind}-*.jsonl'))):
+        with open(path, encoding='utf-8', errors='replace') as fh:
+            for line in fh:
+                if line in seen_lines:
+                    continue
+                seen_lines.add(line)
+                try:
+                    r = json.loads(line)
+                    r['ts'] = datetime.fromisoformat((r.get('s') or r['t']).replace('Z', '+00:00')).timestamp()
+                except (ValueError, KeyError, TypeError, AttributeError):
+                    continue
+                out.append(r)
+    out.sort(key=lambda r: r['ts'])
+    return out
+
+
+def app_bursts():
+    """Bursts with the ones split by the hourly pull joined back together."""
+    merged, last = [], {}
+    for b in cf_rows('apps'):
+        b['te'] = datetime.fromisoformat(b['e'].replace('Z', '+00:00')).timestamp()
+        k = (b.get('ip'), b.get('ua'), b.get('host'))
+        prev = last.get(k)
+        if prev and b['ts'] - prev['te'] <= APP_GAP:
+            for f in ('n', 'server', 'gate', 'blocked', 'used'):
+                prev[f] = prev.get(f, 0) + b.get(f, 0)
+            prev['te'], prev['e'] = max(prev['te'], b['te']), b['e']
+            prev['paths'] += [p for p in b.get('paths', []) if p not in prev['paths']][:max(0, 8 - len(prev['paths']))]
+            prev['auth'] += b.get('auth', [])
+            prev['users'] += [u for u in b.get('users', []) if u not in prev['users']]
+            continue
+        last[k] = b
+        merged.append(b)
+    return merged
+
+
+def app_hosts():
+    """Subdomain -> app name, from the public page's tiles."""
+    try:
+        with open(os.path.join(BASE, 'site', 'index.html'), encoding='utf-8') as fh:
+            html = fh.read()
+    except OSError:
+        return {}
+    pairs = re.findall(r'href="(https://[^"]+)"[^>]*>(?:(?!</a>).)*?<span class="app-name">([^<]+)</span>', html, re.S)
+    return {(urllib.parse.urlsplit(href).hostname or ''): name.strip() for href, name in pairs}
+
+
+def allowed_for(host, allowed):
+    """Emails Cloudflare's login lets into a subdomain: its own app's rules, else the
+    wildcard app's. None when the rules are not a list of single emails."""
+    if host in allowed:
+        return allowed[host]
+    return allowed.get('*.' + host.split('.', 1)[1]) if '.' in host else None
+
+
+def got_in(b, gated, public):
+    """True when a burst got past Cloudflare's login, not just into the parts it leaves open."""
+    if not (b.get('server') and b['host'] in gated):
+        return False
+    open_paths = public.get(b['host'], [])
+    return not (b.get('paths') and all(any(p.startswith(o) for o in open_paths) for p in b['paths']))
+
+
+def outcome(b, gated, public, emails):
+    """What came of one subdomain in a visit, in a few words."""
+    ok = [x for x in b.get('auth', []) if SIGNED_IN.search(x[1]) and 200 <= int(x[2]) < 300]
+    bad = [x for x in b.get('auth', []) if int(x[2]) in (400, 401, 403)]
+    who = f" as {', '.join(b['users'])}" if b.get('users') else ''
+    if got_in(b, gated, public):
+        return f"got past Cloudflare's login{' as ' + ', '.join(emails) if emails else ''}"
+    if b.get('server') and b['host'] in gated:
+        return f"opened only its public part ({', '.join(b['paths'][:2])})"
+    if ok:
+        return 'signed in' + who + (f' (after {len(bad)} failed tries)' if bad else '')
+    if bad:
+        return f"failed to sign in{f' {len(bad)} times' if len(bad) > 1 else ''}"
+    if b.get('used'):
+        return 'used the app (already signed in)' + who
+    if b.get('server'):
+        return "opened the sign-in page, didn't sign in"
+    if b.get('gate'):
+        return "stopped at Cloudflare's login"
+    if b.get('blocked'):
+        return 'blocked by Cloudflare'
+    return 'only redirected'
+
+
+def app_visits(a=None, start=None, end=None):
+    """App visits in [start, end), newest first, each with its network, the page device it
+    belongs to (if any) and who it most likely is: 'yours', 'outsider', 'noise' (cloud
+    servers and VPNs, secret-file hunting, abroad and blocked) or 'bot'.
+
+    Yours: an IP your marked devices used, a browser + IP marked as known, or getting past
+    Cloudflare's login on apps that let in one email only. 'like' names the device of yours
+    with the same browser on the same network, a hint rather than proof: many phones share
+    a browser string."""
+    a = analyse() if a is None else a
+    nets, names, hosts = a['nets'], labels(), app_hosts()
+    bursts = app_bursts()
+    gated = {b['host'] for b in bursts if b.get('gate')}
+    rules = read_json(os.path.join(STATE, 'cloudflare', 'state.json'), {})
+    public, allowed = rules.get('public', {}), rules.get('allowed', {})
+    logins = cf_rows('access')
+    devices = a['all_devices']
+    mine_ips = {r.get('ip') for r in a['rows'] if devices.get(r['key'], {}).get('mine')}
+    asn = lambda ip: (nets.get(ip) or [0])[0]
+    page = {}   # page loads and probes by browser string, to find the device an app visit belongs to
+    for r in a['rows']:
+        if not r['bot'] and r['key'] in devices:
+            page.setdefault(r.get('ua'), []).append(r)
+    mine_like = {}  # (browser, network) your devices have used -> a name for it
+    for r in a['rows']:
+        d = devices.get(r['key'])
+        if d and d['mine'] and asn(r.get('ip')):
+            mine_like[(r.get('ua'), asn(r.get('ip')))] = d['name']
+
+    visits, last = [], {}
+    for b in bursts:
+        k = (b.get('ip'), b.get('ua'))
+        v = last.get(k)
+        if v is None or b['ts'] - v['te'] > APP_GAP:
+            v = last[k] = {'ts': b['ts'], 'te': b['te'], 'ip': k[0], 'ua': k[1], 'cc': b.get('cc', ''), 'bursts': []}
+            visits.append(v)
+        v['bursts'].append(b)
+        v['te'] = max(v['te'], b['te'])
+
+    for v in visits:
+        ip, ua = v['ip'], v['ua']
+        v['when'], v['until'] = datetime.fromtimestamp(v['ts'], IST), datetime.fromtimestamp(v['te'], IST)
+        v['network'] = network(ip, nets)
+        v['device'], v['bot'] = device({'ua': ua})
+        v['ukey'] = 'u:' + hashlib.sha1(f'{ip}|{ua}'.encode()).hexdigest()[:16]
+        near = [r for r in page.get(ua, []) if v['ts'] - APP_GAP <= r['ts'] <= v['te'] + APP_GAP
+                and (r.get('ip') == ip or (asn(ip) and asn(r.get('ip')) == asn(ip)))]
+        match = devices.get(min(near, key=lambda r: abs(r['ts'] - v['ts']))['key']) if near else None
+        v['page_device'] = {'key': match['key'], 'name': match['name'], 'mine': match['mine']} if match else None
+        v['emails'] = sorted({x['email'] for x in logins if x.get('ip') == ip and x.get('email')
+                              and v['ts'] - 3600 <= x['ts'] <= v['te'] + 600})
+        v['apps'] = [{'host': b['host'], 'name': hosts.get(b['host'], b['host'].split('.')[0]),
+                      'outcome': outcome(b, gated, public, v['emails']), 'n': b.get('n', 0), 'paths': b.get('paths', []),
+                      'when': datetime.fromtimestamp(b['ts'], IST)} for b in v['bursts']]
+        v['n'] = sum(b.get('n', 0) for b in v['bursts'])
+        inside = [allowed_for(b['host'], allowed) for b in v['bursts'] if got_in(b, gated, public)]
+        only = sorted({e[0] for e in inside if e and len(e) == 1})
+        v['label'] = names.get(v['ukey'], {})
+        if v['bot']:
+            v['cat'], v['why'] = 'bot', v['device']
+        elif ip in mine_ips or v['label'].get('mine') or (match and match['mine']):
+            v['cat'], v['why'] = 'yours', v['label'].get('name', '')
+        elif inside and len(only) == 1 and all(e and len(e) == 1 for e in inside):
+            v['cat'], v['why'] = 'yours', f"got past Cloudflare's login, which lets in {only[0]} only"
+        else:
+            v['cat'] = None
+    # Music-app accounts (Subsonic usernames) seen from your own visits are yours anywhere.
+    my_users = {u for v in visits if v['cat'] == 'yours' for b in v['bursts'] for u in b.get('users', [])}
+    for v in visits:
+        users = {u for b in v['bursts'] for u in b.get('users', [])}
+        if v['cat'] is None and users and users <= my_users:
+            v['cat'], v['why'] = 'yours', f"used your account ({', '.join(sorted(users))})"
+        if v['cat'] == 'yours' and asn(v['ip']):
+            mine_like.setdefault((v['ua'], asn(v['ip'])), v['page_device']['name'] if v['page_device'] else v['device'])
+
+    out = []
+    for v in visits:
+        if (start and v['te'] < start.timestamp()) or (end and v['ts'] >= end.timestamp()):
+            continue
+        v['like'] = None if v['cat'] == 'yours' else mine_like.get((v['ua'], asn(v['ip'])))
+        probes = any(PROBE.search(p) for b in v['bursts'] for p in b.get('paths', []))
+        reached = any(b.get('server') for b in v['bursts'])  # before the abroad block (28 Sep) some got through
+        if v['cat'] in ('yours', 'bot'):
+            pass
+        elif probes:
+            v['cat'], v['why'] = 'noise', 'asked for secret files or WordPress pages'
+        elif v['network'] and v['network']['kind'] == 'cloud':
+            v['cat'], v['why'] = 'noise', 'from a cloud server or VPN'
+        elif v['cc'] not in ('IN', ''):
+            v['cat'], v['why'] = 'noise', 'from abroad' + ('' if reached else ', blocked by Cloudflare')
+        else:
+            v['cat'], v['why'] = 'outsider', ''
+        out.append(v)
+    out.sort(key=lambda v: v['ts'], reverse=True)
+    return out
+
+
+def app_line(v):
+    """'Navidrome: opened the sign-in page; Sonarr: stopped at ...' for one app visit."""
+    parts = []
+    for app in v['apps']:
+        if parts and parts[-1][1] == app['outcome']:
+            parts[-1][0].append(app['name'])
+        else:
+            parts.append([[app['name']], app['outcome']])
+    return '; '.join(f"{', '.join(n)}: {o}" for n, o in parts)
+
+
+def pulled():
+    """When the Cloudflare data was last brought in, and the last problem, for the page."""
+    st = read_json(os.path.join(STATE, 'cloudflare', 'state.json'), {})
+    return {'ok': st.get('ok'), 'until': st.get('until'), 'error': st.get('error'), 'tried': st.get('tried')}
+
+
 # ---------------------------------------------------------------- weekly reports
 def week_start(t):
     t = t.astimezone(IST)
@@ -589,12 +886,23 @@ def week_label(start):
     return f'{left}–{end.day} {end:%b %Y}'
 
 
+def app_summary(v):
+    return {'when': v['when'].isoformat(timespec='minutes'), 'until': v['until'].isoformat(timespec='minutes'),
+            'device': v['device'], 'page_device': (v['page_device'] or {}).get('name'),
+            'network': v['network']['name'] if v['network'] else '', 'ip': v['ip'], 'country': v['cc'],
+            'apps': app_line(v), 'emails': v['emails'], 'like': v['like']}
+
+
 def make_report(start, rows=None):
     end = start + timedelta(days=7)
     a = analyse(start, end, rows)
     people = a['devices']
     unknown = [d for d in people if not d['mine'] and d['visits']]
+    apps = app_visits(a, start, end)
     return {
+        'apps': [app_summary(v) for v in apps if v['cat'] == 'outsider'][::-1],
+        'apps_yours': sum(1 for v in apps if v['cat'] == 'yours'),
+        'apps_noise': sum(1 for v in apps if v['cat'] in ('noise', 'bot')),
         'week': start.date().isoformat(), 'label': week_label(start),
         'generated': datetime.now(IST).isoformat(timespec='seconds'),
         'visits': len(a['visits']), 'devices': sum(1 for d in people if d['visits']),
@@ -665,6 +973,12 @@ def brief():
                      f"({n} visit{'s' * (n != 1)}, latest from {unknown[0]['place']})")
     else:
         parts.append('no unknown devices since you last looked')
+    # Ones with the same browser and network as a device of yours wait for the dashboard.
+    outsiders = [v for v in app_visits(a, since) if v['cat'] == 'outsider' and not v['like']]
+    if outsiders:
+        level, v = 'warn', outsiders[0]
+        parts.append(f"{len(outsiders)} outsider visit{'s' * (len(outsiders) != 1)} to your apps "
+                     f"(latest: {app_line(v)[:70]}, {v['network']['name'] if v['network'] else v['ip']})")
     latest = reports()
     if latest and latest[0]['week'] != s.get('report'):
         r = latest[0]
@@ -714,6 +1028,11 @@ def print_report(r):
         table(['UNKNOWN DEVICE', 'VISITS', 'WHERE', 'IPS', 'LAST SEEN'],
               [[d['name'], d['visits'], ', '.join(d['places']), ', '.join(d['ips'][:3]),
                 stamp(datetime.fromisoformat(d['last']))] for d in r['unknown']])
+    if r.get('apps'):
+        print('\nOutsiders on your apps (subdomains):')
+        table(['TIME (IST)', 'DEVICE', 'NETWORK', 'IP', 'WHAT HAPPENED'],
+              [[stamp(datetime.fromisoformat(x['when'])), x['page_device'] or x['device'], x['network'], x['ip'],
+                x['apps'][:90]] for x in r['apps']])
     extra = [f"{r['blocked_attempts']} blocked attempt(s)" if r['blocked_attempts'] else '',
              f"{r['bots']} bot request(s)" if r['bots'] else '',
              f"{r['probes']} scanner probe(s)" if r['probes'] else '',
@@ -724,13 +1043,32 @@ def print_report(r):
 
 def main():
     ap = argparse.ArgumentParser(description='Visitors to the public landing page.')
-    ap.add_argument('view', nargs='?', choices=['devices', 'requests', 'report', 'brief'])
+    ap.add_argument('view', nargs='?', choices=['devices', 'apps', 'requests', 'report', 'brief', 'pull'])
     ap.add_argument('-n', type=int, default=30, help='how many lines (default 30)')
     ap.add_argument('--all', action='store_true', help='include bots, scanners and 404s')
     a = ap.parse_args()
 
     if a.view == 'brief':
         print(brief())
+        return
+    if a.view == 'pull':
+        import cloudflare
+        print(cloudflare.pull())
+        return
+    if a.view == 'apps':
+        av = [v for v in app_visits() if a.all or v['cat'] == 'outsider'][:a.n]
+        if not av:
+            print('No visits to the subdomains in the Cloudflare data (`visitors pull` fetches it).')
+            return
+        table(['TIME (IST)', 'WHO', 'DEVICE', 'NETWORK', 'IP', 'WHAT HAPPENED'],
+              [[stamp(v['when']), (f"outsider (like your {v['like']})"[:40] if v['like'] else v['cat'])
+                if v['cat'] in ('outsider', 'yours') else v['why'][:28],
+                (v['page_device'] or {}).get('name') or v['device'],
+                v['network']['name'] if v['network'] else '?', v['ip'], app_line(v)[:90]] for v in av])
+        p = pulled()
+        print(f"\nCloudflare data up to {p['until'] or 'never'} UTC"
+              + (f" · last problem: {p['error']}" if p.get('error') else '')
+              + ('' if a.all else " · yours, cloud servers, scanners and bots hidden (--all)"))
         return
     if a.view == 'requests':
         asks = [r for r in requests() if a.all or r['valid']][-a.n:][::-1]
@@ -767,8 +1105,9 @@ def main():
                 ('BLOCKED ' if r['blocked'] else '') + f"{r.get('status', '')} {r.get('path', '')[:40]}"]
                for r in rows[-a.n:][::-1]])
     else:
-        table(['TIME (IST)', 'LOCATION', 'DEVICE', 'FROM', 'OPEN', 'IP', ''],
-              [[stamp(v['when']), v['place'], v['name'], v['source'], duration(v['open_s'], v.get('open_partial')), v.get('ip', ''),
+        table(['TIME (IST)', 'LOCATION', 'NETWORK', 'DEVICE', 'FROM', 'OPEN', 'IP', ''],
+              [[stamp(v['when']), v['place'], v['network']['name'] if v['network'] else '', v['name'], v['source'],
+                duration(v['open_s'], v.get('open_partial')), v.get('ip', ''),
                 'yours' if v['mine'] else ''] for v in res['visits'][-a.n:][::-1]])
 
     day = datetime.now(IST) - timedelta(hours=24)
