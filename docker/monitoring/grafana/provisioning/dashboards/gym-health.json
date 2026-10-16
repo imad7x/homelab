@@ -1311,8 +1311,8 @@
     },
     {
       "type": "timeseries",
-      "title": "Heart rate (last 2 days)",
-      "description": "Per minute. Gaps are the times the watch was off your wrist.",
+      "title": "Heart rate by the minute",
+      "description": "Every minute the watch was on (the last 60 days are kept). Follows the time picker: drag across the chart to zoom into a day or an hour. Gaps are the times the watch was off your wrist. The gym app's Health > Heart rate shows one day at a time with sleep and workouts marked.",
       "datasource": {
         "type": "frser-sqlite-datasource",
         "uid": "gym-health"
@@ -1341,7 +1341,7 @@
           },
           "custom": {
             "drawStyle": "line",
-            "lineWidth": 2,
+            "lineWidth": 1,
             "fillOpacity": 10,
             "gradientMode": "none",
             "showPoints": "never",
@@ -1373,11 +1373,128 @@
           "sort": "none"
         }
       },
-      "timeFrom": "2d",
       "id": 19,
       "gridPos": {
         "x": 0,
         "y": 36,
+        "w": 24,
+        "h": 9
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Heart rate per day",
+      "description": "Resting = lowest 30-minute average asleep; average awake = every worn minute outside sleep (days with an hour of it at least); peak = the day's highest minute.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "gym-health"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "gym-health"
+          },
+          "queryType": "table",
+          "queryText": "SELECT time, hr_max AS \"Peak\", hr_awake AS \"Average awake\", rhr AS \"Resting\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "rawQueryText": "SELECT time, hr_max AS \"Peak\", hr_awake AS \"Average awake\", rhr AS \"Resting\" FROM days WHERE time >= $__from / 1000 AND time <= $__to / 1000 ORDER BY time",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bpm",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#3987e5"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "showPoints": "always",
+            "pointSize": 6,
+            "spanNulls": false,
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            }
+          },
+          "noValue": "No data",
+          "decimals": 0
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Average awake"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3987e5"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Peak"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d95926"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Resting"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#199e70"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "transformations": [],
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "id": 20,
+      "gridPos": {
+        "x": 0,
+        "y": 45,
         "w": 16,
         "h": 8
       }
@@ -1462,22 +1579,22 @@
           "sort": "none"
         }
       },
-      "id": 20,
+      "id": 21,
       "gridPos": {
         "x": 16,
-        "y": 36,
+        "y": 45,
         "w": 8,
         "h": 8
       }
     },
     {
       "type": "row",
-      "id": 21,
+      "id": 22,
       "title": "Training",
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 44,
+        "y": 53,
         "w": 24,
         "h": 1
       },
@@ -1564,10 +1681,10 @@
           "sort": "none"
         }
       },
-      "id": 22,
+      "id": 23,
       "gridPos": {
         "x": 0,
-        "y": 45,
+        "y": 54,
         "w": 8,
         "h": 8
       }
@@ -1637,10 +1754,10 @@
           "sort": "none"
         }
       },
-      "id": 23,
+      "id": 24,
       "gridPos": {
         "x": 8,
-        "y": 45,
+        "y": 54,
         "w": 8,
         "h": 8
       }
@@ -1710,10 +1827,10 @@
           "sort": "none"
         }
       },
-      "id": 24,
+      "id": 25,
       "gridPos": {
         "x": 16,
-        "y": 45,
+        "y": 54,
         "w": 8,
         "h": 8
       }
@@ -1843,10 +1960,10 @@
           "sort": "none"
         }
       },
-      "id": 25,
+      "id": 26,
       "gridPos": {
         "x": 0,
-        "y": 53,
+        "y": 62,
         "w": 12,
         "h": 8
       }
@@ -1896,22 +2013,22 @@
           "fields": []
         }
       },
-      "id": 26,
+      "id": 27,
       "gridPos": {
         "x": 12,
-        "y": 53,
+        "y": 62,
         "w": 12,
         "h": 8
       }
     },
     {
       "type": "row",
-      "id": 27,
+      "id": 28,
       "title": "Body",
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 61,
+        "y": 70,
         "w": 24,
         "h": 1
       },
@@ -2005,10 +2122,10 @@
           "sort": "none"
         }
       },
-      "id": 28,
+      "id": 29,
       "gridPos": {
         "x": 0,
-        "y": 62,
+        "y": 71,
         "w": 24,
         "h": 7
       }
