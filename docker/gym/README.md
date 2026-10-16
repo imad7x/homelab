@@ -17,7 +17,11 @@ the streak.
   sets. Weeks 1-2 are a lighter "learn" phase, and every 8th week is a deload. Every
   exercise has photos, setup, cues, common mistakes and swaps for when a machine is taken.
   The rationale, nutrition and measuring notes and the sources are on the Plan tab.
-- **Logger** - starts today's session with each exercise's suggested weight. The
+- **Log workout** - the Today tab's main action: one line of what was trained ("Mix of
+  all", "Chest + Shoulders extra", with tap-to-add muscle chips), date, start time and
+  minutes. It counts toward the week like any session; the program sessions stay
+  available under "Follow a program session".
+- **Logger** - a program session starts with each exercise's suggested weight. The
   suggestion uses double progression: top of the rep range on every set means the next
   weight up, two weak sessions in a row mean a 10% reset. The logger also shows warm-up
   sets, starts a rest timer when a set is ticked, flags personal bests, and has a
@@ -29,14 +33,21 @@ the streak.
   overwrite later edits.
 - **Progress** - a 12-week consistency grid, the streak in weeks that met the goal
   (5 of 6 by default), estimated 1-rep-max charts for the main lifts, and hard sets per
-  muscle this week against the plan.
-- **Body** - weigh-ins with a 7-day average, waist, and InBody scans.
+  muscle this week against the plan (once sets are logged).
+- **Body** - weigh-ins, waist, and InBody scans. A weigh-in stands as the current
+  weight until the next one; the 7-day average runs over those daily values.
 - **Watch** - the Huawei watch pairs with *Gadgetbridge* (no Huawei app or cloud), which
   writes to Android Health Connect; the phone app *HC Webhook* posts that data hourly to
   `POST /api/health` with an `X-Api-Key` header (the key and setup steps are on the Health
   tab). Payloads marked `"test": true` are checked but never stored. `GET /api/hc-webhook.json`
   hands the phone a file in HC Webhook's own settings-export format (URL, key, data types,
   resolutions, hourly sync) to import under Settings -> Settings Backup -> Import.
+- **Heart rate** - Health -> Heart rate: one day at a time (previous/next), the average
+  per 5 minutes with its low-high band, sleep shaded and workouts or raised-heart-rate
+  stretches marked under the axis, the usual resting HR as a reference line. Night /
+  Morning / Afternoon / Evening, or tapping a sleep or workout in the list, zooms in (1-2
+  minute detail). Under it, the last 30 days side by side: a bar from resting to peak
+  and a dot at the average awake; tapping a day opens it. Data from `GET /api/hr`.
 - **Access from outside** - the tunnel hostname (`PUBLIC_URL`) sits behind Cloudflare Access
   (email one-time PIN) like the other apps, with a second Access application that bypasses
   login for two paths only: `/api/health` (the phone's exporter can't log in; the endpoint
@@ -66,6 +77,7 @@ the streak.
 |---|---|
 | `GET /api/state` | every saved record plus the watch data, for the page |
 | `GET /api/summary` | days this week, goal, streak, last workout (Homepage widget) |
+| `GET /api/hr?date=YYYY-MM-DD` | one day's heart rate by the minute, sleep and workout spans, resting / awake / peak |
 | `GET /api/export` | everything as one JSON download |
 | `GET /api/export.csv` | every logged set as CSV |
 | `POST /api/sync` | `{"docs": [...]}` records changed on a device |

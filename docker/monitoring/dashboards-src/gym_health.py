@@ -207,10 +207,19 @@ place(series("Hours worn per day", [sql(f'SELECT time, wear_h AS "Worn (24 h)", 
              unit="suffix: h", decimals=1, overrides=[color("Worn 7:00-23:00", GREY)], points=True,
              desc="A 15-minute slot counts as worn if it has a heart-rate reading or steps."), 12, 12, 8)
 y += 8
-place(series("Heart rate (last 2 days)", [sql(f'SELECT time, bpm AS "Heart rate" FROM hr WHERE {RANGE} ORDER BY time')],
-             unit="bpm", decimals=0, relative="2d", legend=False,
-             desc="Per minute. Gaps are the times the watch was off your wrist."), 0, 16, 8)
-panels[-1]["fieldConfig"]["defaults"]["custom"]["insertNulls"] = 15 * 60 * 1000
+place(series("Heart rate by the minute", [sql(f'SELECT time, bpm AS "Heart rate" FROM hr WHERE {RANGE} ORDER BY time')],
+             unit="bpm", decimals=0, legend=False,
+             desc="Every minute the watch was on (the last 60 days are kept). Follows the time picker: drag across the "
+                  "chart to zoom into a day or an hour. Gaps are the times the watch was off your wrist. The gym app's "
+                  "Health > Heart rate shows one day at a time with sleep and workouts marked."), 0, 24, 9)
+panels[-1]["fieldConfig"]["defaults"]["custom"].update(insertNulls=15 * 60 * 1000, lineWidth=1)
+y += 9
+place(series("Heart rate per day", [sql(f'SELECT time, hr_max AS "Peak", hr_awake AS "Average awake", rhr AS "Resting" '
+                                        f'FROM days WHERE {RANGE} ORDER BY time')],
+             unit="bpm", decimals=0, points=True,
+             overrides=[color("Average awake", BLUE), color("Peak", ORANGE), color("Resting", AQUA)],
+             desc="Resting = lowest 30-minute average asleep; average awake = every worn minute outside sleep (days "
+                  "with an hour of it at least); peak = the day's highest minute."), 0, 16, 8)
 place(series("Active minutes per week", [sql(f'SELECT time, activity_min AS "WHO minutes" FROM weeks WHERE {RANGE} ORDER BY time')],
              unit="short", bars=True, threshold=150, legend=False,
              desc="Moderate + vigorous x 2, from heart rate. Line = 150 (WHO minimum)."), 16, 8, 8)
