@@ -1,1 +1,93 @@
-[]
+[
+  {
+    "comment": "Meta apps - FB Marketplace, IG, WhatsApp catalogue - blocked by Hagezi Ultimate",
+    "domain": "graph.facebook.com",
+    "enabled": 1,
+    "id": 1,
+    "type": 0
+  },
+  {
+    "comment": "Meta apps - FB Marketplace, IG, WhatsApp catalogue - blocked by Hagezi Ultimate",
+    "domain": "b-graph.facebook.com",
+    "enabled": 1,
+    "id": 2,
+    "type": 0
+  },
+  {
+    "comment": "Meta apps - FB Marketplace, IG, WhatsApp catalogue - blocked by Hagezi Ultimate",
+    "domain": "graph-fallback.facebook.com",
+    "enabled": 1,
+    "id": 3,
+    "type": 0
+  },
+  {
+    "comment": "Meta apps - FB Marketplace, IG, WhatsApp catalogue - blocked by Hagezi Ultimate",
+    "domain": "b-graph-fallback.facebook.com",
+    "enabled": 1,
+    "id": 4,
+    "type": 0
+  },
+  {
+    "comment": "Meta apps - FB Marketplace, IG, WhatsApp catalogue - blocked by Hagezi Ultimate",
+    "domain": "z-m-graph.facebook.com",
+    "enabled": 1,
+    "id": 5,
+    "type": 0
+  },
+  {
+    "comment": "Meta apps - FB Marketplace, IG, WhatsApp catalogue - blocked by Hagezi Ultimate",
+    "domain": "web.facebook.com",
+    "enabled": 1,
+    "id": 6,
+    "type": 0
+  },
+  {
+    "comment": "Meta apps - FB Marketplace, IG, WhatsApp catalogue - blocked by Hagezi Ultimate",
+    "domain": "web-fallback.facebook.com",
+    "enabled": 1,
+    "id": 7,
+    "type": 0
+  },
+  {
+    "comment": "Meta apps - FB Marketplace, IG, WhatsApp catalogue - blocked by Hagezi Ultimate",
+    "domain": "mqtt-mini.facebook.com",
+    "enabled": 1,
+    "id": 8,
+    "type": 0
+  },
+  {
+    "comment": "Meta apps - FB Marketplace, IG, WhatsApp catalogue - blocked by Hagezi Ultimate",
+    "domain": "graph.instagram.com",
+    "enabled": 1,
+    "id": 9,
+    "type": 0
+  },
+  {
+    "comment": "Meta apps - FB Marketplace, IG, WhatsApp catalogue - blocked by Hagezi Ultimate",
+    "domain": "graph-fallback.instagram.com",
+    "enabled": 1,
+    "id": 10,
+    "type": 0
+  },
+  {
+    "comment": "Meta apps - FB Marketplace, IG, WhatsApp catalogue - blocked by Hagezi Ultimate",
+    "domain": "graph.whatsapp.com",
+    "enabled": 1,
+    "id": 11,
+    "type": 0
+  },
+  {
+    "comment": "Meta apps - FB Marketplace, IG, WhatsApp catalogue - blocked by Hagezi Ultimate",
+    "domain": "graph.whatsapp.net",
+    "enabled": 1,
+    "id": 12,
+    "type": 0
+  },
+  {
+    "comment": "Meta AI and AR effects API - blocked by Hagezi Ultimate",
+    "domain": "(\\.|^)graph\\.meta\\.com$",
+    "enabled": 1,
+    "id": 13,
+    "type": 2
+  }
+]
