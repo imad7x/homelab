@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "lastUpdated": 1790622555576,
+  "lastUpdated": 1792524178480,
   "lastUpdatedBy": "moonfin-flutter",
   "syncEnabled": true,
   "global": {
@@ -10,6 +10,9 @@
   "mobile": {
     "seerrEnabled": true,
     "seerrBlockNsfw": false,
+    "seerrShowMissingCollectionItems": true,
+    "showSeerrAvailabilityBadges": true,
+    "showBookDiscoverTab": true,
     "seerrRows": {
       "rowOrder": [
         "recent_requests",
@@ -93,6 +96,7 @@
     "backdropEnabled": true,
     "homeRowsImageTypeOverride": false,
     "homeRowsStyle": "v2",
+    "modernCardsOnMyMediaRow": true,
     "modernHomeRowsPadding": 460,
     "classicHomeRowsPadding": 30,
     "fullScreenRows": false,
@@ -481,6 +485,15 @@
     "screensaverClockMode": "off",
     "screensaverMaxAgeRating": "any",
     "screensaverRequireRating": false,
+    "screensaverBackdrop": "library",
+    "screensaverComponent": "none",
+    "screensaverMovement": "fast",
+    "screensaverPosition": "middle",
+    "screensaverSize": "medium",
+    "screensaverContentType": "both",
+    "screensaverLibraryIds": [],
+    "screensaverCollectionIds": [],
+    "screensaverExcludedGenres": [],
     "subtitleMode": "flagged",
     "defaultSubtitleLanguage": "eng",
     "fallbackSubtitleLanguage": "",
@@ -514,6 +527,7 @@
     "skipBackLength": 10000,
     "skipForwardLength": 30000,
     "osdLockEnabled": false,
+    "showChapterMarkers": false,
     "detailButtonOrderTv": [],
     "detailButtonOrderMobile": [],
     "detailButtonOrderDesktop": [],
@@ -526,6 +540,12 @@
     "hiddenOsdButtonsTv": [],
     "hiddenOsdButtonsMobile": [],
     "hiddenOsdButtonsDesktop": [],
+    "detailMetadataOrderTv": [],
+    "detailMetadataOrderMobile": [],
+    "detailMetadataOrderDesktop": [],
+    "hiddenDetailMetadataTv": [],
+    "hiddenDetailMetadataMobile": [],
+    "hiddenDetailMetadataDesktop": [],
     "videoStartDelay": 0,
     "liveTvDirectPlayEnabled": false,
     "maxBitrate": "120",
@@ -631,6 +651,8 @@
     "homeRowInfoOverlay": false,
     "showSeerrButton": true,
     "crashReportsEnabled": true,
+    "showDownloadsButton": true,
+    "showLiveTvButton": false,
     "showServerMessagesButton": false,
     "diagnosticLoggingEnabled": false,
     "updateNotificationsEnabled": true,
@@ -644,6 +666,17 @@
     "collectionsRowShowEpisodes": false,
     "mergeRecentRowsByType": false,
     "playlistsRowShowEpisodes": false,
-    "recentlyReleasedSeriesType": "series"
+    "recentlyReleasedSeriesType": "series",
+    "loadingAnimationImage": "moonfinLogo",
+    "loadingAnimationSize": "medium",
+    "loadingAnimationPosition": "middle",
+    "loadingAnimationSpeed": "fast",
+    "showLoadingAnimationText": true
+  },
+  "hiddenContentBaselines": {
+    "mobile": {
+      "continueWatching": "{}",
+      "nextUpSeries": "{}"
+    }
   }
 }
