@@ -314,6 +314,18 @@
               label: Week Streak
               format: number
 
+- Garden:
+    # Plants (/docker/plants): photo inventory, per-plant care guide and the
+    # weather-driven watering log. The "needs water" count is worked out in the
+    # browser from the log, so there is no summary widget here.
+    - Plants:
+        icon: mdi-sprout
+        href: http://192.168.0.10:8087
+        description: Watering & Care Guide
+        server: my-docker
+        container: plants
+        siteMonitor: http://192.168.0.10:8087/api/ping
+
 - Documents:
     - Paperless:
         icon: paperless-ngx.png
@@ -328,6 +340,16 @@
         #     type: paperlessngx
         #     url: http://192.168.0.10:8000
         #     key: <token>
+
+    # Resume (/docker/resume): resume editor for everyone at home, many
+    # templates, PDF download. No logins.
+    - Resume:
+        icon: mdi-file-account
+        href: http://192.168.0.10:8088
+        description: Resume Builder
+        server: my-docker
+        container: resume
+        siteMonitor: http://192.168.0.10:8088/api/ping
 
     - Paperless DB:
         icon: postgres.png

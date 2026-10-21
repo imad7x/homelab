@@ -1,0 +1,39 @@
+# Resume: a resume editor for everyone at home. One tab per person, any
+# number of copies each (one per kind of job), many templates, PDF download.
+# No logins.
+#
+#   on the LAN:  http://192.168.0.10:8088
+#   log:         docker logs resume
+#
+# Resumes, their earlier versions and deleted ones (trash) live in ./state as
+# JSON. A template is one file in app/web/templates; a new file there shows
+# up in the template picker on the next page load. PDFs are printed by the
+# Chromium inside the image.
+
+services:
+  resume:
+    build: .
+    image: resume:latest
+    container_name: resume
+    restart: unless-stopped
+    user: "1000:1000"
+    ports:
+      - "8088:8088"
+    environment:
+      - TZ=Asia/Kolkata
+      # Names (besides IPs and localhost) the page may be opened under.
+      - ALLOWED_HOSTS=
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      - ./state:/state
+      # The code is mounted read-only so an edit takes effect on the next
+      # restart (templates and the page: on the next reload), like plants.
+      - ./app:/app:ro
+    # Chromium needs more shared memory than Docker's 64 MB default.
+    shm_size: 256m
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8088/api/ping', timeout=3)"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
