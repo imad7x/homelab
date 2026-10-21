@@ -85,6 +85,7 @@ Generated from `docker ps` on every sync.
 | pihole | flaresolverr | `ghcr.io/flaresolverr/flaresolverr:latest` | 8191 |
 | pihole | pihole | `pihole/pihole:latest` | 53, 8081 |
 | plants | plants | `plants:latest` | 8087 |
+| resume | resume | `resume:latest` | 8088 |
 | updater | updater | `updater:latest` | 8084 |
 <!-- inventory:end -->
 
