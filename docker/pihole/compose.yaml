@@ -6,8 +6,8 @@ services:
       proxy-dns
       --port 5053
       --address 0.0.0.0
-      --upstream https://dns.google/dns-query
-      --upstream https://dns.quad9.net/dns-query
+      --upstream https://1.1.1.1/dns-query
+      --upstream https://1.0.0.1/dns-query
     restart: unless-stopped
     networks:
       pihole_net:
@@ -46,9 +46,6 @@ services:
     networks:
       pihole_net:
         ipv4_address: 172.20.0.4
-    # 👇 ADD THIS ENVIRONMENT SECTION 👇
-    environment:
-      - TUNNEL_TRANSPORT_PROTOCOL=http2
     command: "tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}"
     restart: unless-stopped
 

@@ -157,6 +157,7 @@ RANDOM_VALUE = re.compile(r'(?<![A-Za-z0-9+/_.-])(?:[0-9a-fA-F]{32,}|(?=[A-Za-z0
 RANDOM_OK = [   # (path regex, key regex) reviewed: ids, public keys and templates, not secrets
     (r'jellyseerr/settings\.json$', r'^(id|serverId|vapidPublic|jsonPayload)$'),
     (r'^exports/jellyfin/plugins\.json$', r'^Id$'),
+    (r'configurations/Moonfin\.Server\.xml$', r'^ChecksumSha256$'),   # hash of an uploaded theme file
 ]
 CAMEL = r'(?:[A-Z][a-z]+[0-9]*)+|[a-z]+(?:[A-Z][a-z]+[0-9]*)+'   # setting/tag names like EnableDepth10Hevc
 KEY_BEFORE = re.compile(r'["\'<]?([A-Za-z_][\w.\\-]*)["\'>]?\s*[:=>]\s*["\']?$')

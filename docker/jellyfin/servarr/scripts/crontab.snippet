@@ -2,3 +2,5 @@
 # 2026-09-22, so this is insurance only - see disk-keepalive.sh for why.
 # Catch anything the Sonarr/Radarr import hooks missed (manual copies, failed hooks).
 */30 * * * * /docker/jellyfin/servarr/scripts/jellyfin-prewarm.sh --all >> /docker/jellyfin/logs/prewarm.log 2>&1
+# Add new MCU / Star Wars films to their franchise collections, in release order.
+45 * * * * /docker/jellyfin/servarr/scripts/jellyfin-franchises.sh >> /docker/jellyfin/logs/franchises.log 2>&1

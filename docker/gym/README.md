@@ -14,9 +14,13 @@ the streak.
 
 - **Program** - `app/program.json`: Push A, Pull A, Legs A, Push B, Pull B, Legs B on
   Monday to Saturday, Sunday off. Each muscle is trained twice a week at about 10-12 hard
-  sets. Weeks 1-2 are a lighter "learn" phase, and every 8th week is a deload. Every
-  exercise has photos, setup, cues, common mistakes and swaps for when a machine is taken.
-  The rationale, nutrition and measuring notes and the sources are on the Plan tab.
+  sets. Weeks 1-2 are a lighter "learn" phase, and every 8th week is a deload. Seven
+  ready-made workouts sit beside the week (Full body A/B, Chest + Shoulders, Back + Biceps,
+  Legs + Glutes, Arms, Core + Cardio). About 100 exercises, grouped by area (chest,
+  shoulders, back, arms, legs, core, cardio), each with photos, a default sets x reps, RIR
+  and rest, setup, cues, common mistakes and swaps. The Plan tab shows the week one day at
+  a time with each exercise's photo, sets x reps and rest, the extra workouts, and the
+  exercise guides by area.
 - **Log workout** - the Today tab's main action: one line of what was trained ("Mix of
   all", "Chest + Shoulders extra", with tap-to-add muscle chips), date, start time and
   minutes. It counts toward the week like any session; the program sessions stay
@@ -25,15 +29,21 @@ the streak.
   suggestion uses double progression: top of the rep range on every set means the next
   weight up, two weak sessions in a row mean a 10% reset. The logger also shows warm-up
   sets, starts a rest timer when a set is ticked, flags personal bests, and has a
-  "short on time" mode that keeps only the first two lifts. Cult classes are logged with
-  one tap and count toward the week.
+  "short on time" mode that keeps only the first two lifts. Exercises can be added from
+  the guide list or removed mid-workout, and "Own workout, with sets" starts empty for
+  building a session as you go. Holds are logged in seconds and cardio in minutes. Cult
+  classes are logged with one tap and count toward the week.
 - **Offline** - a service worker keeps the page and the program on the phone, and every
   change is saved locally first and synced when the server answers. Each record carries
   the time it was last changed and the newer copy wins, so a phone that was offline can't
   overwrite later edits.
 - **Progress** - a 12-week consistency grid, the streak in weeks that met the goal
-  (5 of 6 by default), estimated 1-rep-max charts for the main lifts, and hard sets per
-  muscle this week against the plan (once sets are logged).
+  (5 of 6 by default), time trained this month, the typical session length, the next
+  workout milestone, days trained per week against the goal, how often each area was
+  trained in the last 4 weeks and how long ago, the watch's heart rate for logged workouts,
+  estimated 1-rep-max charts for the most-trained exercises, and hard sets per muscle this
+  week against the plan (once sets are logged). Today lists the areas not trained for 5+ days.
+  A one-line workout counts toward the areas named in it ("Mix of all" = every lifting area).
 - **Body** - weigh-ins, waist, and InBody scans. A weigh-in stands as the current
   weight until the next one; the 7-day average runs over those daily values.
 - **Watch** - the Huawei watch pairs with *Gadgetbridge* (no Huawei app or cloud), which
@@ -63,7 +73,8 @@ the streak.
   Heart-rate zones and Edwards' TRIMP per workout, and WHO-style intensity minutes.
 - **Reports and questions** (`app/ai.py`) - a weekly report every Monday from 06:30 and a
   monthly one on the 1st from 06:45, a 7-day report on demand, and free-text questions on
-  the Health tab. Jobs queue in the app; a worker on the host (`ai/worker.py`, started
+  the Health tab. Reports are kept short (a summary, three highlights, three actions, under
+  120 words) above a small table of days trained, steps, sleep, resting HR and weight. Jobs queue in the app; a worker on the host (`ai/worker.py`, started
   `@reboot` from cron by `ai/start.sh`) long-polls `GET /api/ai/next` with the key in
   `state/worker.key`, runs the prompt and posts the answer back. Its provider is set in
   `ai/config.json`: an AI command-line tool logged in on the host, or the OpenAI Responses
