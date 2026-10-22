@@ -58,6 +58,12 @@ sub_ext() {
     esac
 }
 
+# jq filter for font attachments. Jellyfin only extracts fonts (for ASS subtitles);
+# an MKV's cover art (cover.jpg) or an unnamed attachment answers 404 and never
+# lands in the cache, so counting those made the same items "warm" every pass.
+FONTS='select(((.MimeType // "") | test("font|truetype|opentype|sfnt"; "i"))
+               or ((.FileName // "") | test("\\.(ttf|otf|ttc|woff2?)$"; "i")))'
+
 # prewarm_item <itemId> - returns 0 if work was done, 1 if nothing to do
 prewarm_item() {
     _id=$1
@@ -81,7 +87,7 @@ prewarm_item() {
               | select(.Type=="Subtitle" and (.IsExternal|not) and .IsTextSubtitleStream==true)]
               | first | .Codec // empty' "$_f")
     # attachment indices are the mkv stream indices, not 0..n-1
-    _atts=$(jq -r '[.Items[0].MediaSources[0].MediaAttachments[]?.Index | tostring] | join(" ")' "$_f")
+    _atts=$(jq -r "[.Items[0].MediaSources[0].MediaAttachments[]? | $FONTS | .Index | tostring] | join(\" \")" "$_f")
     rm -f "$_f"
 
     [ -z "$_sidx" ] && [ -z "$_atts" ] && return 1
@@ -94,9 +100,9 @@ prewarm_item() {
     fi
     if [ -n "$_atts" ]; then
         for _a in $_atts; do
-            hit "/Videos/$_id/$_ms/Attachments/$_a" >/dev/null
+            _rc=$(hit "/Videos/$_id/$_ms/Attachments/$_a")
+            if [ "$_rc" = "200" ]; then _did=1; else log "  ! attachment idx $_a -> HTTP $_rc"; fi
         done
-        _did=1
     fi
     return $(( 1 - _did ))
 }
@@ -130,7 +136,7 @@ run_all() {
                | ($i.MediaSources[0] // {}) as $m
                | [ $i.Id,
                    ( [ $m.MediaStreams[]? | select(.Type=="Subtitle" and (.IsExternal|not) and .IsTextSubtitleStream==true) ] | length | if .>0 then 1 else 0 end ),
-                   ( [ $m.MediaAttachments[]?.Index ] | length ),
+                   ( [ $m.MediaAttachments[]? | '"$FONTS"' ] | length ),
                    ( $i.Name // "?" ) ] | @tsv' > "$_tmp"
 
     _total=$(wc -l < "$_tmp"); _n=0; _warm=0; _done=0; _skip=0

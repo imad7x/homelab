@@ -4,7 +4,9 @@ services:
     container_name: prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.retention.size=40GB'
+      # 30 days here on the NVMe; older data is in VictoriaMetrics on disk2 (below).
+      - '--storage.tsdb.retention.time=30d'
+      - '--storage.tsdb.retention.size=10GB'   # backstop; 30 days is about 3 GB
     ports:
       - 9090:9090
     restart: unless-stopped
@@ -13,6 +15,30 @@ services:
     volumes:
       - ./prometheus:/etc/prometheus
       - monitoring_prometheus_data:/prometheus
+
+  # Long-term metrics. Prometheus keeps 30 days on the NVMe and copies every sample here
+  # (remote_write in prometheus.yml); this keeps 5 years on disk2, thinned to one sample
+  # per minute per series. Grafana datasource "Prometheus (5y)". No host port: only
+  # Prometheus and Grafana talk to it. The bind fails instead of writing to the NVMe
+  # if disk2 is not mounted.
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.153.0
+    container_name: victoriametrics
+    user: "1000:1000"
+    restart: unless-stopped
+    cpu_shares: 256   # background merges give way to Jellyfin and the rest
+    command:
+      - '-storageDataPath=/storage'
+      - '-retentionPeriod=5y'
+      - '-dedup.minScrapeInterval=1m'
+      - '-inmemoryDataFlushInterval=1m'   # fewer small writes to the SMR disk (default 5s)
+    volumes:
+      - type: bind
+        source: /mnt/disk2/victoria-metrics
+        target: /storage
+        bind:
+          create_host_path: false
+
   grafana:
     image: grafana/grafana
     container_name: grafana

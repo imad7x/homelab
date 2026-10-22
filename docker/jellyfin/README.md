@@ -1,13 +1,12 @@
 # jellyfin - media
 
-Four Compose projects; the first three share `/data` (the mergerfs pool):
+Three Compose projects share `/data` (the mergerfs pool):
 
 | Folder | Project | Apps |
 |---|---|---|
 | `.` | `jellyfin` | Jellyfin (Intel Quick Sync through `/dev/dri`), Jellystat and its Postgres |
 | `servarr/` | `servarr` | qBittorrent, Prowlarr, Sonarr, Radarr, Bazarr, Seerr, on `servarrnetwork` (172.39.0.0/24, fixed IPs) |
 | `music/` | `music` | Navidrome, slskd (Soulseek) |
-| `discover/` | `discover` | Jellylook and the small service that answers its TMDb lookups from Seerr |
 
 | App | Port | App | Port |
 |---|---|---|---|
@@ -16,7 +15,6 @@ Four Compose projects; the first three share `/data` (the mergerfs pool):
 | Seerr | 5055 | Bazarr | 6767 |
 | qBittorrent | 8080, torrents on 6881 | Prowlarr | 9696 |
 | Navidrome | 4533 | slskd | 5030, Soulseek on 50300 |
-| Jellylook | 3045 | | |
 
 ## How releases are picked: seeders first
 
@@ -52,6 +50,23 @@ again on every subtitle switch. Cron runs it with `--all` every 30 minutes and i
 items that are already warm; it also works as a Sonarr/Radarr *Custom Script* on import.
 Settings are in `servarr/scripts/prewarm.env`.
 
+## Franchise collections
+
+Jellyfin's *Automatically add to collection* follows TMDb collections, which split the MCU
+into Iron Man, Thor, Spider-Man (MCU) and so on, and leave Star Wars spin-offs out.
+`servarr/scripts/jellyfin-franchises.sh` adds every matching movie to one collection per
+franchise (**Marvel Cinematic Universe**, **Star Wars Collection**) and sets the display
+order to release date. A movie matches on a TMDb keyword (Jellyfin keeps them as tags),
+its TMDb collection id or a title substring; the list is `FRANCHISES` in the script. It
+only adds, never removes. Cron runs it hourly; `--dry-run` shows what it would change.
+Settings are in `servarr/scripts/franchises.env` (its own API key).
+
+## Moonfin theme
+
+The Moonbase plugin serves a custom **Netflix** theme (near-black, red accents, white focus)
+to every Moonfin client: Dashboard → Plugins → Moonbase → Themes lists and replaces it.
+Clients pick it under Settings → Personalization → General Style → App Theme.
+
 ## Jellystat and the Media Usage dashboard
 
 Jellystat (port 3003) records who watches what through Jellyfin's websocket and ignores
@@ -69,25 +84,3 @@ into the same folder.
 Installed plugins and their versions: [`exports/jellyfin/plugins.json`](../../exports/jellyfin/plugins.json).
 Plugin settings: `config/data/plugins/configurations/`. Library options:
 `config/data/root/default/*/options.xml`.
-
-## What to watch next: Jellylook (`discover/`)
-
-[Jellylook](https://github.com/dean1850/jellylook) (port 3045) suggests titles from each
-viewer's own Jellyfin history, read through Jellystat. Tick *who's watching* and press
-*Scan*: one AI call returns about 60 titles, each with IMDb and TMDb ratings, a trailer,
-where it streams in India, and an *Add to Seerr* button. The filters include a minimum
-IMDb rating. Likes (♡) and hides (✕) are kept per viewer and steer that viewer's next
-scan. Requests go out under the Seerr API key's account (the shared one). It has no login,
-so it is LAN and Tailscale only.
-
-- **AI:** Gemini's free tier, `gemini-3.5-flash-lite`. The full flash models spend part
-  of Jellylook's 8,000-token output limit on thinking and cut the 60-title answer short;
-  the newest one is also often over capacity on the free tier.
-- **No TMDb key:** Jellylook only talks to TMDb with an API key. `tmdb-via-seerr` answers
-  the few TMDb v3 calls it makes (search, details, trailers, watch providers) from Seerr's
-  API instead, and the locally built `jellylook-local` image is the upstream build with its
-  TMDb address pointed there. Both come from the stack's `Dockerfile`; the upstream build
-  is pinned by tag because the patch edits one line of its source, so move the tag on
-  purpose and run `docker compose build` when updating.
-- **Keys** (`jellylook.env`): dedicated `jellylook` keys in Jellyfin and Jellystat, the
-  Seerr API key, the Gemini key and a free OMDb key for IMDb ratings (1,000 lookups a day).

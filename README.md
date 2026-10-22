@@ -33,7 +33,7 @@ kept encrypted - see [Secrets](#secrets).
 |---|---|---|
 | `docker/pihole` | Pi-hole, DNS-over-HTTPS proxy, Cloudflare Tunnel, FlareSolverr | [README](docker/pihole) |
 | `docker/jellyfin` | Jellyfin and Jellystat; the *arr stack (`servarr/`); music (`music/`) | [README](docker/jellyfin) |
-| `docker/monitoring` | Prometheus, Grafana, node-exporter, cAdvisor, Scrutiny, smartctl-exporter, Homepage | [README](docker/monitoring) |
+| `docker/monitoring` | Prometheus, VictoriaMetrics, Grafana, node-exporter, cAdvisor, Scrutiny, smartctl-exporter, Homepage | [README](docker/monitoring) |
 | `docker/finance` | Firefly III with a mail-driven ingest worker | [README](docker/finance) |
 | `docker/paperless` | Paperless-ngx document archive | [README](docker/paperless) |
 | `docker/updater` | One-click container updater (custom app) | [README](docker/updater) |
@@ -57,8 +57,6 @@ Generated from `docker ps` on every sync.
 | jellyfin | jellyfin | `lscr.io/linuxserver/jellyfin:latest` | 1900, 7359, 8096 |
 | jellyfin | jellystat | `cyfershepard/jellystat:latest` | 3003 |
 | jellyfin | jellystat-db | `postgres:16-alpine` | - |
-| jellyfin/discover | jellylook | `jellylook-local:latest` | 3045 |
-| jellyfin/discover | tmdb-via-seerr | `tmdb-via-seerr:latest` | - |
 | jellyfin/music | navidrome | `deluan/navidrome:latest` | 4533 |
 | jellyfin/music | slskd | `slskd/slskd:latest` | 5030, 50300 |
 | jellyfin/servarr | bazarr | `lscr.io/linuxserver/bazarr:latest` | 6767 |
@@ -76,7 +74,9 @@ Generated from `docker ps` on every sync.
 | monitoring | prometheus | `prom/prometheus` | 9090 |
 | monitoring | scrutiny | `ghcr.io/analogj/scrutiny:v0.9.4-omnibus` | 8083 |
 | monitoring | smartctl-exporter | `quay.io/prometheuscommunity/smartctl-exporter:v0.14.0` | 9633 |
+| monitoring | victoriametrics | `victoriametrics/victoria-metrics:v1.153.0` | - |
 | monitoring/homepage-lan | homepage-lan | `ghcr.io/gethomepage/homepage:latest` | 3010 |
+| movies | movies | `movies:latest` | 8089 |
 | paperless | paperless | `ghcr.io/paperless-ngx/paperless-ngx:latest` | 8000 |
 | paperless | paperless-db | `postgres:16-alpine` | - |
 | paperless | paperless-redis | `redis:7-alpine` | - |
@@ -129,8 +129,8 @@ writes the files and runs the checks without committing, use
 4. `python3 tools/homelab_sync.py restore /tmp/bundles --identity /path/to/age.key --target /docker`
    fills in every placeholder and puts the private files back. Host files land in
    `/docker/_host/`, to be copied into place with sudo.
-5. Create what the compose files expect to exist: `docker volume create monitoring_prometheus_data`
-   and `docker volume create monitoring_grafana_data`. Start `finance` and `jellyfin`
+5. Create what the compose files expect to exist: `docker volume create monitoring_prometheus_data`,
+   `docker volume create monitoring_grafana_data` and `mkdir /mnt/disk2/victoria-metrics`. Start `finance` and `jellyfin`
    before `monitoring`, because Grafana joins their networks.
 6. `docker compose up -d` in each stack, `pihole` first.
 

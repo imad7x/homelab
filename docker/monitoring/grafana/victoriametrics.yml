@@ -1,0 +1,14 @@
+# VictoriaMetrics, the 5-year metrics store on disk2 (see compose.yaml). Same metric names
+# and PromQL as the Prometheus datasource, one sample per minute per series. Prometheus
+# itself keeps 30 days, so pick this one for longer time ranges.
+apiVersion: 1
+
+datasources:
+  - name: Prometheus (5y)
+    uid: victoriametrics
+    type: prometheus
+    access: proxy
+    url: http://victoriametrics:8428
+    jsonData:
+      timeInterval: 1m
+    editable: false

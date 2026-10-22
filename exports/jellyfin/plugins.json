@@ -8,13 +8,7 @@
   {
     "Id": "5e87cc92571a4d8d8d98d2d4147f9f90",
     "Name": "File Transformation",
-    "Status": "Superseded",
-    "Version": "3.0.1.0"
-  },
-  {
-    "Id": "5e87cc92571a4d8d8d98d2d4147f9f90",
-    "Name": "File Transformation",
-    "Status": "Restart",
+    "Status": "Active",
     "Version": "3.0.2.0"
   },
   {

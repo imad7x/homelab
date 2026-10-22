@@ -173,6 +173,7 @@ log:
   include_filter: ''
   use_regex: false
 napiprojekt:
+  hash_only: false
   only_authors: false
   only_real_names: false
 napisy24:
@@ -304,6 +305,9 @@ subsync:
   gss: true
   max_offset_seconds: 60
   no_fix_framerate: true
+  quality_max_framerate_deviation: 0.1
+  quality_max_offset_seconds: 30
+  quality_min_score: 0.0
   subsync_movie_threshold: 70
   subsync_threshold: 90
   use_original_language: false

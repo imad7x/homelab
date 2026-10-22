@@ -112,6 +112,25 @@
     "access": "proxy",
     "basicAuth": false,
     "database": "",
+    "id": 10,
+    "isDefault": false,
+    "jsonData": {
+      "timeInterval": "1m"
+    },
+    "name": "Prometheus (5y)",
+    "orgId": 1,
+    "readOnly": true,
+    "type": "prometheus",
+    "typeLogoUrl": "public/plugins/prometheus/img/prometheus_logo.svg",
+    "typeName": "Prometheus",
+    "uid": "victoriametrics",
+    "url": "http://victoriametrics:8428",
+    "user": ""
+  },
+  {
+    "access": "proxy",
+    "basicAuth": false,
+    "database": "",
     "id": 6,
     "isDefault": false,
     "jsonData": {

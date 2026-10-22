@@ -10,13 +10,32 @@
   <MdblistOfficialListsEnabled>true</MdblistOfficialListsEnabled>
   <ImdbListsEnabled>true</ImdbListsEnabled>
   <MdblistOfficialListsMaxItems>250</MdblistOfficialListsMaxItems>
+  <RecommendationsProviderEnabled>true</RecommendationsProviderEnabled>
   <StudioLogosEnabled>true</StudioLogosEnabled>
   <StudioLogosMaxAgeDays>30</StudioLogosMaxAgeDays>
+  <AnimeMarkersEnabled>false</AnimeMarkersEnabled>
+  <AnimeMarkerLibraryIds />
+  <AnimeMarkerRecapLookup>true</AnimeMarkerRecapLookup>
+  <AnimeMarkerMaxAgeDays>30</AnimeMarkerMaxAgeDays>
+  <AnimeMarkerVerboseLogging>false</AnimeMarkerVerboseLogging>
+  <AnimeAudioMarkersEnabled>false</AnimeAudioMarkersEnabled>
+  <AnimeAudioMarkersMovies>false</AnimeAudioMarkersMovies>
+  <AnimeAudioSeparateDualAudio>false</AnimeAudioSeparateDualAudio>
+  <AnimeAudioTrustSelectedLibraries>false</AnimeAudioTrustSelectedLibraries>
+  <AnimeMarkerPlacement>below</AnimeMarkerPlacement>
+  <AnimeMarkerShowFiller>true</AnimeMarkerShowFiller>
+  <AnimeMarkerShowMixed>true</AnimeMarkerShowMixed>
+  <AnimeMarkerShowRecap>true</AnimeMarkerShowRecap>
+  <AnimeMarkerShowMangaCanon>false</AnimeMarkerShowMangaCanon>
+  <AnimeMarkerShowAnimeCanon>false</AnimeMarkerShowAnimeCanon>
   <WebEnableWebRtcScan>true</WebEnableWebRtcScan>
   <PushRelayUrl>https://push.moonfin.io/send</PushRelayUrl>
   <DefaultUserSettings>
     <SeerrEnabled xsi:nil="true" />
     <SeerrBlockNsfw xsi:nil="true" />
+    <SeerrShowMissingCollectionItems xsi:nil="true" />
+    <ShowSeerrAvailabilityBadges xsi:nil="true" />
+    <ShowBookDiscoverTab xsi:nil="true" />
     <SeerrRows>
       <TrendingMovies xsi:nil="true" />
       <TrendingTv xsi:nil="true" />
@@ -66,6 +85,7 @@
       </RowOrder>
     </JellyseerrRowsCompat>
     <MdblistEnabled>false</MdblistEnabled>
+    <MdblistRatingSources />
     <MdblistShowRatingNames xsi:nil="true" />
     <MdblistShowRatingBadges xsi:nil="true" />
     <TmdbEpisodeRatingsEnabled>false</TmdbEpisodeRatingsEnabled>
@@ -73,6 +93,7 @@
     <DetailsBackdropBlur xsi:nil="true" />
     <NavbarOpacity xsi:nil="true" />
     <NavbarAlwaysExpanded xsi:nil="true" />
+    <BottomNavbarTabs />
     <MediaBarTrailerCaptions xsi:nil="true" />
     <DetailExpandedTabs xsi:nil="true" />
     <VisualTheme>moonfin</VisualTheme>
@@ -99,8 +120,12 @@
     <PreviewAudioEnabled xsi:nil="true" />
     <MediaBarCollectionIds />
     <MediaBarLibraryIds />
+    <MediaBarExcludedGenres />
+    <SeasonalRowEnabled xsi:nil="true" />
+    <SeasonalRowHiddenHolidays />
     <BackdropEnabled xsi:nil="true" />
     <HomeRowsImageTypeOverride xsi:nil="true" />
+    <ModernCardsOnMyMediaRow xsi:nil="true" />
     <ModernHomeRowsPadding xsi:nil="true" />
     <ClassicHomeRowsPadding xsi:nil="true" />
     <FullScreenRows xsi:nil="true" />
@@ -110,6 +135,8 @@
     <ThemeMusicVolume xsi:nil="true" />
     <ThemeMusicLoop xsi:nil="true" />
     <BlockedRatings />
+    <HomeRowOrder />
+    <HomeSections />
     <DisplayFavoritesRows xsi:nil="true" />
     <DisplayCollectionsRows xsi:nil="true" />
     <DisplayGenresRows xsi:nil="true" />
@@ -132,6 +159,9 @@
     <ScreensaverEnabled xsi:nil="true" />
     <ScreensaverDimming xsi:nil="true" />
     <ScreensaverRequireRating xsi:nil="true" />
+    <ScreensaverLibraryIds />
+    <ScreensaverCollectionIds />
+    <ScreensaverExcludedGenres />
     <PreferSdhSubtitles xsi:nil="true" />
     <SubtitlesUseEmbeddedStyles xsi:nil="true" />
     <SubtitlesUseEmbeddedFontSizes xsi:nil="true" />
@@ -152,6 +182,7 @@
     <SkipBackLength xsi:nil="true" />
     <SkipForwardLength xsi:nil="true" />
     <OsdLockEnabled xsi:nil="true" />
+    <ShowChapterMarkers xsi:nil="true" />
     <DetailButtonOrderTv>
       <string>seerrRequest</string>
       <string>seerrRequest4k</string>
@@ -272,6 +303,21 @@
       <string>fullscreen</string>
       <string>floatOnTop</string>
     </OsdButtonOrderDesktop>
+    <HiddenDetailButtonsTv />
+    <HiddenDetailButtonsMobile />
+    <HiddenDetailButtonsDesktop />
+    <HiddenOsdButtonsTv />
+    <HiddenOsdButtonsMobile />
+    <HiddenOsdButtonsDesktop />
+    <DetailMetadataOrderTv />
+    <DetailMetadataOrderMobile />
+    <DetailMetadataOrderDesktop />
+    <HiddenDetailMetadataTv />
+    <HiddenDetailMetadataMobile />
+    <HiddenDetailMetadataDesktop />
+    <HiddenDetailSectionsTv />
+    <HiddenDetailSectionsMobile />
+    <HiddenDetailSectionsDesktop />
     <VideoStartDelay xsi:nil="true" />
     <LiveTvDirectPlayEnabled xsi:nil="true" />
     <CinemaModeEnabled xsi:nil="true" />
@@ -348,17 +394,32 @@
     <HomeRowInfoOverlay xsi:nil="true" />
     <ShowSeerrButton xsi:nil="true" />
     <CrashReportsEnabled xsi:nil="true" />
+    <ShowDownloadsButton xsi:nil="true" />
+    <ShowLiveTvButton xsi:nil="true" />
     <ShowServerMessagesButton xsi:nil="true" />
+    <ShowFriendsButton xsi:nil="true" />
     <DiagnosticLoggingEnabled xsi:nil="true" />
     <UpdateNotificationsEnabled xsi:nil="true" />
     <CollectionsRowShowEpisodes xsi:nil="true" />
     <MergeRecentRowsByType xsi:nil="true" />
     <PlaylistsRowShowEpisodes xsi:nil="true" />
+    <ShowLoadingAnimationText xsi:nil="true" />
   </DefaultUserSettings>
-  <UploadedThemes />
+  <UploadedThemes>
+    <UploadedThemeEntry>
+      <Id>netflix</Id>
+      <DisplayName>Netflix</DisplayName>
+      <FileName>netflix.json</FileName>
+      <SizeBytes>2299</SizeBytes>
+      <UploadedAtUtc>2026-10-22T18:05:42.1121091Z</UploadedAtUtc>
+      <UploadedByUserId>00000000-0000-0000-0000-000000000000</UploadedByUserId>
+      <ChecksumSha256>b984ffb9e7fdaac501bb4de85a925c908963ea22f1f6a15e829024af86ef9eb2</ChecksumSha256>
+    </UploadedThemeEntry>
+  </UploadedThemes>
   <Messages />
   <GamesEnabled>false</GamesEnabled>
   <GameLibraryIds />
+  <GamesIsolateWebApp>false</GamesIsolateWebApp>
   <GamesMetadataEnabled>true</GamesMetadataEnabled>
   <GamesMetadataDbUrlBase>https://cdn.jsdelivr.net/gh/libretro/libretro-database@master/rdb/</GamesMetadataDbUrlBase>
   <GamesLaunchBoxEnabled>true</GamesLaunchBoxEnabled>
