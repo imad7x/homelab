@@ -67,7 +67,8 @@ the streak.
   10+ worn hours between 7:00 and 23:00, and a night only with 3+ hours of recorded sleep.
   Resting HR is the watch's value when one arrives, otherwise the lowest 30-minute average
   asleep. Recovery is a 0-100 score: resting HR and average HR asleep against the 30 nights
-  before, last night's sleep, 3-night sleep debt against 7.5 h, and the last 3 days' TRIMP
+  before, sleep (last night plus that day's naps; overlapping or split
+  records of one night are merged first), 3-day sleep debt against 7.5 h, and the last 3 days' TRIMP
   against the 28-day average (plus HRV against its 60-day range, if the watch ever sends it).
   "Rest" when resting HR is up 5+ bpm two nights running.
   Heart-rate zones and Edwards' TRIMP per workout, and WHO-style intensity minutes.

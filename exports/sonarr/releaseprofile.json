@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "enabled": true,
+    "id": 3,
+    "ignored": [
+      "/(^|[\\s._\\-\\[(])(7z|zip|zipx|rar|iso|img|exe|exi|lnk|scr|msi|bat|cmd)($|[\\s._\\-\\])])/i"
+    ],
+    "indexerId": 0,
+    "name": "Archive/executable fakes",
+    "required": [],
+    "tags": []
+  }
+]

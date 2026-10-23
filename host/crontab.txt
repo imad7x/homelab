@@ -10,3 +10,5 @@
 # Gym AI worker (/docker/gym/ai): runs reports and questions for the gym app on the subscription.
 @reboot sleep 70 && /docker/gym/ai/start.sh
 45 * * * * /docker/jellyfin/servarr/scripts/jellyfin-franchises.sh >> /docker/jellyfin/logs/franchises.log 2>&1
+# IPO Desk worker (/docker/ipodesk/ai): runs the paper account's decisions, post-mortems and weekly reviews on the subscription.
+@reboot sleep 80 && /docker/ipodesk/ai/start.sh

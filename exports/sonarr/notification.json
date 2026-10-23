@@ -61,5 +61,68 @@
     "supportsOnSeriesDelete": true,
     "supportsOnUpgrade": true,
     "tags": []
+  },
+  {
+    "configContract": "CustomScriptSettings",
+    "fields": [
+      {
+        "advanced": false,
+        "isFloat": false,
+        "label": "Path",
+        "name": "path",
+        "order": 0,
+        "privacy": "normal",
+        "type": "filePath",
+        "value": "/scripts/sonarr-preair-guard.sh"
+      },
+      {
+        "advanced": false,
+        "helpText": "Arguments to pass to the script",
+        "hidden": "hiddenIfNotSet",
+        "isFloat": false,
+        "label": "Arguments",
+        "name": "arguments",
+        "order": 1,
+        "privacy": "normal",
+        "type": "textbox"
+      }
+    ],
+    "id": 2,
+    "implementation": "CustomScript",
+    "implementationName": "Custom Script",
+    "includeHealthWarnings": false,
+    "infoLink": "https://wiki.servarr.com/sonarr/supported#customscript",
+    "message": {
+      "message": "Testing will execute the script with the EventType set to Test, ensure your script handles this correctly",
+      "type": "warning"
+    },
+    "name": "Pre-air fake guard",
+    "onApplicationUpdate": false,
+    "onDownload": false,
+    "onEpisodeFileDelete": false,
+    "onEpisodeFileDeleteForUpgrade": false,
+    "onGrab": true,
+    "onHealthIssue": false,
+    "onHealthRestored": false,
+    "onImportComplete": false,
+    "onManualInteractionRequired": false,
+    "onRename": false,
+    "onSeriesAdd": false,
+    "onSeriesDelete": false,
+    "onUpgrade": false,
+    "supportsOnApplicationUpdate": true,
+    "supportsOnDownload": true,
+    "supportsOnEpisodeFileDelete": true,
+    "supportsOnEpisodeFileDeleteForUpgrade": true,
+    "supportsOnGrab": true,
+    "supportsOnHealthIssue": true,
+    "supportsOnHealthRestored": true,
+    "supportsOnImportComplete": true,
+    "supportsOnManualInteractionRequired": true,
+    "supportsOnRename": true,
+    "supportsOnSeriesAdd": true,
+    "supportsOnSeriesDelete": true,
+    "supportsOnUpgrade": true,
+    "tags": []
   }
 ]

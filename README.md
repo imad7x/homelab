@@ -48,12 +48,14 @@ Generated from `docker ps` on every sync.
 <!-- inventory:start -->
 | Stack (`docker/…`) | Container | Image | Host ports |
 |---|---|---|---|
+| - | openwrt-plan | `nginxinc/nginx-unprivileged:alpine` | 8090 |
 | finance | finance-db | `postgres:16-alpine` | 5432 |
 | finance | finance-ingest | `finance-ingest:latest` | - |
 | finance | firefly | `fireflyiii/core:latest` | 3002 |
 | finance | firefly-cron | `alpine:3` | - |
 | gym | gym | `gym:latest` | 8086 |
 | homeassistant | homeassistant | `ghcr.io/home-assistant/home-assistant:stable` | - |
+| ipodesk | ipodesk | `ipodesk:latest` | 8091 |
 | jellyfin | jellyfin | `lscr.io/linuxserver/jellyfin:latest` | 1900, 7359, 8096 |
 | jellyfin | jellystat | `cyfershepard/jellystat:latest` | 3003 |
 | jellyfin | jellystat-db | `postgres:16-alpine` | - |

@@ -291,6 +291,16 @@
         server: my-docker
         container: finance-ingest
 
+    # IPO Desk (/docker/ipodesk): paper trading in recent IPO listings with Rs 1
+    # lakh of pretend money; an AI decides and keeps a playbook of its lessons.
+    - IPO Desk:
+        icon: mdi-chart-line
+        href: http://192.168.0.10:8091
+        siteMonitor: http://192.168.0.10:8091/api/ping
+        description: Paper Trading in New Listings
+        server: my-docker
+        container: ipodesk
+
 - Health:
     # Gym (/docker/gym): workout program, set logger, progress charts and the
     # watch's data. Its summary only changes when a workout is logged, so a
