@@ -122,6 +122,27 @@
         "name": "zip",
         "negate": false,
         "required": false
+      },
+      {
+        "fields": [
+          {
+            "advanced": false,
+            "helpText": "Custom Format RegEx is Case Insensitive",
+            "isFloat": false,
+            "label": "Regular Expression",
+            "name": "value",
+            "order": 0,
+            "privacy": "normal",
+            "type": "textbox",
+            "value": "(^|[\\s._\\-\\[(])(7z|zip|zipx|rar|iso|img|exe|exi|lnk|scr|msi|bat|cmd)($|[\\s._\\-\\])])"
+          }
+        ],
+        "implementation": "ReleaseTitleSpecification",
+        "implementationName": "Release Title",
+        "infoLink": "https://wiki.servarr.com/radarr/settings#custom-formats-2",
+        "name": "Archive or executable",
+        "negate": false,
+        "required": false
       }
     ]
   },

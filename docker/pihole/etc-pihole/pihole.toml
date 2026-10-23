@@ -1,7 +1,7 @@
 # Pi-hole configuration file (v6.8)
 # Encoding: UTF-8
 # This file is managed by pihole-FTL
-# Last updated on 2026-10-22 17:38:35 IST
+# Last updated on 2026-10-23 15:02:01 IST
 
 [dns]
   # Upstream DNS Servers to be used by Pi-hole. If this is not set, Pi-hole will not
@@ -271,7 +271,9 @@
   #    
   #     - "<domain>": Domain used for the reverse server feature (e.g., "fritz.box")
   #     Example: "fritz.box"
-  revServers = []
+  revServers = [
+    "true,192.168.0.0/24,192.168.0.1"
+  ] ### CHANGED, default = []
 
   [dns.domain]
     # The DNS domain used by your Pi-hole.
@@ -1767,6 +1769,6 @@
   all = false
 
 # Configuration statistics:
-# 167 total entries out of which 148 entries are default
-# --> 19 entries are modified
+# 167 total entries out of which 147 entries are default
+# --> 20 entries are modified
 
