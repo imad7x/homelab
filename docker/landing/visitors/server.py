@@ -2,9 +2,9 @@
 """LAN dashboard for the landing page's visitors (port 3011; never give it a tunnel route).
 
 Serves web/ and a small JSON API over visitors.py: who visited, visits per device,
-marking devices as yours, the blocklist nginx enforces, and the weekly reports, which
-it writes every Monday for the week before. Every hour it also copies Cloudflare's log
-(cloudflare.py): the network each visitor came from and the visits to the subdomains.
+marking devices as yours, and the blocklist nginx enforces. Every hour it also copies
+Cloudflare's log (cloudflare.py): the network each visitor came from and the visits to
+the subdomains.
 
 Only the Host names in ALLOWED_HOSTS are answered (stops DNS-rebinding pages reading it
 through a browser on the LAN), and changes need the page's own header and origin.
@@ -116,7 +116,6 @@ def data(rng):
         'requests': [{'when': iso(r['when']), 'email': r['email'][:120], 'valid': r['valid'], 'place': r['place'],
                       'device': r['device'], 'ip': r.get('ip', '')} for r in asks[::-1]],
         'blocklist': a['blocklist'],
-        'reports': V.reports()[:12],
         'apps': [app_json(v) for cat in ('outsider', 'yours', 'noise') for v in [x for x in apps if x['cat'] == cat][:200]],
         'cloudflare': V.pulled(),
     }
@@ -248,18 +247,6 @@ class Handler(BaseHTTPRequestHandler):
             self.send(400, {'error': str(e)})
 
 
-def reporter():
-    """Write last week's report soon after Monday 00:00 IST (checks every 10 minutes)."""
-    while True:
-        try:
-            with LOCK:
-                for path in V.ensure_reports():
-                    print(f'wrote {path}', flush=True)
-        except Exception as e:  # keep the dashboard up whatever a report trips on
-            print(f'report failed: {e!r}', flush=True)
-        time.sleep(600)
-
-
 def puller():
     """Copy Cloudflare's log every hour (the first run fills in the last 30 days)."""
     while True:
@@ -271,7 +258,6 @@ def puller():
 
 
 if __name__ == '__main__':
-    threading.Thread(target=reporter, daemon=True).start()
     threading.Thread(target=puller, daemon=True).start()
     print(f'visitors dashboard on :8080 for {sorted(ALLOWED)}', flush=True)
     ThreadingHTTPServer(('0.0.0.0', 8080), Handler).serve_forever()

@@ -127,3 +127,4 @@ services:
       servarrnetwork:
         ipv4_address: 172.39.0.10
     restart: unless-stopped
+

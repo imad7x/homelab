@@ -3,6 +3,10 @@
 # Catch anything the Sonarr/Radarr import hooks missed (manual copies, failed hooks).
 */30 * * * * /docker/jellyfin/servarr/scripts/jellyfin-prewarm.sh --all >> /docker/jellyfin/logs/prewarm.log 2>&1
 17 4 * * * $HOME/github/homelab/tools/sync.sh >> $HOME/.local/state/homelab-sync.log 2>&1
+# Lab AI gateway (/docker/lab-ai): 127.0.0.1:8092, one ledger and limit-aware routing for every AI call; starts before the workers.
+@reboot sleep 50 && /docker/lab-ai/start.sh
+# Lab AI Portal (core7x, /docker/lab-ai/portal): LAN :8093; AI sessions from the phone, plan limits, session cleanup.
+@reboot sleep 55 && /docker/lab-ai/portal/start.sh
 # Ask my finances (/docker/finance/ask): LAN page on :8085; AI answers on the subscription, not API keys.
 @reboot sleep 60 && /docker/finance/ask/start.sh
 # Pi-hole weekly digest for Grafana (/docker/monitoring/pihole-digest): finalises last week, refreshes this week.
@@ -12,3 +16,6 @@
 45 * * * * /docker/jellyfin/servarr/scripts/jellyfin-franchises.sh >> /docker/jellyfin/logs/franchises.log 2>&1
 # IPO Desk worker (/docker/ipodesk/ai): runs the paper account's decisions, post-mortems and weekly reviews on the subscription.
 @reboot sleep 80 && /docker/ipodesk/ai/start.sh
+# core7x portal-down safety net (/docker/ntfy/portal-watch.sh): pushes straight to ntfy once per outage.
+*/10 * * * * /docker/ntfy/portal-watch.sh
+@reboot sleep 90 && /docker/lgtv/watcher/start.sh

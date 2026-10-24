@@ -168,7 +168,7 @@ a.sub { color: var(--accent); }
 .badge.blocked { color: var(--crit); border-color: color-mix(in srgb, var(--crit) 45%, transparent); }
 .badge.dot::before { content: ""; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; background: currentColor; }
 
-/* ------------------------------------------------------------ blocklist + reports */
+/* ------------------------------------------------------------ blocklist */
 .block-form { display: flex; gap: 8px; }
 .block-form input { flex: 1; min-width: 0; height: 32px; padding: 0 10px; border-radius: 9px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: 16px/1 system-ui, sans-serif; }
 @media (min-width: 720px) { .block-form input { font-size: 13.5px; } }
@@ -179,18 +179,6 @@ a.sub { color: var(--accent); }
 .blocklist li:last-child { border-bottom: 0; }
 .blocklist .what { min-width: 0; }
 .blocklist .what strong { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; word-break: break-all; }
-
-details.report { border: 1px solid var(--line); border-radius: 12px; padding: 0 14px; }
-details.report + details.report { margin-top: 8px; }
-details.report summary { cursor: pointer; padding: 12px 0; display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; list-style: none; }
-details.report summary::-webkit-details-marker { display: none; }
-details.report summary::before { content: "›"; color: var(--muted); transition: transform .15s ease; display: inline-block; }
-details.report[open] summary::before { transform: rotate(90deg); }
-details.report summary strong { font-weight: 650; }
-details.report summary span { color: var(--ink-2); font-size: 13px; }
-.report-body { padding: 0 0 14px; display: grid; gap: 10px; }
-.report-body h3 { font-size: 12.5px; font-weight: 600; color: var(--muted); margin: 4px 0 0; }
-.report-body p { font-size: 13.5px; }
 
 .foot { padding-top: 20px; padding-bottom: 32px; font-size: 12.5px; color: var(--muted); display: grid; gap: 4px; }
 
@@ -212,7 +200,6 @@ details.report summary span { color: var(--ink-2); font-size: 13px; }
   .tbl { font-size: 13px; }
   .tbl td, .tbl th { padding-right: 12px; }
 }
-@media (prefers-reduced-motion: reduce) { details.report summary::before { transition: none; } }
 /* Wide tables keep readable columns and scroll inside their card instead. */
 #devices { min-width: 760px; }
 #activity { min-width: 760px; }

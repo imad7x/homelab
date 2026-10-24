@@ -1,17 +1,14 @@
 # Public landing page for the bare domain (the tunnel's route for it points at
-# port 3000). Two containers, so the one the internet talks to holds nothing:
+# port 3000).
 #
-#   landing            nginx serving ./site and one JSON file. No secrets, no
-#                      proxying, read-only filesystem, no capabilities.
-#   landing-collector  no published port. Every minute it reads Prometheus, the media
-#                      servers, the Pi-hole digest and a few public APIs, and writes
-#                      ./state/public/snapshot.json - counts and percentages only.
+#   landing            nginx serving the static ./site. No secrets, no proxying,
+#                      read-only filesystem, no capabilities.
 #
 #   landing-visitors   LAN-only dashboard (port 3011) over the visitor log: visits per
-#                      device, marking your own devices, the blocklist nginx enforces,
-#                      weekly reports. Also on the command line: `visitors`.
+#                      device, marking your own devices, the blocklist nginx enforces.
+#                      Also on the command line: `visitors`.
 #
-#   log:  docker logs landing-collector
+#   log:  docker logs landing-visitors
 #
 # The full dashboard with LAN links and widgets is homepage-lan on port 3010.
 
@@ -29,8 +26,6 @@ services:
       - ./site:/usr/share/nginx/html:ro
       # The whole folder, so an editor that replaces default.conf (sed -i) is still seen.
       - ./nginx:/etc/nginx/conf.d:ro
-      # Only the public half of the state: the collector's database stays out of reach.
-      - ./state/public:/srv/public:ro
       # Visitor log (writable): one JSON line per page view, read by ./visitors.
       - ./logs:/var/log/visitors
       # Blocklist written by the dashboard; the script reloads nginx when it changes.
@@ -49,32 +44,6 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-
-  landing-collector:
-    build: .
-    image: landing-collector:latest
-    container_name: landing-collector
-    restart: unless-stopped
-    user: "1000:1000"
-    env_file:
-      - collector.env   # Jellyfin and Navidrome read keys
-    environment:
-      - TZ=Asia/Kolkata
-      - PYTHONUNBUFFERED=1
-      - PYTHONDONTWRITEBYTECODE=1
-    read_only: true
-    tmpfs:
-      - /tmp
-    volumes:
-      - ./state:/state
-      # The code is mounted read-only so an edit takes effect on the next restart.
-      - ./collector:/app:ro
-      # Daily DNS totals written by monitoring/pihole-digest (read-only).
-      - /docker/monitoring/pihole-digest:/pihole-digest:ro
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
 
   landing-visitors:
     image: python:3.13-alpine
@@ -100,7 +69,7 @@ services:
       - ./logs:/logs:ro
       # The public page, read for app names ("Tapped Jellyfin").
       - ./site:/site:ro
-      # Names, "this is mine" marks, the blocklist source and the weekly reports.
+      # Names, "this is mine" marks and the blocklist source.
       - ./visitors-state:/visitors-state
       # nginx's include files, regenerated from visitors-state/blocklist.json.
       - ./blocklist:/blocklist

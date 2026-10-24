@@ -460,7 +460,7 @@
       h('tbody', {}, rows));
   }
 
-  // ---------------------------------------------------------------- requests, blocklist, reports
+  // ---------------------------------------------------------------- requests, blocklist
   function renderRequests() {
     const list = D.requests.filter((r) => r.valid);
     const t = clear($('requests'));
@@ -488,49 +488,6 @@
           h('span', { class: 'sub muted', text: `${e.note || ''}${e.note ? ' · ' : ''}since ${fDay.format(new Date(e.at))}` })),
         btn));
     }
-  }
-
-  function renderReports() {
-    const box = clear($('reports'));
-    $('reports-empty').hidden = D.reports.length > 0;
-    D.reports.forEach((r, i) => {
-      const det = h('details', { class: 'report', open: i === 0 },
-        h('summary', {}, h('strong', { text: r.label }),
-          h('span', { text: plural(r.visits, 'visit') }), h('span', { text: plural(r.devices, 'device') }),
-          r.unknown.length ? badge('unknown dot', `${r.unknown.length} unknown`) : badge('mine dot', 'only yours')));
-      const body = h('div', { class: 'report-body' });
-      if (r.unknown.length) {
-        body.append(h('h3', { text: 'Unknown devices' }),
-          h('div', { class: 'table-wrap' }, h('table', { class: 'tbl' },
-            h('thead', {}, h('tr', {}, ['Device', 'Visits', 'Where', 'IPs', 'Last seen'].map((x, k) => h('th', { class: k === 1 ? 'num' : null, text: x })))),
-            h('tbody', {}, r.unknown.map((d) => h('tr', {},
-              h('td', {}, h('span', { text: d.name }), d.blocked ? badge('blocked', 'Blocked') : null,
-                d.name !== d.device ? h('span', { class: 'sub', text: d.device }) : null,
-                d.your_network ? h('span', { class: 'sub', text: 'on a network your devices use' }) : null),
-              h('td', { class: 'num', text: String(d.visits) }),
-              h('td', {}, h('span', { text: d.places.join(', ') }),
-                d.area && d.area.map ? h('a', { class: 'sub', href: d.area.map, target: '_blank', rel: 'noopener noreferrer', text: 'approx. area ↗' }) : null),
-              h('td', { class: 'mono', text: d.ips.join(', ') }),
-              h('td', { class: 'nowrap', text: when(d.last) })))))));
-      }
-      if (r.apps && r.apps.length) {
-        body.append(h('h3', { text: 'Outsiders on your apps' }),
-          h('div', { class: 'table-wrap' }, h('table', { class: 'tbl' },
-            h('thead', {}, h('tr', {}, ['When', 'Device', 'Network', 'IP', 'What happened'].map((x) => h('th', { text: x })))),
-            h('tbody', {}, r.apps.map((x) => h('tr', {},
-              h('td', { class: 'nowrap', text: when(x.when) }),
-              h('td', {}, h('span', { text: x.page_device || x.device }), x.like ? h('span', { class: 'sub', text: `same browser and network as your ${x.like}` }) : null),
-              h('td', { text: x.network }), h('td', { class: 'mono', text: x.ip }), h('td', { text: x.apps })))))));
-      }
-      if (r.mine.length) body.append(h('p', { text: `Yours: ${r.mine.map((m) => `${m.name} (${m.visits})`).join(', ')}` }));
-      const extra = [r.blocked_attempts && plural(r.blocked_attempts, 'blocked attempt'), r.bots && plural(r.bots, 'bot request'),
-        r.probes && plural(r.probes, 'scanner probe'), r.requests.length && plural(r.requests.length, 'access request')].filter(Boolean);
-      if (extra.length) body.append(h('p', { class: 'muted', text: `Also: ${extra.join(', ')}.` }));
-      if (r.requests.length) body.append(h('p', { text: `Requests: ${r.requests.map((q) => `${q.email} (${q.place})`).join(', ')}` }));
-      if (!r.visits && !extra.length) body.append(h('p', { class: 'muted', text: 'No visits that week.' }));
-      det.append(body);
-      box.append(det);
-    });
   }
 
   // ---------------------------------------------------------------- device panel
@@ -609,7 +566,7 @@
 
   // ---------------------------------------------------------------- load loop
   function render() {
-    for (const f of [renderBanner, renderTiles, renderByDevice, renderPerDay, renderDevices, renderActivity, renderApps, renderRequests, renderBlocklist, renderReports]) {
+    for (const f of [renderBanner, renderTiles, renderByDevice, renderPerDay, renderDevices, renderActivity, renderApps, renderRequests, renderBlocklist]) {
       try { f(); } catch (e) { console.error(f.name, e); }
     }
     $('generated').textContent = `Updated ${fTime.format(new Date(D.generated))} IST · refreshes every minute`;

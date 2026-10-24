@@ -918,6 +918,561 @@
     ]
   },
   {
+    "added": "2026-10-24T08:59:19Z",
+    "appProfileId": 1,
+    "capabilities": {
+      "bookSearchParams": [
+        "q"
+      ],
+      "categories": [
+        {
+          "id": 2000,
+          "name": "Movies",
+          "subCategories": [
+            {
+              "id": 2060,
+              "name": "Movies/3D",
+              "subCategories": []
+            },
+            {
+              "id": 2010,
+              "name": "Movies/Foreign",
+              "subCategories": []
+            },
+            {
+              "id": 2040,
+              "name": "Movies/HD",
+              "subCategories": []
+            },
+            {
+              "id": 2070,
+              "name": "Movies/DVD",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 100051,
+          "name": "3D",
+          "subCategories": []
+        },
+        {
+          "id": 5000,
+          "name": "TV",
+          "subCategories": [
+            {
+              "id": 5080,
+              "name": "TV/Documentary",
+              "subCategories": []
+            },
+            {
+              "id": 5060,
+              "name": "TV/Sport",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 100012,
+          "name": "Анимация",
+          "subCategories": []
+        },
+        {
+          "id": 3000,
+          "name": "Audio",
+          "subCategories": [
+            {
+              "id": 3030,
+              "name": "Audio/Audiobook",
+              "subCategories": []
+            },
+            {
+              "id": 3020,
+              "name": "Audio/Video",
+              "subCategories": []
+            },
+            {
+              "id": 3060,
+              "name": "Audio/Foreign",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 100035,
+          "name": "Аудио-книги",
+          "subCategories": []
+        },
+        {
+          "id": 100013,
+          "name": "Боевик",
+          "subCategories": []
+        },
+        {
+          "id": 100052,
+          "name": "Биография",
+          "subCategories": []
+        },
+        {
+          "id": 100033,
+          "name": "Военный",
+          "subCategories": []
+        },
+        {
+          "id": 100045,
+          "name": "Видеоклипы",
+          "subCategories": []
+        },
+        {
+          "id": 100048,
+          "name": "Вестерн",
+          "subCategories": []
+        },
+        {
+          "id": 100021,
+          "name": "Драма",
+          "subCategories": []
+        },
+        {
+          "id": 100032,
+          "name": "Документальный",
+          "subCategories": []
+        },
+        {
+          "id": 100039,
+          "name": "Детектив",
+          "subCategories": []
+        },
+        {
+          "id": 100044,
+          "name": "Зарубежная музыка",
+          "subCategories": []
+        },
+        {
+          "id": 4000,
+          "name": "PC",
+          "subCategories": [
+            {
+              "id": 4050,
+              "name": "PC/Games",
+              "subCategories": []
+            }
+          ]
+        },
+        {
+          "id": 100005,
+          "name": "Игры",
+          "subCategories": []
+        },
+        {
+          "id": 100028,
+          "name": "Исторический",
+          "subCategories": []
+        },
+        {
+          "id": 100018,
+          "name": "Катастрофа",
+          "subCategories": []
+        },
+        {
+          "id": 100024,
+          "name": "Комедия",
+          "subCategories": []
+        },
+        {
+          "id": 100036,
+          "name": "Криминал",
+          "subCategories": []
+        },
+        {
+          "id": 7000,
+          "name": "Books",
+          "subCategories": []
+        },
+        {
+          "id": 100038,
+          "name": "Книги и журналы",
+          "subCategories": []
+        },
+        {
+          "id": 100053,
+          "name": "Классика",
+          "subCategories": []
+        },
+        {
+          "id": 100054,
+          "name": "Классическая музыка",
+          "subCategories": []
+        },
+        {
+          "id": 100019,
+          "name": "Мелодрама",
+          "subCategories": []
+        },
+        {
+          "id": 100020,
+          "name": "Мультфильм",
+          "subCategories": []
+        },
+        {
+          "id": 100031,
+          "name": "Мистика",
+          "subCategories": []
+        },
+        {
+          "id": 100046,
+          "name": "Муз. сборники",
+          "subCategories": []
+        },
+        {
+          "id": 100029,
+          "name": "Наше кино",
+          "subCategories": []
+        },
+        {
+          "id": 100049,
+          "name": "Научно-популярное",
+          "subCategories": []
+        },
+        {
+          "id": 100050,
+          "name": "Новости",
+          "subCategories": []
+        },
+        {
+          "id": 100027,
+          "name": "Приключения",
+          "subCategories": []
+        },
+        {
+          "id": 8000,
+          "name": "Other",
+          "subCategories": []
+        },
+        {
+          "id": 100009,
+          "name": "Разное",
+          "subCategories": []
+        },
+        {
+          "id": 100043,
+          "name": "Русская музыка",
+          "subCategories": []
+        },
+        {
+          "id": 100001,
+          "name": "Софт",
+          "subCategories": []
+        },
+        {
+          "id": 100011,
+          "name": "Сериалы",
+          "subCategories": []
+        },
+        {
+          "id": 100037,
+          "name": "Спорт",
+          "subCategories": []
+        },
+        {
+          "id": 100047,
+          "name": "Сказки",
+          "subCategories": []
+        },
+        {
+          "id": 100055,
+          "name": "Саундтрек",
+          "subCategories": []
+        },
+        {
+          "id": 100025,
+          "name": "ТВ-шоу",
+          "subCategories": []
+        },
+        {
+          "id": 100022,
+          "name": "Триллер",
+          "subCategories": []
+        },
+        {
+          "id": 100026,
+          "name": "Ужасы",
+          "subCategories": []
+        },
+        {
+          "id": 100023,
+          "name": "Фантастика",
+          "subCategories": []
+        },
+        {
+          "id": 100030,
+          "name": "Фэнтази",
+          "subCategories": []
+        },
+        {
+          "id": 6000,
+          "name": "XXX",
+          "subCategories": []
+        },
+        {
+          "id": 100042,
+          "name": "Эротика",
+          "subCategories": []
+        },
+        {
+          "id": 100014,
+          "name": "HDTV",
+          "subCategories": []
+        },
+        {
+          "id": 100015,
+          "name": "DVD",
+          "subCategories": []
+        }
+      ],
+      "limitsDefault": 100,
+      "limitsMax": 100,
+      "movieSearchParams": [
+        "q"
+      ],
+      "musicSearchParams": [
+        "q"
+      ],
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "supportsRawSearch": false,
+      "tvSearchParams": [
+        "q",
+        "season",
+        "ep"
+      ]
+    },
+    "configContract": "CardigannSettings",
+    "definitionName": "bigfangroup",
+    "description": "BigFANGroup is a RUSSIAN Public Torrent Tracker for MOVIES / TV",
+    "downloadClientId": 0,
+    "enable": true,
+    "encoding": "Cyrillic (Windows)",
+    "fields": [
+      {
+        "advanced": false,
+        "hidden": "hidden",
+        "isFloat": false,
+        "name": "definitionFile",
+        "order": 0,
+        "privacy": "normal",
+        "type": "textbox",
+        "value": "bigfangroup"
+      },
+      {
+        "advanced": false,
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "isFloat": false,
+        "label": "Base Url",
+        "name": "baseUrl",
+        "order": 1,
+        "privacy": "normal",
+        "selectOptionsProviderAction": "getUrls",
+        "type": "select"
+      },
+      {
+        "advanced": true,
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "isFloat": false,
+        "label": "Query Limit",
+        "name": "baseSettings.queryLimit",
+        "order": 2,
+        "privacy": "normal",
+        "type": "number"
+      },
+      {
+        "advanced": true,
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "isFloat": false,
+        "label": "Grab Limit",
+        "name": "baseSettings.grabLimit",
+        "order": 3,
+        "privacy": "normal",
+        "type": "number"
+      },
+      {
+        "advanced": true,
+        "helpText": "The unit of time for counting limits per indexer",
+        "isFloat": false,
+        "label": "Limits Unit",
+        "name": "baseSettings.limitsUnit",
+        "order": 4,
+        "privacy": "normal",
+        "selectOptions": [
+          {
+            "hint": "(0)",
+            "name": "Day",
+            "order": 0,
+            "value": 0
+          },
+          {
+            "hint": "(1)",
+            "name": "Hour",
+            "order": 1,
+            "value": 1
+          }
+        ],
+        "type": "select",
+        "value": 0
+      },
+      {
+        "advanced": true,
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "isFloat": false,
+        "label": "Apps Minimum Seeders",
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "order": 5,
+        "privacy": "normal",
+        "type": "number"
+      },
+      {
+        "advanced": false,
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "isFloat": true,
+        "label": "Seed Ratio",
+        "name": "torrentBaseSettings.seedRatio",
+        "order": 6,
+        "privacy": "normal",
+        "type": "number"
+      },
+      {
+        "advanced": true,
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "isFloat": false,
+        "label": "Seed Time",
+        "name": "torrentBaseSettings.seedTime",
+        "order": 7,
+        "privacy": "normal",
+        "type": "number",
+        "unit": "minutes"
+      },
+      {
+        "advanced": true,
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "isFloat": false,
+        "label": "Pack Seed Time",
+        "name": "torrentBaseSettings.packSeedTime",
+        "order": 8,
+        "privacy": "normal",
+        "type": "number",
+        "unit": "minutes"
+      },
+      {
+        "advanced": true,
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "isFloat": false,
+        "label": "Prefer Magnet URL",
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "order": 9,
+        "privacy": "normal",
+        "type": "checkbox",
+        "value": false
+      },
+      {
+        "advanced": false,
+        "isFloat": false,
+        "label": "Strip Cyrillic Letters",
+        "name": "stripcyrillic",
+        "order": 0,
+        "privacy": "normal",
+        "type": "checkbox",
+        "value": false
+      },
+      {
+        "advanced": false,
+        "isFloat": false,
+        "label": "Add RUS to end of all titles to improve language detection by Sonarr and Radarr. Will cause English-only results to be misidentified.",
+        "name": "addrussiantotitle",
+        "order": 1,
+        "privacy": "normal",
+        "type": "checkbox",
+        "value": false
+      },
+      {
+        "advanced": false,
+        "isFloat": false,
+        "label": "Sort requested from site",
+        "name": "sort",
+        "order": 2,
+        "privacy": "normal",
+        "selectOptions": [
+          {
+            "name": "created",
+            "order": 0,
+            "value": 0
+          },
+          {
+            "name": "title",
+            "order": 0,
+            "value": 1
+          },
+          {
+            "name": "seeders",
+            "order": 0,
+            "value": 2
+          },
+          {
+            "name": "size",
+            "order": 0,
+            "value": 3
+          }
+        ],
+        "type": "select",
+        "value": 0
+      },
+      {
+        "advanced": false,
+        "isFloat": false,
+        "label": "Order requested from site",
+        "name": "type",
+        "order": 3,
+        "privacy": "normal",
+        "selectOptions": [
+          {
+            "name": "asc",
+            "order": 0,
+            "value": 0
+          },
+          {
+            "name": "desc",
+            "order": 0,
+            "value": 1
+          }
+        ],
+        "type": "select",
+        "value": 1
+      }
+    ],
+    "id": 28,
+    "implementation": "Cardigann",
+    "implementationName": "Cardigann",
+    "indexerUrls": [
+      "https://bigfangroup.org/",
+      "https://www.freebfg.org/"
+    ],
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#bigfangroup",
+    "language": "ru-RU",
+    "legacyUrls": [],
+    "name": "BigFANGroup",
+    "priority": 25,
+    "privacy": "public",
+    "protocol": "torrent",
+    "redirect": false,
+    "sortName": "bigfangroup",
+    "supportsPagination": false,
+    "supportsRedirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "tags": []
+  },
+  {
     "added": "2026-09-29T18:43:05Z",
     "appProfileId": 1,
     "capabilities": {
@@ -1123,6 +1678,183 @@
     "tags": [
       3
     ]
+  },
+  {
+    "added": "2026-10-24T08:59:40Z",
+    "appProfileId": 1,
+    "capabilities": {
+      "bookSearchParams": [],
+      "categories": [
+        {
+          "id": 6000,
+          "name": "XXX",
+          "subCategories": [
+            {
+              "id": 6050,
+              "name": "XXX/Pack",
+              "subCategories": []
+            }
+          ]
+        }
+      ],
+      "limitsDefault": 100,
+      "limitsMax": 100,
+      "movieSearchParams": [],
+      "musicSearchParams": [],
+      "searchParams": [
+        "q",
+        "q"
+      ],
+      "supportsRawSearch": false,
+      "tvSearchParams": []
+    },
+    "configContract": "CardigannSettings",
+    "definitionName": "freejavtorrent",
+    "description": "Free JAV Torrent is a Public tracker for Asian 3X (JAV)",
+    "downloadClientId": 0,
+    "enable": true,
+    "encoding": "Unicode (UTF-8)",
+    "fields": [
+      {
+        "advanced": false,
+        "hidden": "hidden",
+        "isFloat": false,
+        "name": "definitionFile",
+        "order": 0,
+        "privacy": "normal",
+        "type": "textbox",
+        "value": "freejavtorrent"
+      },
+      {
+        "advanced": false,
+        "helpText": "Select which base url Prowlarr will use for requests to the site",
+        "isFloat": false,
+        "label": "Base Url",
+        "name": "baseUrl",
+        "order": 1,
+        "privacy": "normal",
+        "selectOptionsProviderAction": "getUrls",
+        "type": "select"
+      },
+      {
+        "advanced": true,
+        "helpText": "The number of max queries as specified by the respective unit that Prowlarr will allow to the site",
+        "isFloat": false,
+        "label": "Query Limit",
+        "name": "baseSettings.queryLimit",
+        "order": 2,
+        "privacy": "normal",
+        "type": "number"
+      },
+      {
+        "advanced": true,
+        "helpText": "The number of max grabs as specified by the respective unit that Prowlarr will allow to the site",
+        "isFloat": false,
+        "label": "Grab Limit",
+        "name": "baseSettings.grabLimit",
+        "order": 3,
+        "privacy": "normal",
+        "type": "number"
+      },
+      {
+        "advanced": true,
+        "helpText": "The unit of time for counting limits per indexer",
+        "isFloat": false,
+        "label": "Limits Unit",
+        "name": "baseSettings.limitsUnit",
+        "order": 4,
+        "privacy": "normal",
+        "selectOptions": [
+          {
+            "hint": "(0)",
+            "name": "Day",
+            "order": 0,
+            "value": 0
+          },
+          {
+            "hint": "(1)",
+            "name": "Hour",
+            "order": 1,
+            "value": 1
+          }
+        ],
+        "type": "select",
+        "value": 0
+      },
+      {
+        "advanced": true,
+        "helpText": "Minimum seeders required by the Applications for the indexer to grab, empty is Sync profile's default",
+        "isFloat": false,
+        "label": "Apps Minimum Seeders",
+        "name": "torrentBaseSettings.appMinimumSeeders",
+        "order": 5,
+        "privacy": "normal",
+        "type": "number"
+      },
+      {
+        "advanced": false,
+        "helpText": "The ratio a torrent should reach before stopping, empty uses the download client's default. Ratio should be at least 1.0 and follow the indexers rules",
+        "isFloat": true,
+        "label": "Seed Ratio",
+        "name": "torrentBaseSettings.seedRatio",
+        "order": 6,
+        "privacy": "normal",
+        "type": "number"
+      },
+      {
+        "advanced": true,
+        "helpText": "The time a torrent should be seeded before stopping, empty uses the download client's default",
+        "isFloat": false,
+        "label": "Seed Time",
+        "name": "torrentBaseSettings.seedTime",
+        "order": 7,
+        "privacy": "normal",
+        "type": "number",
+        "unit": "minutes"
+      },
+      {
+        "advanced": true,
+        "helpText": "The time a pack (season or discography) torrent should be seeded before stopping, empty is app's default",
+        "isFloat": false,
+        "label": "Pack Seed Time",
+        "name": "torrentBaseSettings.packSeedTime",
+        "order": 8,
+        "privacy": "normal",
+        "type": "number",
+        "unit": "minutes"
+      },
+      {
+        "advanced": true,
+        "helpText": "When enabled, this indexer will prefer the use of magnet URLs for grabs with fallback to torrent links",
+        "isFloat": false,
+        "label": "Prefer Magnet URL",
+        "name": "torrentBaseSettings.preferMagnetUrl",
+        "order": 9,
+        "privacy": "normal",
+        "type": "checkbox",
+        "value": false
+      }
+    ],
+    "id": 29,
+    "implementation": "Cardigann",
+    "implementationName": "Cardigann",
+    "indexerUrls": [
+      "https://www.freejavtorrent.com/"
+    ],
+    "infoLink": "https://wiki.servarr.com/prowlarr/supported-indexers#freejavtorrent",
+    "language": "en-US",
+    "legacyUrls": [],
+    "name": "Free JAV Torrent",
+    "priority": 25,
+    "privacy": "public",
+    "protocol": "torrent",
+    "redirect": false,
+    "sortName": "free jav torrent",
+    "supportsPagination": false,
+    "supportsRedirect": false,
+    "supportsRss": true,
+    "supportsSearch": true,
+    "tags": []
   },
   {
     "added": "2025-10-10T19:22:55Z",

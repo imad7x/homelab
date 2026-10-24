@@ -27,7 +27,7 @@
         # widget:
         #   type: jellyfin
         #   url: http://192.168.0.10:8096
-        #   key: [[secret:JELLYFIN_KEY]]
+        #   key: [[secret:SEERR_APIKEY_2]]
         #   enableBlocks: true
         #   enableNowPlaying: true
         #   enableUser: true
@@ -201,8 +201,7 @@
         server: my-docker
         container: homepage-lan
 
-    # The public landing page the tunnel serves (/docker/landing): nginx plus the
-    # collector that writes its snapshot every minute.
+    # The public landing page the tunnel serves (/docker/landing): a static nginx site.
     - Landing Page:
         icon: mdi-web
         href: http://192.168.0.10:3000
@@ -210,19 +209,23 @@
         server: my-docker
         container: landing
 
-    - Landing Collector:
-        icon: mdi-database-sync-outline
-        description: Writes the page's snapshot every minute
-        server: my-docker
-        container: landing-collector
-
-    # Who opened the public page: visits per device, blocklist, weekly reports.
+    # Who opened the public page: visits per device, visits to the apps, blocklist.
     - Visitors:
         icon: mdi-account-eye-outline
         href: http://192.168.0.10:3011
         description: Who opened the public page
         server: my-docker
         container: landing-visitors
+
+    # ntfy (/docker/ntfy): phone push alerts from core7x and the apps. LAN and
+    # Tailscale only, never routed through the tunnel.
+    - ntfy:
+        icon: ntfy.png
+        href: http://192.168.0.10:8094
+        description: Phone Alerts
+        server: my-docker
+        container: ntfy
+        siteMonitor: http://192.168.0.10:8094/v1/health
 
 - Monitoring:
     - Grafana:
@@ -301,6 +304,16 @@
         server: my-docker
         container: ipodesk
 
+- AI:
+    # core7x (/docker/lab-ai/portal): lead of the AI team and its portal. Sessions
+    # on any model from the phone, plan limits, cleanup and growth reviews. A host
+    # process, not a container, so only the site monitor shows its state.
+    - core7x:
+        icon: /images/core7x.svg
+        href: http://192.168.0.10:8093
+        description: AI Sessions, Limits & Reviews
+        siteMonitor: http://192.168.0.10:8093/api/me
+
 - Health:
     # Gym (/docker/gym): workout program, set logger, progress charts and the
     # watch's data. Its summary only changes when a workout is logged, so a
@@ -338,20 +351,6 @@
         siteMonitor: http://192.168.0.10:8087/api/ping
 
 - Documents:
-    - Paperless:
-        icon: paperless-ngx.png
-        href: http://192.168.0.10:8000
-        description: OCR Document Archive
-        server: my-docker
-        container: paperless
-        siteMonitor: http://192.168.0.10:8000
-        # For the doc-count widget, create a token in Paperless
-        # (top-right menu -> My Profile -> API Auth Token) and add:
-        #   widget:
-        #     type: paperlessngx
-        #     url: http://192.168.0.10:8000
-        #     key: <token>
-
     # Resume (/docker/resume): resume editor for everyone at home, many
     # templates, PDF download. No logins.
     - Resume:
@@ -362,8 +361,12 @@
         container: resume
         siteMonitor: http://192.168.0.10:8088/api/ping
 
-    - Paperless DB:
-        icon: postgres.png
-        description: Document Index
+- Archive:
+    # oldbackup (/data/oldbackup): old downloads, browsed and played by simpleparty.
+    - oldbackup:
+        icon: mdi-archive
+        href: http://192.168.0.10:1312
+        description: Old Downloads Browser
         server: my-docker
-        container: paperless-db
+        container: simpleparty
+        siteMonitor: http://192.168.0.10:1312

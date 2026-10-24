@@ -11,7 +11,6 @@ and the engine behind the LAN dashboard (server.py, port 3011).
   visitors devices     one line per device, with visit counts
   visitors apps        visits to the subdomains, from Cloudflare's log (cloudflare.py)
   visitors requests    emails left in the footer's "need access?" box
-  visitors report      the latest weekly report (Monday to Sunday)
   visitors pull        fetch Cloudflare's log now (the dashboard does it every hour)
   visitors --all       include bots, link previews, scanners and 404 probes
 
@@ -30,7 +29,6 @@ from datetime import datetime, timedelta, timezone
 BASE = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))  # / in the container
 LOGS = os.path.join(BASE, 'logs')
 STATE = os.path.join(BASE, 'visitors-state')
-REPORTS = os.path.join(STATE, 'reports')
 BLOCKLIST_DIR = os.path.join(BASE, 'blocklist')
 DASHBOARD = 'http://192.168.0.10:3011'
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -407,7 +405,7 @@ def assign_keys(rows):
             r['key'] = near[0] if near else r['ukey']
 
 
-GAP = 180  # seconds without a snapshot refresh before an open page counts as closed
+GAP = 180  # seconds without a ping before an open page counts as closed
 SESSION_GAP = 1800  # seconds of nothing before the next activity starts a new session
 
 
@@ -441,7 +439,7 @@ def pings():
 
 
 def analyse(start=None, end=None, rows=None):
-    """Everything the dashboard, the report and the command show, for [start, end)."""
+    """Everything the dashboard and the command show, for [start, end)."""
     rows = load() if rows is None else rows
     names, blocks = labels(), blocklist()
     refresh, beats = {}, pings()
@@ -537,7 +535,7 @@ def analyse(start=None, end=None, rows=None):
             'all_devices': devices, 'blocklist': blocks, 'mine_ips': mine_ips, 'rows': rows, 'nets': nets}
 
 
-SECTIONS = {'apps': 'Looked at the apps', 'vitals': 'Scrolled to server vitals',
+SECTIONS = {'apps': 'Looked at the apps', 'media': 'Scrolled to the media library', 'vitals': 'Scrolled to server vitals',
             'around': 'Scrolled to weather, media and rates', 'dns': 'Scrolled to DNS filtering',
             'footer': 'Reached the bottom of the page'}
 TABLES = {'fx': 'USD to INR', 'dns': 'DNS filtering'}
@@ -596,8 +594,8 @@ def activity(key):
         if ours(q):
             steps.append((q['ts'], None, 'email', f"Left their email: {q['email'][:120]}" if q['valid']
                           else 'Sent the email box something that is not an email', q))
-    # Runs of the page's once-a-minute refreshes; a run under a minute is just the page's
-    # own first load of its data.
+    # Runs of the page's once-a-minute pings; a run under a minute is just the ping the
+    # page sends as it loads.
     runs = []
     for p in side_log('pings'):
         if not ours(p):
@@ -874,93 +872,18 @@ def pulled():
     return {'ok': st.get('ok'), 'until': st.get('until'), 'error': st.get('error'), 'tried': st.get('tried')}
 
 
-# ---------------------------------------------------------------- weekly reports
-def week_start(t):
-    t = t.astimezone(IST)
-    return datetime(t.year, t.month, t.day, tzinfo=IST) - timedelta(days=t.weekday())
-
-
-def week_label(start):
-    end = start + timedelta(days=6)
-    left = f'{start.day} {start:%b}' if start.month != end.month else f'{start.day}'
-    return f'{left}–{end.day} {end:%b %Y}'
-
-
-def app_summary(v):
-    return {'when': v['when'].isoformat(timespec='minutes'), 'until': v['until'].isoformat(timespec='minutes'),
-            'device': v['device'], 'page_device': (v['page_device'] or {}).get('name'),
-            'network': v['network']['name'] if v['network'] else '', 'ip': v['ip'], 'country': v['cc'],
-            'apps': app_line(v), 'emails': v['emails'], 'like': v['like']}
-
-
-def make_report(start, rows=None):
-    end = start + timedelta(days=7)
-    a = analyse(start, end, rows)
-    people = a['devices']
-    unknown = [d for d in people if not d['mine'] and d['visits']]
-    apps = app_visits(a, start, end)
-    return {
-        'apps': [app_summary(v) for v in apps if v['cat'] == 'outsider'][::-1],
-        'apps_yours': sum(1 for v in apps if v['cat'] == 'yours'),
-        'apps_noise': sum(1 for v in apps if v['cat'] in ('noise', 'bot')),
-        'week': start.date().isoformat(), 'label': week_label(start),
-        'generated': datetime.now(IST).isoformat(timespec='seconds'),
-        'visits': len(a['visits']), 'devices': sum(1 for d in people if d['visits']),
-        'mine_visits': sum(1 for v in a['visits'] if v['mine']),
-        'unknown_visits': sum(1 for v in a['visits'] if not v['mine']),
-        'unknown': [{'name': d['name'], 'device': d['auto'], 'visits': d['visits'],
-                     'first': min(d['ips'].values()).isoformat(timespec='minutes'),
-                     'last': max(d['ips'].values()).isoformat(timespec='minutes'),
-                     'ips': list(d['ips']), 'places': list(d['places']), 'area': d['area'],
-                     'your_network': d['your_network'], 'blocked': d['blocked']} for d in unknown],
-        'mine': [{'name': d['name'], 'visits': d['visits']} for d in people if d['mine'] and d['visits']],
-        'blocked_attempts': len(a['attempts']),
-        'bots': sum(1 for r in a['others'] if r['bot']),
-        'probes': sum(1 for r in a['others'] if not r['bot']),
-        'requests': [{'when': r['when'].isoformat(timespec='minutes'), 'email': r['email'],
-                      'place': r['place'], 'device': r['device'], 'ip': r.get('ip', '')}
-                     for r in requests(start, end) if r['valid']],
-    }
-
-
-def ensure_reports(rows=None):
-    """Write a report for every finished week since logging began (up to 12 back)."""
-    rows = load() if rows is None else rows
-    if not rows:
-        return []
-    done = week_start(datetime.now(IST))
-    week = max(week_start(rows[0]['when']), done - timedelta(weeks=12))
-    made = []
-    while week < done:
-        path = os.path.join(REPORTS, f'{week.date().isoformat()}.json')
-        if not os.path.exists(path):
-            write_json(path, make_report(week, rows))
-            made.append(path)
-        week += timedelta(weeks=1)
-    return made
-
-
-def reports():
-    out = [read_json(p, None) for p in sorted(glob.glob(os.path.join(REPORTS, '*.json')), reverse=True)]
-    return [r for r in out if r]
-
-
 # ---------------------------------------------------------------- "seen" (for the login brief)
 def seen():
     return read_json(os.path.join(STATE, 'seen.json'), {})
 
 
 def mark_seen():
-    latest = reports()
-    write_json(os.path.join(STATE, 'seen.json'), {
-        'opened': datetime.now(IST).isoformat(timespec='seconds'),
-        'report': latest[0]['week'] if latest else seen().get('report')})
+    write_json(os.path.join(STATE, 'seen.json'), {'opened': datetime.now(IST).isoformat(timespec='seconds')})
 
 
 def brief():
     """One line for lab-brief: 'ok|warn<TAB>text'."""
     rows = load()
-    ensure_reports(rows)
     s = seen()
     since = datetime.fromisoformat(s['opened']) if s.get('opened') else datetime.now(IST) - timedelta(days=7)
     a = analyse(since, None, rows)
@@ -979,10 +902,6 @@ def brief():
         level, v = 'warn', outsiders[0]
         parts.append(f"{len(outsiders)} outsider visit{'s' * (len(outsiders) != 1)} to your apps "
                      f"(latest: {app_line(v)[:70]}, {v['network']['name'] if v['network'] else v['ip']})")
-    latest = reports()
-    if latest and latest[0]['week'] != s.get('report'):
-        r = latest[0]
-        parts.append(f"weekly report {r['label']} ready ({len(r['unknown'])} unknown)")
     if level == 'warn' or len(parts) > 1:
         parts.append(f"`visitors` or {DASHBOARD.split('//')[1]}")
     return f"{level}\t{' · '.join(parts)}"
@@ -1020,30 +939,9 @@ def duration(sec, partial=False):
     return f'{sec // 60} min' if sec < 3600 else f'{sec // 3600} h {sec % 3600 // 60} min'
 
 
-def print_report(r):
-    print(f"Week {r['label']}: {r['visits']} visit(s) from {r['devices']} device(s); "
-          f"{r['mine_visits']} yours, {r['unknown_visits']} unknown.")
-    if r['unknown']:
-        print()
-        table(['UNKNOWN DEVICE', 'VISITS', 'WHERE', 'IPS', 'LAST SEEN'],
-              [[d['name'], d['visits'], ', '.join(d['places']), ', '.join(d['ips'][:3]),
-                stamp(datetime.fromisoformat(d['last']))] for d in r['unknown']])
-    if r.get('apps'):
-        print('\nOutsiders on your apps (subdomains):')
-        table(['TIME (IST)', 'DEVICE', 'NETWORK', 'IP', 'WHAT HAPPENED'],
-              [[stamp(datetime.fromisoformat(x['when'])), x['page_device'] or x['device'], x['network'], x['ip'],
-                x['apps'][:90]] for x in r['apps']])
-    extra = [f"{r['blocked_attempts']} blocked attempt(s)" if r['blocked_attempts'] else '',
-             f"{r['bots']} bot request(s)" if r['bots'] else '',
-             f"{r['probes']} scanner probe(s)" if r['probes'] else '',
-             f"{len(r['requests'])} access request(s)" if r['requests'] else '']
-    if any(extra):
-        print('\n' + ', '.join(x for x in extra if x).capitalize() + '.')
-
-
 def main():
     ap = argparse.ArgumentParser(description='Visitors to the public landing page.')
-    ap.add_argument('view', nargs='?', choices=['devices', 'apps', 'requests', 'report', 'brief', 'pull'])
+    ap.add_argument('view', nargs='?', choices=['devices', 'apps', 'requests', 'brief', 'pull'])
     ap.add_argument('-n', type=int, default=30, help='how many lines (default 30)')
     ap.add_argument('--all', action='store_true', help='include bots, scanners and 404s')
     a = ap.parse_args()
@@ -1081,15 +979,6 @@ def main():
         return
 
     rows = load()
-    if a.view == 'report':
-        ensure_reports(rows)
-        latest = reports()
-        if latest:
-            print_report(latest[0])
-            mark_seen()
-        else:
-            print('No finished week yet; the first report comes the Monday after logging began.')
-        return
     if not rows:
         print('No visits logged yet.')
         return

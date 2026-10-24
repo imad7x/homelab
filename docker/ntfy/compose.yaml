@@ -1,0 +1,21 @@
+# ntfy notification server — LAN/Tailscale only, no Cloudflare tunnel route.
+# Reachable at http://192.168.0.10:8094 (phone uses this over Tailscale too).
+services:
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    command: serve
+    user: "1000:1000"
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Kolkata
+    volumes:
+      - ./server.yml:/etc/ntfy/server.yml:ro
+      - ./state:/var/lib/ntfy
+    ports:
+      - "8094:8094"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8094/v1/health | grep -q '\"healthy\":true' || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3

@@ -69,6 +69,8 @@ services:
     restart: unless-stopped
     user: "1000:1000"
     command: ["python", "/app/worker.py"]
+    env_file:
+      - ./secrets/notify.env          # NOTIFY_TOKEN + NOTIFY_URL for the core7x notifier
     environment:
       - PYTHONDONTWRITEBYTECODE=1
       - INGEST_INTERVAL=900
