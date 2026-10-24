@@ -5,7 +5,8 @@
         "ratio_limit": -2,
         "save_path": "",
         "seeding_time_limit": -2,
-        "share_limit_action": "Default"
+        "share_limit_action": "Default",
+        "share_limits_mode": "Default"
     },
     "music": {
         "download_path": null,
@@ -13,7 +14,8 @@
         "ratio_limit": -2,
         "save_path": "",
         "seeding_time_limit": -2,
-        "share_limit_action": "Default"
+        "share_limit_action": "Default",
+        "share_limits_mode": "Default"
     },
     "prowlarr": {
         "download_path": null,
@@ -21,7 +23,8 @@
         "ratio_limit": -2,
         "save_path": "",
         "seeding_time_limit": -2,
-        "share_limit_action": "Default"
+        "share_limit_action": "Default",
+        "share_limits_mode": "Default"
     },
     "radarr": {
         "download_path": null,
@@ -29,7 +32,8 @@
         "ratio_limit": -2,
         "save_path": "",
         "seeding_time_limit": -2,
-        "share_limit_action": "Default"
+        "share_limit_action": "Default",
+        "share_limits_mode": "Default"
     },
     "shows": {
         "download_path": null,
@@ -37,7 +41,8 @@
         "ratio_limit": -2,
         "save_path": "",
         "seeding_time_limit": -2,
-        "share_limit_action": "Default"
+        "share_limit_action": "Default",
+        "share_limits_mode": "Default"
     },
     "tv-sonarr": {
         "download_path": null,
@@ -45,6 +50,16 @@
         "ratio_limit": -2,
         "save_path": "",
         "seeding_time_limit": -2,
-        "share_limit_action": "Default"
+        "share_limit_action": "Default",
+        "share_limits_mode": "Default"
+    },
+    "whisparr": {
+        "download_path": null,
+        "inactive_seeding_time_limit": -2,
+        "ratio_limit": -2,
+        "save_path": "",
+        "seeding_time_limit": -2,
+        "share_limit_action": "Default",
+        "share_limits_mode": "Default"
     }
 }

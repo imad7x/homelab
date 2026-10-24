@@ -13,7 +13,7 @@ All four sit on `pihole_net` (172.20.0.0/24) with fixed IPs. The *arr apps use P
 - **Tunnel**: its token is `CLOUDFLARE_TUNNEL_TOKEN` in `.env`. The hostname-to-service
   map is read from the tunnel's log every night into
   [`exports/cloudflared/tunnel-ingress.json`](../../exports/cloudflared/tunnel-ingress.json).
-  Apps without a login strong enough for the internet (the updater, Paperless) are kept
+  Apps without a login strong enough for the internet (the updater) are kept
   off the tunnel on purpose; reach those over Tailscale.
 - **Blocklists, groups and allow/deny lists** live in Pi-hole's database and are exported
   to [`exports/pihole`](../../exports/pihole).

@@ -3,6 +3,27 @@
     "access": "proxy",
     "basicAuth": false,
     "database": "",
+    "id": 11,
+    "isDefault": false,
+    "jsonData": {
+      "path": "/var/lib/lab-ai/ledger.db",
+      "pathOptions": "mode=ro",
+      "pathPrefix": "file:"
+    },
+    "name": "AI Usage",
+    "orgId": 1,
+    "readOnly": true,
+    "type": "frser-sqlite-datasource",
+    "typeLogoUrl": "public/plugins/frser-sqlite-datasource/img/logo.svg",
+    "typeName": "SQLite",
+    "uid": "ai-usage",
+    "url": "",
+    "user": ""
+  },
+  {
+    "access": "proxy",
+    "basicAuth": false,
+    "database": "",
     "id": 3,
     "isDefault": false,
     "jsonData": {

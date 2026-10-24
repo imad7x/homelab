@@ -57,6 +57,8 @@ services:
       - ./pihole-digest:/var/lib/pihole-digest:ro
       # Health & Training dashboard: health.db written by the gym app (/docker/gym/app/analysis.py)
       - /docker/gym/state/grafana:/var/lib/gym:ro
+      # AI Usage dashboard: ledger.db snapshot written by the lab AI gateway (/docker/lab-ai)
+      - /docker/lab-ai/state/grafana:/var/lib/lab-ai:ro
     # The Finance dashboard reads Firefly's database (finance-db, which is only
     # reachable on the finance stack's network) as the read-only grafana_ro.
     env_file:

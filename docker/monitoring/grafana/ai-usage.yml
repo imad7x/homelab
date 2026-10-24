@@ -1,0 +1,15 @@
+# AI Usage dashboard: ledger.db is a snapshot of the lab AI gateway's ledger (/docker/lab-ai),
+# rewritten into /docker/lab-ai/state/grafana every 5 minutes and mounted read-only into the
+# container. The SQLite plugin (frser-sqlite-datasource) is installed by GF_PLUGINS_PREINSTALL_SYNC.
+apiVersion: 1
+
+datasources:
+  - name: AI Usage
+    uid: ai-usage
+    type: frser-sqlite-datasource
+    access: proxy
+    jsonData:
+      path: /var/lib/lab-ai/ledger.db
+      pathPrefix: 'file:'
+      pathOptions: mode=ro
+    editable: false

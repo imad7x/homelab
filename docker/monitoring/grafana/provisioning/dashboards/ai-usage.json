@@ -1,0 +1,1032 @@
+{
+  "uid": "ai-usage",
+  "title": "AI Usage",
+  "description": "Every AI call on the lab, from the gateway's ledger: limits left in each plan, tokens by pool, and which app and model used them.",
+  "tags": [
+    "ai",
+    "homelab"
+  ],
+  "timezone": "browser",
+  "weekStart": "monday",
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "5m",
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "schemaVersion": 41,
+  "version": 1,
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "type": "row",
+      "id": 1,
+      "title": "Limits",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "bargauge",
+      "title": "Left in each limit now",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "ai-usage"
+      },
+      "description": "Newest reading per plan and window, taken every 10 minutes with each CLI's own usage command (costs no tokens). The subscription's 5-hour window is shared with chats.",
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ai-usage"
+          },
+          "queryType": "table",
+          "queryText": "SELECT p.label || CASE l.win WHEN '5h' THEN ' \u00b7 5-hour' ELSE ' \u00b7 ' || l.win END AS name, 100 - l.used_pct AS left_pct FROM limits l JOIN pools p ON p.code = l.pool WHERE l.t = (SELECT max(t) FROM limits x WHERE x.pool = l.pool AND x.win = l.win) ORDER BY p.ord, l.win",
+          "rawQueryText": "SELECT p.label || CASE l.win WHEN '5h' THEN ' \u00b7 5-hour' ELSE ' \u00b7 ' || l.win END AS name, 100 - l.used_pct AS left_pct FROM limits l JOIN pools p ON p.code = l.pool WHERE l.t = (SELECT max(t) FROM limits x WHERE x.pool = l.pool AND x.win = l.win) ORDER BY p.ord, l.win",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "decimals": 0,
+          "displayName": "${__data.fields.name}",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#d03b3b",
+                "value": null
+              },
+              {
+                "color": "#fab219",
+                "value": 10
+              },
+              {
+                "color": "#0ca30c",
+                "value": 25
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [],
+          "fields": "",
+          "values": true
+        },
+        "orientation": "horizontal",
+        "displayMode": "basic",
+        "valueMode": "color",
+        "showUnfilled": true,
+        "namePlacement": "left",
+        "sizing": "auto",
+        "minVizHeight": 16,
+        "maxVizHeight": 24
+      },
+      "id": 2,
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 10,
+        "h": 7
+      }
+    },
+    {
+      "type": "table",
+      "title": "When each limit resets",
+      "description": "Times from the subscription CLI are as it prints them; Google's are converted to IST.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "ai-usage"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ai-usage"
+          },
+          "queryType": "table",
+          "queryText": "SELECT p.label || CASE l.win WHEN '5h' THEN ' \u00b7 5-hour' ELSE ' \u00b7 ' || l.win END AS \"Limit\", ROUND(l.used_pct, 1) AS \"Used %\", CASE WHEN l.resets LIKE '____-__-__T%' THEN strftime('%Y-%m-%d %H:%M IST', l.resets, '+330 minutes') ELSE l.resets END AS \"Resets\" FROM limits l JOIN pools p ON p.code = l.pool WHERE l.t = (SELECT max(t) FROM limits x WHERE x.pool = l.pool AND x.win = l.win) ORDER BY p.ord, l.win",
+          "rawQueryText": "SELECT p.label || CASE l.win WHEN '5h' THEN ' \u00b7 5-hour' ELSE ' \u00b7 ' || l.win END AS \"Limit\", ROUND(l.used_pct, 1) AS \"Used %\", CASE WHEN l.resets LIKE '____-__-__T%' THEN strftime('%Y-%m-%d %H:%M IST', l.resets, '+330 minutes') ELSE l.resets END AS \"Resets\" FROM limits l JOIN pools p ON p.code = l.pool WHERE l.t = (SELECT max(t) FROM limits x WHERE x.pool = l.pool AND x.win = l.win) ORDER BY p.ord, l.win",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "noValue": "Nothing in this range"
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "fields": []
+        }
+      },
+      "id": 3,
+      "gridPos": {
+        "x": 10,
+        "y": 1,
+        "w": 14,
+        "h": 7
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Limits used over time",
+      "description": "Each line is one plan window; it drops back when the window resets.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "ai-usage"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ai-usage"
+          },
+          "queryType": "table",
+          "queryText": "SELECT l.t AS time, p.label || CASE l.win WHEN '5h' THEN ' \u00b7 5-hour' ELSE ' \u00b7 ' || l.win END AS series, l.used_pct AS used FROM limits l JOIN pools p ON p.code = l.pool WHERE l.t >= $__from / 1000 AND l.t <= $__to / 1000 ORDER BY l.t",
+          "rawQueryText": "SELECT l.t AS time, p.label || CASE l.win WHEN '5h' THEN ' \u00b7 5-hour' ELSE ' \u00b7 ' || l.win END AS series, l.used_pct AS used FROM limits l JOIN pools p ON p.code = l.pool WHERE l.t >= $__from / 1000 AND l.t <= $__to / 1000 ORDER BY l.t",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "transformations": [
+        {
+          "id": "partitionByValues",
+          "options": {
+            "fields": [
+              "series"
+            ],
+            "keepFields": false,
+            "naming": {
+              "asLabels": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "displayName": "${__field.labels.series}",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": true,
+            "lineInterpolation": "stepAfter",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "axisSoftMin": 0,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisSoftMax": 100
+          },
+          "noValue": "No data"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*Pro.*"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d95926"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*Gemini.*"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3987e5"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*GPT.*"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#199e70"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*Pro \u00b7 week"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    6
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 4,
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 24,
+        "h": 8
+      }
+    },
+    {
+      "type": "row",
+      "id": 5,
+      "title": "Tokens",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "Calls",
+      "description": "",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "ai-usage"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ai-usage"
+          },
+          "queryType": "table",
+          "queryText": "SELECT count(*) AS calls FROM calls c WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000",
+          "rawQueryText": "SELECT count(*) AS calls FROM calls c WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 6,
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 4,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Answered from the cache",
+      "description": "Repeat requests that cost no tokens.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "ai-usage"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ai-usage"
+          },
+          "queryType": "table",
+          "queryText": "SELECT COALESCE(sum(c.cached), 0) AS hits FROM calls c WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000",
+          "rawQueryText": "SELECT COALESCE(sum(c.cached), 0) AS hits FROM calls c WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 7,
+      "gridPos": {
+        "x": 4,
+        "y": 17,
+        "w": 4,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Failed calls",
+      "description": "",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "ai-usage"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ai-usage"
+          },
+          "queryType": "table",
+          "queryText": "SELECT COALESCE(sum(1 - c.ok), 0) AS failed FROM calls c WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000",
+          "rawQueryText": "SELECT COALESCE(sum(1 - c.ok), 0) AS failed FROM calls c WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 8,
+      "gridPos": {
+        "x": 8,
+        "y": 17,
+        "w": 4,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Tokens in",
+      "description": "Fresh input plus cache writes and reads.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "ai-usage"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ai-usage"
+          },
+          "queryType": "table",
+          "queryText": "SELECT COALESCE(sum(COALESCE(c.input,0) + COALESCE(c.cache_write,0) + COALESCE(c.cache_read,0)), 0) AS tokens FROM calls c WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000",
+          "rawQueryText": "SELECT COALESCE(sum(COALESCE(c.input,0) + COALESCE(c.cache_write,0) + COALESCE(c.cache_read,0)), 0) AS tokens FROM calls c WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 9,
+      "gridPos": {
+        "x": 12,
+        "y": 17,
+        "w": 4,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Tokens out",
+      "description": "Answers plus thinking.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "ai-usage"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ai-usage"
+          },
+          "queryType": "table",
+          "queryText": "SELECT COALESCE(sum(COALESCE(c.output,0) + COALESCE(c.thinking,0)), 0) AS tokens FROM calls c WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000",
+          "rawQueryText": "SELECT COALESCE(sum(COALESCE(c.output,0) + COALESCE(c.thinking,0)), 0) AS tokens FROM calls c WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 10,
+      "gridPos": {
+        "x": 16,
+        "y": 17,
+        "w": 4,
+        "h": 4
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Helper calls",
+      "description": "Work handed to the Google plan's models.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "ai-usage"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ai-usage"
+          },
+          "queryType": "table",
+          "queryText": "SELECT count(*) AS calls FROM calls c WHERE c.cli = 'agy' AND c.t >= $__from / 1000 AND c.t <= $__to / 1000",
+          "rawQueryText": "SELECT count(*) AS calls FROM calls c WHERE c.cli = 'agy' AND c.t >= $__from / 1000 AND c.t <= $__to / 1000",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "showPercentChange": false
+      },
+      "id": 11,
+      "gridPos": {
+        "x": 20,
+        "y": 17,
+        "w": 4,
+        "h": 4
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Tokens per day, by pool",
+      "description": "Input, output and thinking tokens per day (IST), stacked by pool.",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "ai-usage"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ai-usage"
+          },
+          "queryType": "table",
+          "queryText": "SELECT ((c.t + 19800) / 86400) * 86400 - 19800 AS time, p.label AS pool, SUM(COALESCE(c.input,0) + COALESCE(c.cache_write,0) + COALESCE(c.cache_read,0) + COALESCE(c.output,0) + COALESCE(c.thinking,0)) AS tokens FROM calls c JOIN pools p ON p.code = c.pool WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000 GROUP BY 1, 2 ORDER BY 1",
+          "rawQueryText": "SELECT ((c.t + 19800) / 86400) * 86400 - 19800 AS time, p.label AS pool, SUM(COALESCE(c.input,0) + COALESCE(c.cache_write,0) + COALESCE(c.cache_read,0) + COALESCE(c.output,0) + COALESCE(c.thinking,0)) AS tokens FROM calls c JOIN pools p ON p.code = c.pool WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000 GROUP BY 1, 2 ORDER BY 1",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "transformations": [
+        {
+          "id": "partitionByValues",
+          "options": {
+            "fields": [
+              "pool"
+            ],
+            "keepFields": false,
+            "naming": {
+              "asLabels": true
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "displayName": "${__field.labels.pool}",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 2,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "showPoints": "never",
+            "pointSize": 5,
+            "spanNulls": true,
+            "lineInterpolation": "linear",
+            "axisBorderShow": false,
+            "barAlignment": 0,
+            "axisSoftMin": 0,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            }
+          },
+          "noValue": "No data"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*Pro.*"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#d95926"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*Gemini.*"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#3987e5"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*GPT.*"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#199e70"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "id": 12,
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 24,
+        "h": 8
+      }
+    },
+    {
+      "type": "row",
+      "id": 13,
+      "title": "Who used what",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 29,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "table",
+      "title": "By app and model",
+      "description": "",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "ai-usage"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ai-usage"
+          },
+          "queryType": "table",
+          "queryText": "SELECT c.app AS \"App\", c.model AS \"Model\", p.label AS \"Pool\", count(*) AS \"Calls\", sum(c.cached) AS \"From cache\", sum(COALESCE(c.input,0) + COALESCE(c.cache_write,0) + COALESCE(c.cache_read,0)) AS \"Tokens in\", sum(COALESCE(c.output,0) + COALESCE(c.thinking,0)) AS \"Tokens out\", ROUND(avg(c.ms) / 1000.0, 1) AS \"Avg seconds\", sum(1 - c.ok) AS \"Failed\" FROM calls c JOIN pools p ON p.code = c.pool WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000 GROUP BY c.app, c.model ORDER BY 6 DESC",
+          "rawQueryText": "SELECT c.app AS \"App\", c.model AS \"Model\", p.label AS \"Pool\", count(*) AS \"Calls\", sum(c.cached) AS \"From cache\", sum(COALESCE(c.input,0) + COALESCE(c.cache_write,0) + COALESCE(c.cache_read,0)) AS \"Tokens in\", sum(COALESCE(c.output,0) + COALESCE(c.thinking,0)) AS \"Tokens out\", ROUND(avg(c.ms) / 1000.0, 1) AS \"Avg seconds\", sum(1 - c.ok) AS \"Failed\" FROM calls c JOIN pools p ON p.code = c.pool WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000 GROUP BY c.app, c.model ORDER BY 6 DESC",
+          "timeColumns": []
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "noValue": "Nothing in this range"
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "fields": []
+        }
+      },
+      "id": 14,
+      "gridPos": {
+        "x": 0,
+        "y": 30,
+        "w": 24,
+        "h": 8
+      }
+    },
+    {
+      "type": "table",
+      "title": "Recent calls",
+      "description": "",
+      "datasource": {
+        "type": "frser-sqlite-datasource",
+        "uid": "ai-usage"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ai-usage"
+          },
+          "queryType": "table",
+          "queryText": "SELECT c.t AS time, c.app AS \"App\", c.kind AS \"Job\", c.model AS \"Model\", p.label AS \"Pool\", COALESCE(c.input,0) + COALESCE(c.cache_write,0) + COALESCE(c.cache_read,0) AS \"In\", COALESCE(c.output,0) + COALESCE(c.thinking,0) AS \"Out\", ROUND(c.ms / 1000.0, 1) AS \"Seconds\", CASE WHEN c.cached = 1 THEN 'cache' WHEN c.ok = 1 THEN 'ok' ELSE 'failed' END AS \"Result\", c.error AS \"Error\" FROM calls c LEFT JOIN pools p ON p.code = c.pool WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000 ORDER BY c.t DESC LIMIT 200",
+          "rawQueryText": "SELECT c.t AS time, c.app AS \"App\", c.kind AS \"Job\", c.model AS \"Model\", p.label AS \"Pool\", COALESCE(c.input,0) + COALESCE(c.cache_write,0) + COALESCE(c.cache_read,0) AS \"In\", COALESCE(c.output,0) + COALESCE(c.thinking,0) AS \"Out\", ROUND(c.ms / 1000.0, 1) AS \"Seconds\", CASE WHEN c.cached = 1 THEN 'cache' WHEN c.ok = 1 THEN 'ok' ELSE 'failed' END AS \"Result\", c.error AS \"Error\" FROM calls c LEFT JOIN pools p ON p.code = c.pool WHERE c.t >= $__from / 1000 AND c.t <= $__to / 1000 ORDER BY c.t DESC LIMIT 200",
+          "timeColumns": [
+            "time"
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "noValue": "Nothing in this range"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "App"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Job"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Result"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Seconds"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 75
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "reducer": [
+            "sum"
+          ],
+          "fields": []
+        }
+      },
+      "id": 15,
+      "gridPos": {
+        "x": 0,
+        "y": 38,
+        "w": 24,
+        "h": 10
+      }
+    }
+  ]
+}

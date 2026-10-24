@@ -35,10 +35,9 @@ kept encrypted - see [Secrets](#secrets).
 | `docker/jellyfin` | Jellyfin and Jellystat; the *arr stack (`servarr/`); music (`music/`) | [README](docker/jellyfin) |
 | `docker/monitoring` | Prometheus, VictoriaMetrics, Grafana, node-exporter, cAdvisor, Scrutiny, smartctl-exporter, Homepage | [README](docker/monitoring) |
 | `docker/finance` | Firefly III with a mail-driven ingest worker | [README](docker/finance) |
-| `docker/paperless` | Paperless-ngx document archive | [README](docker/paperless) |
 | `docker/updater` | One-click container updater (custom app) | [README](docker/updater) |
 | `docker/gym` | Workout program, set logger and watch data (custom app) | [README](docker/gym) |
-| `docker/landing` | Public landing page: app launcher, live vitals, weather and rates (custom app) | [README](docker/landing) |
+| `docker/landing` | Public landing page: app launcher and visitor log (custom app) | [README](docker/landing) |
 | `docker/homeassistant` | Home Assistant | [README](docker/homeassistant) |
 
 ### Containers
@@ -48,7 +47,7 @@ Generated from `docker ps` on every sync.
 <!-- inventory:start -->
 | Stack (`docker/…`) | Container | Image | Host ports |
 |---|---|---|---|
-| - | openwrt-plan | `nginxinc/nginx-unprivileged:alpine` | 8090 |
+| - | simpleparty | `python:3.12-slim` | 1312 |
 | finance | finance-db | `postgres:16-alpine` | 5432 |
 | finance | finance-ingest | `finance-ingest:latest` | - |
 | finance | firefly | `fireflyiii/core:latest` | 3002 |
@@ -68,7 +67,6 @@ Generated from `docker ps` on every sync.
 | jellyfin/servarr | radarr | `lscr.io/linuxserver/radarr:latest` | 7878 |
 | jellyfin/servarr | sonarr | `lscr.io/linuxserver/sonarr:latest` | 8989 |
 | landing | landing | `nginxinc/nginx-unprivileged:alpine` | 3000 |
-| landing | landing-collector | `landing-collector:latest` | - |
 | landing | landing-visitors | `python:3.13-alpine` | 3011 |
 | monitoring | cadvisor | `gcr.io/cadvisor/cadvisor:v0.49.1` | 8082 |
 | monitoring | grafana | `grafana/grafana` | 3001 |
@@ -79,9 +77,7 @@ Generated from `docker ps` on every sync.
 | monitoring | victoriametrics | `victoriametrics/victoria-metrics:v1.153.0` | - |
 | monitoring/homepage-lan | homepage-lan | `ghcr.io/gethomepage/homepage:latest` | 3010 |
 | movies | movies | `movies:latest` | 8089 |
-| paperless | paperless | `ghcr.io/paperless-ngx/paperless-ngx:latest` | 8000 |
-| paperless | paperless-db | `postgres:16-alpine` | - |
-| paperless | paperless-redis | `redis:7-alpine` | - |
+| ntfy | ntfy | `binwiederhier/ntfy:latest` | 8094 |
 | pihole | cloudflared | `cloudflare/cloudflared:2025.10.0` | - |
 | pihole | cloudflared_tunnel | `cloudflare/cloudflared:latest` | - |
 | pihole | flaresolverr | `ghcr.io/flaresolverr/flaresolverr:latest` | 8191 |

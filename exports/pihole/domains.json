@@ -117,5 +117,173 @@
     "enabled": 1,
     "id": 17,
     "type": 0
+  },
+  {
+    "comment": "LG telemetry audit 2026-10-24",
+    "domain": "kic-mclip.lgthinq.com",
+    "enabled": 1,
+    "id": 18,
+    "type": 1
+  },
+  {
+    "comment": "LG telemetry audit 2026-10-24",
+    "domain": "kic-connect-client.lgthinq.com",
+    "enabled": 1,
+    "id": 19,
+    "type": 1
+  },
+  {
+    "comment": "LG telemetry audit 2026-10-24",
+    "domain": "common.iot.kic.lgthinq.com",
+    "enabled": 1,
+    "id": 20,
+    "type": 1
+  },
+  {
+    "comment": "LG telemetry audit 2026-10-24",
+    "domain": "kic.tv.wiselg.com",
+    "enabled": 1,
+    "id": 21,
+    "type": 1
+  },
+  {
+    "comment": "LG telemetry audit 2026-10-24",
+    "domain": "kic.lgtviot.com",
+    "enabled": 1,
+    "id": 22,
+    "type": 1
+  },
+  {
+    "comment": "LG telemetry audit 2026-10-24",
+    "domain": "kic.api.lgtviot.com",
+    "enabled": 1,
+    "id": 23,
+    "type": 1
+  },
+  {
+    "comment": "LG telemetry audit 2026-10-24",
+    "domain": "kic-ocp.lgtviot.com",
+    "enabled": 1,
+    "id": 24,
+    "type": 1
+  },
+  {
+    "comment": "LG telemetry audit 2026-10-24",
+    "domain": "in.nextlgsdp.com",
+    "enabled": 1,
+    "id": 25,
+    "type": 1
+  },
+  {
+    "comment": "LG telemetry audit 2026-10-24",
+    "domain": "in.emp.lgsmartplatform.com",
+    "enabled": 1,
+    "id": 26,
+    "type": 1
+  },
+  {
+    "comment": "LG telemetry audit 2026-10-24",
+    "domain": "in.lgeapi.com",
+    "enabled": 1,
+    "id": 27,
+    "type": 1
+  },
+  {
+    "comment": "LG telemetry audit 2026-10-24",
+    "domain": "kic.lgchhomeapp.lgtvcommon.com",
+    "enabled": 1,
+    "id": 28,
+    "type": 1
+  },
+  {
+    "comment": "LG telemetry audit 2026-10-24",
+    "domain": "kic.cdpsvc.lgtvcommon.com",
+    "enabled": 1,
+    "id": 29,
+    "type": 1
+  },
+  {
+    "comment": "LG telemetry audit 2026-10-24",
+    "domain": "kic.cdplauncher.lgtvcommon.com",
+    "enabled": 1,
+    "id": 30,
+    "type": 1
+  },
+  {
+    "comment": "LG voice updates keep working 2026-10-24",
+    "domain": "aic-ngfts.lge.com",
+    "enabled": 1,
+    "id": 31,
+    "type": 0
+  },
+  {
+    "comment": "LG voice updates keep working 2026-10-24",
+    "domain": "kic-ngfts.lge.com",
+    "enabled": 1,
+    "id": 32,
+    "type": 0
+  },
+  {
+    "comment": "LG voice updates keep working 2026-10-24",
+    "domain": "ngfts.tv.wiselg.com",
+    "enabled": 1,
+    "id": 33,
+    "type": 0
+  },
+  {
+    "comment": "LG voice updates keep working 2026-10-24",
+    "domain": "he-kr-ai.lgthinq.com",
+    "enabled": 1,
+    "id": 34,
+    "type": 0
+  },
+  {
+    "comment": "LG voice updates keep working 2026-10-24",
+    "domain": "lgtvonline.lge.com",
+    "enabled": 1,
+    "id": 36,
+    "type": 0
+  },
+  {
+    "comment": "LG firmware update block 2026-10-25",
+    "domain": "snu.lge.com",
+    "enabled": 1,
+    "id": 37,
+    "type": 1
+  },
+  {
+    "comment": "LG firmware update block 2026-10-25",
+    "domain": "su.lge.com",
+    "enabled": 1,
+    "id": 38,
+    "type": 1
+  },
+  {
+    "comment": "LG firmware update block 2026-10-25",
+    "domain": "su-ssl.lge.com",
+    "enabled": 1,
+    "id": 39,
+    "type": 1
+  },
+  {
+    "comment": "LG firmware update block 2026-10-25",
+    "domain": "su-prod.lge.com",
+    "enabled": 1,
+    "id": 40,
+    "type": 1
+  },
+  {
+    "comment": "LG firmware update block 2026-10-25",
+    "domain": "ngfts.lge.com",
+    "enabled": 1,
+    "id": 41,
+    "type": 1
+  },
+  {
+    "comment": "LG firmware update block 2026-10-25",
+    "domain": "ngfts-sdk.lge.com",
+    "enabled": 1,
+    "id": 42,
+    "type": 1
   }
 ]
