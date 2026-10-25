@@ -272,21 +272,13 @@
         container: firefly
         siteMonitor: http://192.168.0.10:3002
 
-    - Finance Dashboard:
-        icon: grafana.png
-        href: http://192.168.0.10:3001/d/finance/finance
-        description: Spending & Balances
-
-    - Ask My Finances:
-        icon: mdi-chat-question-outline
+    - Finances:
+        icon: mdi-finance
         href: http://192.168.0.10:8085
-        description: Plain-language questions, read-only
-        siteMonitor: http://192.168.0.10:8085
-
-    - Categorise Payments:
-        icon: mdi-tag-multiple-outline
-        href: http://192.168.0.10:8085/categorise
-        description: Filter by dates, set categories in bulk
+        description: Balances, Spending, Loans, Categorise & Ask
+        siteMonitor: http://192.168.0.10:8085/api/ping
+        server: my-docker
+        container: finance-app
 
     - Bank Mail Importer:
         icon: mdi-email-sync-outline
@@ -337,6 +329,16 @@
             - field: streak_weeks
               label: Week Streak
               format: number
+    # Family Health (/docker/health): everyone's lab reports over time, an AI
+    # summary and a doctor chat. LAN + Tailscale only (no tunnel); no widget so
+    # no health numbers show on the dashboard.
+    - Family Health:
+        icon: mdi-heart-pulse
+        href: http://192.168.0.10:8090
+        siteMonitor: http://192.168.0.10:8090/api/ping
+        description: Lab Reports, Trends & Doctor Chat
+        server: my-docker
+        container: health
 
 - Garden:
     # Plants (/docker/plants): photo inventory, per-plant care guide and the

@@ -24,6 +24,7 @@ jq
 linux-generic
 login
 mergerfs
+moreutils
 ncurses-base
 ncurses-bin
 net-tools
