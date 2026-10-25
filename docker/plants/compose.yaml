@@ -23,7 +23,7 @@ services:
     environment:
       - TZ=Asia/Kolkata
       # Names (besides IPs and localhost) the page may be opened under.
-      - ALLOWED_HOSTS=
+      - ALLOWED_HOSTS=plants.[[private:DOMAIN]]
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
     volumes:

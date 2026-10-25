@@ -285,5 +285,96 @@
     "enabled": 1,
     "id": 42,
     "type": 1
+  },
+  {
+    "comment": null,
+    "domain": "(ibis|ibs)\\.lgappstv\\.com$",
+    "enabled": 1,
+    "id": 43,
+    "type": 3
+  },
+  {
+    "comment": null,
+    "domain": "(rdx2|.*\\.rdx2)\\.lgtvsdp\\.com$",
+    "enabled": 1,
+    "id": 44,
+    "type": 3
+  },
+  {
+    "comment": "LG Content Store - apps need these",
+    "domain": "ibs.lgappstv.com",
+    "enabled": 1,
+    "id": 45,
+    "type": 0
+  },
+  {
+    "comment": "LG Content Store - apps need these",
+    "domain": "ibis.lgappstv.com",
+    "enabled": 1,
+    "id": 46,
+    "type": 0
+  },
+  {
+    "comment": "LG Content Store - apps need these",
+    "domain": "in.ibs.lgappstv.com",
+    "enabled": 1,
+    "id": 47,
+    "type": 0
+  },
+  {
+    "comment": "LG Content Store - apps need these",
+    "domain": "aic.ibs.lgappstv.com",
+    "enabled": 1,
+    "id": 48,
+    "type": 0
+  },
+  {
+    "comment": "LG Content Store - apps need these",
+    "domain": "rdx2.lgtvsdp.com",
+    "enabled": 1,
+    "id": 49,
+    "type": 0
+  },
+  {
+    "comment": "LG Content Store - apps need these",
+    "domain": "in.rdx2.lgtvsdp.com",
+    "enabled": 1,
+    "id": 50,
+    "type": 0
+  },
+  {
+    "comment": "LG Content Store - apps need these",
+    "domain": "aic.rdx2.lgtvsdp.com",
+    "enabled": 1,
+    "id": 51,
+    "type": 0
+  },
+  {
+    "comment": "LG device provisioning - needed for Content Store",
+    "domain": "snu.lge.com",
+    "enabled": 1,
+    "id": 52,
+    "type": 0
+  },
+  {
+    "comment": "LG Content Store / SDX auth - India region",
+    "domain": "in.nextlgsdp.com",
+    "enabled": 1,
+    "id": 53,
+    "type": 0
+  },
+  {
+    "comment": "LG Content Store / SDX auth - India region",
+    "domain": "in.lgeapi.com",
+    "enabled": 1,
+    "id": 54,
+    "type": 0
+  },
+  {
+    "comment": "LG Content Store downloads",
+    "domain": "rdx2.nextlgsdp.com",
+    "enabled": 1,
+    "id": 55,
+    "type": 0
   }
 ]

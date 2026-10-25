@@ -121,30 +121,11 @@
     "jsonData": {},
     "name": "Prometheus",
     "orgId": 1,
-    "readOnly": false,
-    "type": "prometheus",
-    "typeLogoUrl": "public/plugins/prometheus/img/prometheus_logo.svg",
-    "typeName": "Prometheus",
-    "uid": "PBFA97CFB590B2093",
-    "url": "http://prometheus:9090",
-    "user": ""
-  },
-  {
-    "access": "proxy",
-    "basicAuth": false,
-    "database": "",
-    "id": 10,
-    "isDefault": false,
-    "jsonData": {
-      "timeInterval": "1m"
-    },
-    "name": "Prometheus (5y)",
-    "orgId": 1,
     "readOnly": true,
     "type": "prometheus",
     "typeLogoUrl": "public/plugins/prometheus/img/prometheus_logo.svg",
     "typeName": "Prometheus",
-    "uid": "victoriametrics",
+    "uid": "PBFA97CFB590B2093",
     "url": "http://victoriametrics:8428",
     "user": ""
   },

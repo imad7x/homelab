@@ -3,107 +3,145 @@
 A small web app in plain Python (standard library only) with a SQLite database. It
 holds a pretend account that started with Rs 1,00,000 and may only deal in two things:
 companies that listed on NSE through a mainboard IPO in the last two years (about 185),
-and mainboard IPOs that are open for bids. An AI on the host makes the calls from news,
-fundamentals and technicals, and every result feeds back into the next decision.
+and mainboard IPOs that are open for bids. An AI on the host makes the calls from live
+technicals, news and fundamentals, and every result feeds back into the next decision.
 
 Web UI: `http://192.168.0.10:8091` on the LAN only (no tunnel route, no login of its own).
-No broker account is involved: prices come from public sources and fills are simulated.
+No orders ever go to a broker: prices are live, fills are simulated.
 
 ## Where the data comes from
 
-- **NSE's public website** (the same JSON its pages use, with a quote page visited first
-  for cookies, requests spaced 0.45 s apart): the IPO lists (current, forthcoming, past),
-  per-issue details (lot size, price band, subscription by QIB / NII / retail, RHP link),
-  live quotes, the minute chart, daily history per stock (backfill), the daily
-  `sec_bhavdata_full` file (every stock's day with delivery %), index history (NIFTY 50,
-  NIFTY IPO, NIFTY SMALLCAP 250), live index levels and GIFT Nifty, the trading holiday
-  list, corporate filings and board meetings.
-- **Headlines**: Bing News RSS per company (holdings, watchlist, live issues, fresh
-  listings), plus the Economic Times IPO feed and Mint's markets feed.
-- **Fundamentals**: Screener's public company page (ratios, last five quarters, growth,
-  pros and cons), for the same names plus a few screen candidates, at most weekly.
+- **Upstox**, with the account's read-only *Analytics Token* (generated on the Upstox
+  Developer Apps page, Analytics tab; valid a year; it cannot place orders). It lives in
+  `secrets/upstox.env` (`UPSTOX_TOKEN=...`, mode 600), mounted read-only at `/secrets`
+  and re-read whenever the file changes, so a new token needs no restart. It never goes
+  into the database, the logs, the AI's prompts or any API answer.
+  - **Market data feed** (WebSocket, V3, protobuf): on trading days from 08:58 to 15:40,
+    every tracked company plus NIFTY 50 and India VIX in `full` mode: each trade, the
+    5-level order book, total buy/sell quantity, exchange VWAP, volume, day OHLC,
+    1-minute bars and the auction's indicative price in the pre-open. Standard-library
+    WebSocket client (`wsock.py`) and protobuf decoder (`pb.py`, checked field by field
+    against Upstox's `MarketDataFeed.proto` in the tests).
+  - REST: full quotes (circuit limits, 52-week range), daily and minute candles (history
+    backfill, end of day, gaps after a reconnect), IPO status with ISIN and expected
+    listing date, headlines, market timings (special sessions).
+- **NSE's public website**: category-wise IPO subscription (QIB / NII / retail), the daily
+  `sec_bhavdata_full` file (official close and delivery %, from 18:30), index history and
+  levels (NIFTY IPO), the holiday list, filings and board meetings; and the fallback
+  quotes / minute chart whenever Upstox is unavailable.
+- **Headlines** also from Bing News RSS, the Economic Times IPO feed and Mint markets.
+- **Fundamentals**: Screener's public company page, at most weekly.
+
+History is adjusted for splits and bonuses (a one-day fall below 0.75x is one, since a
+day's move is capped at 20%).
 
 ## The paper account
 
 - Long only, delivery, cash only. One stock may not be more than 50% of the account
-  when bought. The mandate is maximum profit: concentrated bets are allowed, with a
-  stop-loss on every position.
-- Every buy must carry a stop or a trailing stop (otherwise it is rejected). Stops can
-  only be raised and trails only tightened, so protection ratchets up along the way;
+  when bought. The mandate is maximum profit, with a stop-loss on every position.
+- Every buy must carry a stop or a trailing stop. Stops only rise and trails only tighten;
   a position left without either (e.g. fresh IPO shares) gets a 12% trailing stop.
-- Market orders fill at the last price plus or minus 0.05%; orders placed while the
-  market is shut fill at the next opening price (10:00 listing price on a listing day).
-  Limit orders fill when the minute chart crosses the limit and last 1-10 trading days.
-- Stop, target and trailing stop on a position are checked every minute against the
-  minute chart, like a GTT, and sell the whole position.
+- **Fills follow the live book.** A market order walks the 5-level order book (buys pay
+  the asks, sells hit the bids) and never fills beyond the day's circuit limits; with
+  nobody on the other side (a circuit lock, or a thin stock between trades) it waits.
+  Orders entered before the pre-open order entry closes (09:08; 09:45 on a listing day)
+  fill at the discovered opening price, later ones at the book when they arrive.
+- Limit orders fill only when a trade goes through the limit (a limit already crossed
+  by the book fills at the book). **Trigger orders** are buy-stops for breakouts: they buy
+  when a trade reaches the trigger.
+- Stops, targets and trailing stops are checked against every trade (every 2 seconds on
+  the feed; every minute on the NSE fallback). A gap through a stop fills at the bids of
+  that moment; after a feed outage the missing minutes are replayed from 1-minute bars,
+  low before high, so a stop counts as hit first.
 - Charges are Zerodha's delivery charges: STT 0.1% both sides, stamp duty 0.015% on
   buys, NSE transaction 0.00297%, SEBI Rs 10/crore, 18% GST on the fees, Rs 15.34 DP
   charge per stock on a sell day.
-- IPO bids are retail bids at the cut-off price, whole lots, up to Rs 2 lakh. The money
-  is blocked until the allotment day (trading day after the close, 18:00). Allotment is
-  drawn like the real lottery from the final retail subscription: under 1x everything
-  is allotted; above that, a proportional share when it comes to a lot or more, else one
-  lot with odds of about 1.5 / retail times. The draw uses a fixed seed per issue.
+- IPO bids are retail bids at the cut-off price, whole lots, up to Rs 2 lakh, blocked
+  until allotment and drawn like the real lottery from the final retail subscription.
   Allotted shares are credited at the issue price on listing morning.
+
+## Technicals and the signal engine
+
+`tech.py` builds one snapshot per stock: today's VWAP, opening range (09:15-09:30, or
+10:00-10:15 on a listing day), relative volume against the usual intraday volume curve,
+5-minute RSI / MACD / EMA 9-21 trend and ATR, order-book balance, spread; and the daily
+structure since listing: EMA 20/50, RSI, ATR, high since listing, listing-day high and
+low, anchored VWAP from the listing day, the recent base (depth, tightness, volume
+dry-up), 20-day strength vs NIFTY IPO, circuit band, and the price levels nearest to
+the price.
+
+`signals.py` looks at every name once a minute in market hours and decides when the AI
+is worth waking. Triggers fire when a condition starts, once per symbol and kind a day:
+opening-range breakouts on volume above VWAP, new highs since listing on 2x volume, a
+holding losing VWAP and its opening range (or 1.5 daily ATRs off the high), gaps of 4%+,
+big moves (min(5%, 0.6 x band)), circuits, the listing day's 10:00-10:15 range, and the
+AI's own **price alerts**. Triggers are batched into one run; at most 7 signal runs a
+day (2 for holdings and listings, 3 for alerts, 1 watchlist, 1 universe scan), at least
+20 minutes apart (5 for holdings), one wake-up per symbol per 90 minutes. Every trigger
+is logged with what became of it and shown on the Overview's Live card.
 
 ## The decisions
 
 The container never talks to a model. `ai/worker.py` on the host long-polls
 `/api/ai/next` (key in `state/worker.key`), runs the job through the AI command-line
-tool that is logged in on the host (on the subscription, headless, system prompt
-replaced, no session saved, answer forced into the job's JSON schema) and posts the
-answer back. Decision runs may use web search and web fetch; nothing else is allowed.
-Models are set in `ai/config.json`: `default` (Sonnet) for decision runs, `light`
-(Haiku) for post-mortems, `deep` (Sonnet; Opus if wanted) for the weekly review;
-`max_budget_usd` caps one call as a runaway guard. Token use is kept low: the data pack
-is about 15k characters (the universe is trimmed to holdings, watchlist, leaders,
-movers and lock-in events plus a one-line summary of the rest), web search is capped at
-3 per run and only allowed in the pre-market, listing and on-request runs. Cron starts the worker `@reboot`; after an
-edit run `ai/start.sh`. Usage per call goes to `ai/state/usage.jsonl`.
+tool logged in on the host (subscription, headless, through the lab AI gateway) and
+posts the answer back. Models are set in `ai/config.json`: `default` (Sonnet) for
+decisions, `light` (Haiku) for post-mortems, `deep` (Sonnet) for the weekly review.
 
 | Run | When | What it sees and does |
 |---|---|---|
-| Pre-market | 08:50 on trading days | the data pack below (web search allowed); places orders, IPO bids and skips, exits, watchlist |
-| Listing day | 10:20 when a stock it holds, bid for or watches lists | same |
-| Afternoon | 14:30 on trading days, only with open positions or orders, an IPO closing that day or a 4%+ watchlist move | same, no web search |
-| On request | the page's "Run now" | same |
-| Post-mortem | after every fully sold position | the trade, its thesis, price path, headlines; writes a verdict (decision vs outcome), mistakes, one lesson |
-| Weekly review | Saturday 10:00 | the week's runs and decisions, closed trades with 5/20-day after-exit moves, post-mortems, IPO calls vs listing gains, record by signal and confidence, the benchmarks and a bid-every-IPO baseline; rewrites the playbook (max 12 rules, each with evidence) |
+| Opening | 09:01 on trading days, in the pre-open | the full data pack with indicative opens; web search (max 3) and market tools; plans the day: orders, alerts, trigger orders |
+| Listing | 09:25 on a day a stock it holds, bids for or watches lists | same, with the listing auction's indicative price |
+| Signal | when the signal engine fires | a short pack: what fired, live technicals, account, alerts, playbook; market tools (max 4 calls), no web |
+| Closing | 15:00, only with positions, orders or alerts | what to carry overnight; market tools |
+| On request | the page's "Run now" | the full pack |
+| Post-mortem | after every fully sold position | verdict (decision vs outcome), mistakes, one lesson |
+| Weekly review | Saturday 10:00 | rewrites the playbook (max 12 rules, each with evidence) |
 
-The data pack for a decision: time and market phase, indices with 1-week and 1-month
-moves, GIFT Nifty, the account and positions (with thesis, stop, target, horizon left),
-open orders and bids, the watchlist with its notes, the playbook, the last eight
-lessons, the track record, its own notes and rejected actions from the last run, open
-and coming issues with subscription, listings of the last five weeks, every tracked
-company in one line (vs issue, 1d / 5d / 20d, from high, RSI, vs SMA, volume ratio,
-delivery %, market cap, lock-in ends), fundamentals, headlines and filings, and coming
-board meetings. Every action is stored as a decision with its thesis (the evidence and what would
-prove it wrong), signals and a 1-5 confidence; the app validates each one and records
-why it was rejected. The Trades tab is the diary: daily P&L after each close, open
-trades with why they were bought and every stop change, and closed trades with why,
-how they ended, what happened and the lesson.
+**Market tools** are the read-only `ipodesk-market` MCP server
+(`/docker/lab-ai/mcp/ipodesk_market.py`, host, stdio): `quote`, `candles`, `technicals`,
+`scan`, `ipo_book`, `market`, `news`. It only calls this app's `/api/md/*` endpoints with
+the market-data key in `state/md.key`, which works on nothing else. The AI gateway lets a
+run load it only through one allow-listed, hash-pinned config file.
 
-A queued decision run waits for fresh news, quotes and fundamentals (about two minutes)
-and expires after 40 minutes if the worker is offline, so it never acts on stale data.
-"Pause" stops new runs; the minute checks (fills, stops, targets) keep working.
+The **technical playbook** is the `ipo-technicals` skill in `app/skills/ipo-technicals/`
+(linked into the host's skills folder): the full text goes into the opening, listing and
+on-request runs, its core rules into signal and closing runs.
+
+Every action is stored as a decision with its thesis, signals and a 1-5 confidence; the
+app validates each one and records why it was rejected. A signal run that can't start
+within 15 minutes (or is held because the AI plan is at its limit) is dropped quietly,
+since the setup has gone stale; other runs are retried once after the limit resets, and
+the phone gets an alert only if one misses its deadline.
 
 ## Schedule inside the container
 
-Issue lists every 30 minutes on trading days (3 hours otherwise); news every 2 hours;
-fundamentals and watchlist expiry daily; quotes for holdings and the watchlist every
-minute in market hours and the whole universe every 15 minutes; day orders expire after
-15:31; the bhavcopy, the daily snapshot and the after-exit moves from 18:10; allotments
-from 18:00; allotted shares credited from 08:30 on listing day.
+| When | What |
+|---|---|
+| 06:30 | market timings for the coming days (special sessions) |
+| 07:15 | fundamentals, watchlist and alert expiry, missing history |
+| 08:30 | allotted shares credited on listing day |
+| 08:58-15:40 | live feed; stops and orders every 2 s; signals every minute; quotes table every 5 s |
+| 09:16 | today's circuit limits (and 10:01 on listing days) |
+| every 15 min in session | Upstox quotes for anything the feed doesn't cover (everything when it is down) |
+| IPO lists | NSE hourly in the day; Upstox every 15 min while an issue is open |
+| 15:31 / 15:50 | day orders expire / daily rows and snapshot from Upstox, volume curve, pruning |
+| 18:00 / 18:30 | allotments / bhavcopy: official close and delivery %, snapshot again |
 
 ## Files
 
-- `app/` - `server.py` (HTTP, scheduler, minute loop), `nse.py`, `sources.py`, `market.py`
-  (calendar, universe, indicators), `broker.py` (paper account), `brain.py` (runs, data
-  pack, schemas, applying answers, learning record), `store.py`, `web/`.
+- `app/` - `server.py` (HTTP, scheduler, trader and signal loops, `/api/md`), `feed.py`,
+  `wsock.py`, `pb.py`, `upstox.py`, `ta.py` (indicators), `tech.py` (snapshots),
+  `signals.py`, `nse.py`, `sources.py`, `market.py`, `broker.py`, `brain.py`, `store.py`,
+  `skills/`, `web/`.
 - `ai/` - `worker.py`, `start.sh`, `config.json` (host side, not in the container).
-- `state/ipodesk.db` - everything. Stack-trace dump of a stuck container:
+- `secrets/upstox.env` - the token (not synced, not in the image).
+- `state/ipodesk.db` - everything. Stack dump of a stuck container:
   `docker kill -s USR1 ipodesk` and read `docker logs ipodesk`.
+- `tests/` - `test_live.py` (fills, auctions, triggers, signals, packs), `test_feed_wire.py`
+  (protobuf, WebSocket), `test_feed_loop.py` (connect, subscribe, reconnect). Run each with
+  `python3 -B <file>`.
 
-Testing: `JOBS=off DB_PATH=<scratch copy> PORT=18091 python3 -B server.py` from `app/`
-serves the page without the scheduler; point a worker at it with `DESK_URL` and
-`DESK_KEY_FILE` and `--once`.
+Testing a copy: `JOBS=off DB_PATH=<scratch copy> PORT=18091 python3 -B server.py` from
+`app/` serves the page and `/api/md` without the scheduler or the feed (`FEED=off` keeps
+the jobs but skips the feed).

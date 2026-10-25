@@ -86,6 +86,46 @@ services:
       firefly:
         condition: service_started
 
+  # Finances (app/server.py): balances, spending, loans, categorising and Ask, on the LAN only.
+  # Reads report.* as grafana_ro (read-only); the only write is a category, through Firefly's API.
+  # Ask is answered by the host worker /docker/finance/ai/worker.py (cron @reboot).
+  finance-app:
+    build: ./app
+    image: finance-app:latest
+    container_name: finance-app
+    restart: unless-stopped
+    user: "1000:1000"
+    ports:
+      - "8085:8085"
+    environment:
+      - TZ=Asia/Kolkata
+      - PORT=8085
+      - ALLOWED_HOSTS=lab,lab.local,localhost
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      - ./app:/app:ro
+      - ./app-state:/state
+      - ./state:/ingest-state:ro
+      - ./secrets/ask.env:/secrets/ask.env:ro
+      - ./secrets/firefly.env:/secrets/firefly.env:ro
+      - ../monitoring/grafana-finance.env:/secrets/grafana-finance.env:ro
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 512m
+    pids_limit: 128
+    depends_on:
+      finance-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8085/api/ping', timeout=3)"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+
 volumes:
   finance_db_data:
   firefly_upload:

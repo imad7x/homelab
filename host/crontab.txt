@@ -4,11 +4,11 @@
 */30 * * * * /docker/jellyfin/servarr/scripts/jellyfin-prewarm.sh --all >> /docker/jellyfin/logs/prewarm.log 2>&1
 17 4 * * * $HOME/github/homelab/tools/sync.sh >> $HOME/.local/state/homelab-sync.log 2>&1
 # Lab AI gateway (/docker/lab-ai): 127.0.0.1:8092, one ledger and limit-aware routing for every AI call; starts before the workers.
-@reboot sleep 50 && /docker/lab-ai/start.sh
+@reboot sleep 50 && /docker/lab-ai/start.sh --boot
 # Lab AI Portal (core7x, /docker/lab-ai/portal): LAN :8093; AI sessions from the phone, plan limits, session cleanup.
 @reboot sleep 55 && /docker/lab-ai/portal/start.sh
-# Ask my finances (/docker/finance/ask): LAN page on :8085; AI answers on the subscription, not API keys.
-@reboot sleep 60 && /docker/finance/ask/start.sh
+# Finances AI worker (/docker/finance/ai): answers questions for the Finances app (finance-app container, :8085).
+@reboot sleep 70 && /docker/finance/ai/start.sh
 # Pi-hole weekly digest for Grafana (/docker/monitoring/pihole-digest): finalises last week, refreshes this week.
 10 5 * * * /usr/bin/python3 /docker/monitoring/pihole-digest/pihole_digest.py >> $HOME/.local/state/pihole-digest.log 2>&1
 # Gym AI worker (/docker/gym/ai): runs reports and questions for the gym app on the subscription.
@@ -18,4 +18,8 @@
 @reboot sleep 80 && /docker/ipodesk/ai/start.sh
 # core7x portal-down safety net (/docker/ntfy/portal-watch.sh): pushes straight to ntfy once per outage.
 */10 * * * * /docker/ntfy/portal-watch.sh
-@reboot sleep 90 && /docker/lgtv/watcher/start.sh
+*/5 * * * * /docker/lab-ai/later --run-due >> /docker/lab-ai/portal/state/later.log 2>&1
+# Family Health AI worker (/docker/health/ai): reads uploaded reports, writes summaries, answers the doctor chat.
+@reboot sleep 85 && /docker/health/ai/start.sh
+# Family Health: nightly local backup of state/ to /mnt/disk2/backups/health
+40 3 * * * /docker/health/backup.sh >> /docker/health/ai/state/backup.log 2>&1

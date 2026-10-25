@@ -56,10 +56,10 @@
       "tooltip": "S.M.A.R.T. health for all three drives"
     },
     {
-      "title": "Finance",
+      "title": "Finances",
       "type": "link",
-      "url": "/d/finance",
-      "icon": "dashboard",
+      "url": "http://192.168.0.10:8085",
+      "icon": "external link",
       "keepTime": false,
       "includeVars": false,
       "targetBlank": false,

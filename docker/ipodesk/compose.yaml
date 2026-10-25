@@ -8,10 +8,14 @@
 #   on the LAN:  http://192.168.0.10:8091
 #   log:         docker logs ipodesk
 #
-# Market data comes from NSE's public website (IPO lists and subscription,
-# quotes, daily prices, filings), headlines from Bing News / ET / Mint RSS and
-# fundamentals from Screener. No broker account is involved. Everything lives
-# in ./state/ipodesk.db (SQLite).
+# Live market data comes from Upstox with the account's read-only Analytics
+# Token (./secrets/upstox.env, valid a year, cannot trade): a WebSocket feed of
+# every trade and the order book in market hours, candles, IPO status and news.
+# A rule-based signal engine decides when the AI is worth waking. NSE's public
+# website still supplies category-wise IPO subscription, delivery %, filings and
+# the fallback quotes when Upstox is unavailable; headlines also come from Bing
+# News / ET / Mint RSS, fundamentals from Screener. No orders are ever sent to a
+# broker. Everything lives in ./state/ipodesk.db (SQLite).
 
 services:
   ipodesk:
@@ -28,8 +32,13 @@ services:
       - ALLOWED_HOSTS=
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
+      # off: no Upstox WebSocket (prices then come from Upstox REST or NSE)
+      - FEED=on
+      - UPSTOX_TOKEN_FILE=/secrets/upstox.env
     volumes:
       - ./state:/state
+      # The Upstox token, read-only; a new token is picked up without a restart.
+      - ./secrets:/secrets:ro
       # The code is mounted read-only so an edit takes effect on the next
       # restart, like gym and movies.
       - ./app:/app:ro

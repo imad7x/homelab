@@ -48,11 +48,13 @@ Generated from `docker ps` on every sync.
 | Stack (`docker/…`) | Container | Image | Host ports |
 |---|---|---|---|
 | - | simpleparty | `python:3.12-slim` | 1312 |
+| finance | finance-app | `finance-app:latest` | 8085 |
 | finance | finance-db | `postgres:16-alpine` | 5432 |
 | finance | finance-ingest | `finance-ingest:latest` | - |
 | finance | firefly | `fireflyiii/core:latest` | 3002 |
 | finance | firefly-cron | `alpine:3` | - |
 | gym | gym | `gym:latest` | 8086 |
+| health | health | `health:latest` | 8090 |
 | homeassistant | homeassistant | `ghcr.io/home-assistant/home-assistant:stable` | - |
 | ipodesk | ipodesk | `ipodesk:latest` | 8091 |
 | jellyfin | jellyfin | `lscr.io/linuxserver/jellyfin:latest` | 1900, 7359, 8096 |
@@ -71,10 +73,10 @@ Generated from `docker ps` on every sync.
 | monitoring | cadvisor | `gcr.io/cadvisor/cadvisor:v0.49.1` | 8082 |
 | monitoring | grafana | `grafana/grafana` | 3001 |
 | monitoring | node-exporter | `prom/node-exporter:latest` | - |
-| monitoring | prometheus | `prom/prometheus` | 9090 |
 | monitoring | scrutiny | `ghcr.io/analogj/scrutiny:v0.9.4-omnibus` | 8083 |
 | monitoring | smartctl-exporter | `quay.io/prometheuscommunity/smartctl-exporter:v0.14.0` | 9633 |
-| monitoring | victoriametrics | `victoriametrics/victoria-metrics:v1.153.0` | - |
+| monitoring | victoriametrics | `victoriametrics/victoria-metrics:v1.153.0` | 8428 |
+| monitoring | vmalert | `victoriametrics/vmalert:v1.153.0` | - |
 | monitoring/homepage-lan | homepage-lan | `ghcr.io/gethomepage/homepage:latest` | 3010 |
 | movies | movies | `movies:latest` | 8089 |
 | ntfy | ntfy | `binwiederhier/ntfy:latest` | 8094 |

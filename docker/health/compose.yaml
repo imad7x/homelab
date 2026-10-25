@@ -1,0 +1,42 @@
+# Family Health: each family member's lab reports over time, an AI summary and a doctor chat.
+#
+#   on the LAN:  http://192.168.0.10:8090   (and over Tailscale; no tunnel, no public name)
+#   log:         docker logs health
+#   import:      docker exec health python /app/cli.py import
+#
+# Data: ./state/health.db (SQLite) + ./state/files/<sha256>.<ext> (every original).
+# The Health Reports folder is mounted read-only; only its Uploaded/ subfolder is writable,
+# so the app can add uploads there but can never change or delete the originals.
+# AI runs on the host: /docker/health/ai/worker.py (cron @reboot).
+
+services:
+  health:
+    build: .
+    image: health:latest
+    container_name: health
+    restart: unless-stopped
+    user: "1000:1000"
+    ports:
+      - "8090:8090"
+    environment:
+      - TZ=Asia/Kolkata
+      - ALLOWED_HOSTS=lab,lab.local,health.[[private:DOMAIN]]
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      - ./state:/state
+      - ./app:/app:ro
+      - /mnt/disk1/documents/Health Reports:/reports:ro
+      - /mnt/disk1/documents/Health Reports/Uploaded:/reports/Uploaded:rw
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 1g
+    pids_limit: 128
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/api/ping', timeout=3)"]
+      interval: 60s
+      timeout: 5s
+      retries: 3

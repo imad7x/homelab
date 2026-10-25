@@ -1,43 +1,36 @@
 services:
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      # 30 days here on the NVMe; older data is in VictoriaMetrics on disk2 (below).
-      - '--storage.tsdb.retention.time=30d'
-      - '--storage.tsdb.retention.size=10GB'   # backstop; 30 days is about 3 GB
-    ports:
-      - 9090:9090
-    restart: unless-stopped
-    extra_hosts:
-      - "dockerlab:host-gateway"
-    volumes:
-      - ./prometheus:/etc/prometheus
-      - monitoring_prometheus_data:/prometheus
-
-  # Long-term metrics. Prometheus keeps 30 days on the NVMe and copies every sample here
-  # (remote_write in prometheus.yml); this keeps 5 years on disk2, thinned to one sample
-  # per minute per series. Grafana datasource "Prometheus (5y)". No host port: only
-  # Prometheus and Grafana talk to it. The bind fails instead of writing to the NVMe
-  # if disk2 is not mounted.
   victoriametrics:
     image: victoriametrics/victoria-metrics:v1.153.0
     container_name: victoriametrics
-    user: "1000:1000"
     restart: unless-stopped
-    cpu_shares: 256   # background merges give way to Jellyfin and the rest
+    cpu_shares: 256
+    ports:
+      - 127.0.0.1:8428:8428
+    extra_hosts:
+      - "dockerlab:host-gateway"
     command:
       - '-storageDataPath=/storage'
-      - '-retentionPeriod=5y'
-      - '-dedup.minScrapeInterval=1m'
-      - '-inmemoryDataFlushInterval=1m'   # fewer small writes to the SMR disk (default 5s)
+      - '-retentionPeriod=90d'
+      - '-storage.minFreeDiskSpaceBytes=5GB'
+      - '-promscrape.config=/etc/victoriametrics/scrape.yml'
     volumes:
-      - type: bind
-        source: /mnt/disk2/victoria-metrics
-        target: /storage
-        bind:
-          create_host_path: false
+      - ./victoriametrics:/etc/victoriametrics:ro
+      - monitoring_victoriametrics_data:/storage
+
+  # Recording rules (homelab-power.yml). VictoriaMetrics does not evaluate
+  # rules itself; vmalert reads them, queries VM, and writes results back.
+  vmalert:
+    image: victoriametrics/vmalert:v1.153.0
+    container_name: vmalert
+    restart: unless-stopped
+    command:
+      - '-datasource.url=http://victoriametrics:8428'
+      - '-remoteWrite.url=http://victoriametrics:8428'
+      - '-remoteRead.url=http://victoriametrics:8428'
+      - '-rule=/etc/vmalert/rules/*.yml'
+      - '-evaluationInterval=15s'
+    volumes:
+      - ./victoriametrics/rules:/etc/vmalert/rules:ro
 
   grafana:
     image: grafana/grafana
@@ -169,7 +162,6 @@ networks:
     external: true
 
 volumes:
-  monitoring_prometheus_data:
-    external: true
+  monitoring_victoriametrics_data:
   monitoring_grafana_data:
     external: true
