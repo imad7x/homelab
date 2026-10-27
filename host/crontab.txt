@@ -23,3 +23,4 @@
 @reboot sleep 85 && /docker/health/ai/start.sh
 # Family Health: nightly local backup of state/ to /mnt/disk2/backups/health
 40 3 * * * /docker/health/backup.sh >> /docker/health/ai/state/backup.log 2>&1
+23 * * * * /docker/lab-ai/drain-deferred >> /docker/lab-ai/state/drain-deferred.log 2>&1
