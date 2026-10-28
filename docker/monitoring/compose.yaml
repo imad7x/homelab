@@ -92,6 +92,15 @@ services:
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.49.1  # Do not use 'latest'
     container_name: cadvisor
+    # CPU saving: sample every 60s (default is 1s-2s per container), docker containers only,
+    # and skip the costly per-cpu / disk-usage / diskIO metrics (dashboards use network only).
+    command:
+      - --housekeeping_interval=60s
+      - --max_housekeeping_interval=60s
+      - --allow_dynamic_housekeeping=false
+      - --docker_only=true
+      - --store_container_labels=false
+      - --disable_metrics=percpu,disk,diskIO,referenced_memory,cpu_topology,resctrl,udp,advtcp,sched,hugetlb,memory_numa,tcp,process
     ports:
       - 8082:8080
     volumes:
