@@ -234,7 +234,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "sum(rate(container_network_transmit_bytes_total{name=\"jellyfin\"}[2m])) * 8",
+          "expr": "sum(rate(container_network_transmit_bytes_total{name=\"jellyfin\"}[5m])) * 8",
           "legendFormat": "Jellyfin",
           "range": false,
           "instant": true
@@ -301,7 +301,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "sum(rate(container_network_receive_bytes_total{name=\"qbittorrent\"}[2m])) * 8",
+          "expr": "sum(rate(container_network_receive_bytes_total{name=\"qbittorrent\"}[5m])) * 8",
           "legendFormat": "Download",
           "range": false,
           "instant": true
@@ -368,7 +368,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "sum(rate(container_network_transmit_bytes_total{name=\"qbittorrent\"}[2m])) * 8",
+          "expr": "sum(rate(container_network_transmit_bytes_total{name=\"qbittorrent\"}[5m])) * 8",
           "legendFormat": "Upload",
           "range": false,
           "instant": true
