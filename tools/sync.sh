@@ -11,7 +11,7 @@ flock -n 9 || { echo "another sync is running"; exit 0; }
 
 out=$(mktemp); trap 'rm -f "$out"' EXIT
 python3 tools/homelab_sync.py sync --push 2>&1 | tee -a "$out"; a=${PIPESTATUS[0]}
-tools/private_mirrors.sh 2>&1 | tee -a "$out"; b=${PIPESTATUS[0]}
+tools/private_mirrors.sh --init 2>&1 | tee -a "$out"; b=${PIPESTATUS[0]}
 [ "$a" -eq 0 ] && [ "$b" -eq 0 ] && exit 0
 
 tok=$(grep -m1 '^NOTIFY_TOKEN=' /docker/lab-ai/portal/secrets.env 2>/dev/null | cut -d= -f2-)
