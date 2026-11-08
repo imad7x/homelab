@@ -1,8 +1,9 @@
 #!/bin/bash
 # Daily (from sync.sh): copy each self-built app into its clone in ~/github, check it for secrets,
-# then commit and push to its PRIVATE repo. The list is ~/.config/homelab-backup/mirrors.txt;
-# what is copied is set by mirror-<repo>.filter (optional) and mirror-common.filter there.
-#   private_mirrors.sh [--init] [REPO...]   --init creates missing private repos and clones first
+# then commit and push to its repo. The list (repo, public/private, source) is
+# ~/.config/homelab-backup/mirrors.txt; what is copied is set by mirror-<repo>.filter (optional)
+# and mirror-common.filter there. A public repo must also pass public_gate.py.
+#   private_mirrors.sh [--init] [REPO...]   --init creates missing repos and clones first
 # A failed check skips that repo's push only.
 set -uo pipefail
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin"
@@ -13,18 +14,19 @@ init=0; [ "${1:-}" = --init ] && { init=1; shift; }
 only=" $* "
 rc=0
 
-mirror() {   # mirror REPO SOURCE [DOCS_DIR]
-  local name=$1 src=$2 docs=${3:-} dir="$HOME/github/$1" bad=0 stack
+mirror() {   # mirror REPO public|private SOURCE [DOCS_DIR]
+  local name=$1 vis=$2 src=$3 docs=${4:-} dir="$HOME/github/$1" bad=0 stack
+  case "$vis" in public|private) ;; *) echo "$name: visibility must be public or private"; rc=1; return ;; esac
   stack=$(echo "$src" | cut -d/ -f1-3)          # /docker/<stack>: its .env values must not leak
   if [ ! -d "$dir/.git" ]; then
     [ $init -eq 1 ] || { echo "$name: no clone at $dir (run with --init)"; rc=1; return; }
-    gh repo view "$OWNER/$name" >/dev/null 2>&1 || gh repo create "$OWNER/$name" --private >/dev/null || { rc=1; return; }
+    gh repo view "$OWNER/$name" >/dev/null 2>&1 || gh repo create "$OWNER/$name" --"$vis" >/dev/null || { rc=1; return; }
     mkdir -p "$dir" && git -C "$dir" init -q -b main && git -C "$dir" remote add origin "https://github.com/$OWNER/$name.git"
     git -C "$dir" config user.name "$OWNER"; git -C "$dir" config user.email "$EMAIL"
     printf '__pycache__/\n*.env\n.env\nnode_modules/\n.next/\nbuild/\n' > "$dir/.gitignore"
   fi
-  [ "$(gh repo view "$OWNER/$name" --json visibility -q .visibility 2>/dev/null)" = PRIVATE ] \
-    || { echo "$name: repo is not private (or unreachable) - not pushing"; rc=1; return; }
+  [ "$(gh repo view "$OWNER/$name" --json visibility -q .visibility 2>/dev/null)" = "${vis^^}" ] \
+    || { echo "$name: repo is not $vis on GitHub (or unreachable) - not pushing"; rc=1; return; }
   local f=() ; [ -f "$CONF/mirror-$name.filter" ] && f+=(--filter="merge $CONF/mirror-$name.filter")
   rsync -a --delete "${f[@]}" --filter="merge $CONF/mirror-common.filter" "$src/" "$dir/"
   if [ -n "$docs" ]; then
@@ -41,6 +43,9 @@ mirror() {   # mirror REPO SOURCE [DOCS_DIR]
            cut -d= -f2- | tr -d "\"'" | awk 'length >= 8')
   gitleaks dir "$dir" --no-banner --redact --exit-code 3 --log-level error >/dev/null 2>&1
   [ $? -eq 3 ] && { echo "$name: gitleaks found something (run: gitleaks dir $dir --redact)"; bad=1; }
+  if [ "$vis" = public ] && ! python3 "$(dirname "$0")/public_gate.py" "$dir"; then
+    echo "$name: personal details found (listed above)"; bad=1
+  fi
   if [ $bad -ne 0 ]; then echo "$name: LEAK CHECK FAILED - not pushed"; rc=1; return; fi
   ( cd "$dir" && git add -A &&
     if ! git diff --cached --quiet; then git commit -q -m "Sync from live $(date +%F)" && echo "$name: committed $(git rev-parse --short HEAD)"
@@ -48,9 +53,9 @@ mirror() {   # mirror REPO SOURCE [DOCS_DIR]
     git push -q -u origin main ) || { echo "$name: commit or push failed"; rc=1; }
 }
 
-while read -r name src docs; do
+while read -r name vis src docs; do
   case "$name" in ''|'#'*) continue ;; esac
   [ "$only" = "  " ] || [[ "$only" == *" $name "* ]] || continue
-  mirror "$name" "$src" "${docs:-}"
+  mirror "$name" "$vis" "$src" "${docs:-}"
 done < "$CONF/mirrors.txt"
 exit $rc
