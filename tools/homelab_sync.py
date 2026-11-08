@@ -62,8 +62,6 @@ PUBLIC = [
     '*/compose.y*ml', '*/*/compose.y*ml',
     '*/Dockerfile', '*/*/Dockerfile', '*/.dockerignore', '*/*/requirements.txt',
     'updater/app/*',
-    'landing/site/*', 'landing/site/icons/*', 'landing/collector/*.py', 'landing/nginx/*.conf',
-    'landing/visitors/*.py', 'landing/visitors/web/*', 'landing/nginx/*.sh',
     'monitoring/prometheus/prometheus.yml', 'monitoring/prometheus/rules/*.yml',
     'monitoring/grafana/*.yml', 'monitoring/grafana/provisioning/**/*.yml',
     'monitoring/grafana/provisioning/**/*.json', 'monitoring/dashboards-src/*.py',
@@ -87,6 +85,9 @@ PUBLIC = [
     'jellyfin/music/slskd-data/slskd.yml',
     'homeassistant/config/*.yaml', 'homeassistant/config/blueprints/**/*.yaml',
 ]
+# Stacks with their own private repo (tools/private_mirrors.sh): nothing of theirs is published
+# here, but their .env files still go into the encrypted bundles.
+OWN_REPO = ('landing/', 'jobs/')
 SKIP = [
     '**/__pycache__/*', '**/*.bak*', '**/*cache*.json',
     'homeassistant/config/.storage/core.restore_state', 'homeassistant/config/.storage/trace.*',
@@ -545,7 +546,7 @@ def build():
     for rel in walk_live():
         if is_private(rel):
             private.append(rel)
-        elif is_public(rel):
+        elif is_public(rel) and not rel.startswith(OWN_REPO):
             originals[f'docker/{rel}'] = read_any(LIVE / rel)
             modes[f'docker/{rel}'] = (LIVE / rel).stat().st_mode & 0o777
     for src, dest in HOST:
@@ -593,7 +594,7 @@ def build():
     for dest in sorted(stage):
         public[dest] = redact(stage[dest], vault, known, terms)
     for rel in env_files:     # documented, value-free copies of every env file
-        if rel.endswith('.env'):
+        if rel.endswith('.env') and not rel.startswith(OWN_REPO):
             text = read_any(LIVE / rel)
             lines = []
             for line in text.splitlines(keepends=True):

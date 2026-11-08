@@ -28,7 +28,8 @@ kept encrypted - see [Secrets](#secrets).
 | `docker/finance` | Firefly III with a mail-driven ingest worker | [README](docker/finance) |
 | `docker/updater` | One-click container updater (custom app) | [README](docker/updater) |
 | `docker/gym` | Workout program, set logger and watch data (custom app) | [README](docker/gym) |
-| `docker/landing` | Public landing page: app launcher and visitor log (custom app) | [README](docker/landing) |
+| `docker/landing` | Personal website: the Observatory, solar system, games, Sunroom (custom app; code in a private repo) | [README](docker/landing) |
+| `docker/jobs` | 7xjobs, a job finder for the Indian market (custom app; code in a private repo) | [README](docker/jobs) |
 | `docker/homeassistant` | Home Assistant | [README](docker/homeassistant) |
 
 ### Containers
@@ -52,14 +53,21 @@ Generated from `docker ps` on every sync.
 | jellyfin | jellystat | `cyfershepard/jellystat:latest` | 3003 |
 | jellyfin | jellystat-db | `postgres:16-alpine` | - |
 | jellyfin/music | navidrome | `deluan/navidrome:latest` | 4533 |
-| jellyfin/music | slskd | `slskd/slskd:latest` | 5030, 50300 |
+| jellyfin/music | slskd | `slskd/slskd:latest` | - |
 | jellyfin/servarr | bazarr | `lscr.io/linuxserver/bazarr:latest` | 6767 |
 | jellyfin/servarr | jellyseerr | `ghcr.io/seerr-team/seerr:latest` | 5055 |
 | jellyfin/servarr | prowlarr | `lscr.io/linuxserver/prowlarr:latest` | 9696 |
 | jellyfin/servarr | qbittorrent | `lscr.io/linuxserver/qbittorrent:latest` | 6881, 8080 |
 | jellyfin/servarr | radarr | `lscr.io/linuxserver/radarr:latest` | 7878 |
 | jellyfin/servarr | sonarr | `lscr.io/linuxserver/sonarr:latest` | 8989 |
+| jobs | jobs-crawler | `jobs-app:latest` | - |
+| jobs | jobs-db | `postgres:16-alpine` | - |
+| jobs | jobs-react | `node:22-alpine` | 8095 |
+| jobs | jobs-web | `jobs-app:latest` | - |
 | landing | landing | `nginxinc/nginx-unprivileged:alpine` | 3000 |
+| landing | landing-bh | `python:3.13-alpine` | - |
+| landing | landing-sky | `python:3.13-alpine` | - |
+| landing | landing-sunroom | `python:3.13-alpine` | - |
 | landing | landing-visitors | `python:3.13-alpine` | 3011 |
 | monitoring | cadvisor | `gcr.io/cadvisor/cadvisor:v0.49.1` | 8082 |
 | monitoring | grafana | `grafana/grafana` | 3001 |

@@ -24,3 +24,10 @@
 # Family Health: nightly local backup of state/ to /mnt/disk2/backups/health
 40 3 * * * /docker/health/backup.sh >> /docker/health/ai/state/backup.log 2>&1
 23 * * * * /docker/lab-ai/drain-deferred >> /docker/lab-ai/state/drain-deferred.log 2>&1
+# landing visitor sky: push new stars to the phone (skyctl, /docker/landing/sky)
+*/10 * * * * /usr/bin/python3 /docker/landing/sky/skyctl.py notify >/dev/null 2>&1
+# Weekly public-site review (/docker/landing/tools/site-review.py): security + feature ideas, ntfy summary.
+45 5 * * 1 /usr/bin/python3 /docker/landing/tools/site-review.py >> /docker/landing/logs/site-review.log 2>&1
+17 3 * * 0 XDG_RUNTIME_DIR=/run/user/1000 systemd-run --user --quiet --collect --wait --pipe -p CPUQuota=50\% -p MemoryMax=256M nice -n 19 ionice -c3 /docker/lab-ai/cleanup --notify >> /docker/lab-ai/state/cleanup/cron.log 2>&1
+47 3 * * * XDG_RUNTIME_DIR=/run/user/1000 systemd-run --user --quiet --collect --wait --pipe -p CPUQuota=50\% -p MemoryMax=256M nice -n 19 ionice -c3 /docker/lab-ai/cleanup --apply --trash-only >> /docker/lab-ai/state/cleanup/cron.log 2>&1
+37 1 * * 0 /usr/bin/python3 /docker/jobs/ai/find-hiring-pages.py >> /data/jobs/discovery/log/weekly.log 2>&1
