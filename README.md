@@ -12,7 +12,7 @@ placeholders; the real values are kept encrypted.
 | [`homeassistant`](docker/homeassistant) | Home Assistant |
 
 My own apps live in their own repos: [movies](https://github.com/imad7x/movies),
-[plants](https://github.com/imad7x/plants), [resume-web](https://github.com/imad7x/resume-web),
+[resume-web](https://github.com/imad7x/resume-web),
 [updater](https://github.com/imad7x/updater), [lgtv](https://github.com/imad7x/lgtv),
 [x7-home](https://github.com/imad7x/x7-home). A few more are private.
 
