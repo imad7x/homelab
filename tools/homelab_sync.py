@@ -61,7 +61,6 @@ PRIVATE = [
 PUBLIC = [
     '*/compose.y*ml', '*/*/compose.y*ml',
     '*/Dockerfile', '*/*/Dockerfile', '*/.dockerignore', '*/*/requirements.txt',
-    'updater/app/*',
     'monitoring/prometheus/prometheus.yml', 'monitoring/prometheus/rules/*.yml',
     'monitoring/grafana/*.yml', 'monitoring/grafana/provisioning/**/*.yml',
     'monitoring/grafana/provisioning/**/*.json', 'monitoring/dashboards-src/*.py',
@@ -85,9 +84,10 @@ PUBLIC = [
     'jellyfin/music/slskd-data/slskd.yml',
     'homeassistant/config/*.yaml', 'homeassistant/config/blueprints/**/*.yaml',
 ]
-# Stacks with their own private repo (tools/private_mirrors.sh): nothing of theirs is published
-# here, but their .env files still go into the encrypted bundles.
-OWN_REPO = ('landing/', 'jobs/')
+# Self-built apps, each in its own private repo (tools/private_mirrors.sh): nothing of theirs is
+# published here, but their .env files and private files still go into the encrypted bundles.
+OWN_REPO = ('landing/', 'jobs/', 'finance/', 'gym/', 'health/', 'ipodesk/', 'movies/', 'plants/',
+            'resume/', 'updater/', 'lab-ai/', 'lgtv/', 'phone/')
 SKIP = [
     '**/__pycache__/*', '**/*.bak*', '**/*cache*.json',
     'homeassistant/config/.storage/core.restore_state', 'homeassistant/config/.storage/trace.*',

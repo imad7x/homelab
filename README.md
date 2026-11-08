@@ -25,12 +25,30 @@ kept encrypted - see [Secrets](#secrets).
 | `docker/pihole` | Pi-hole, DNS-over-HTTPS proxy, Cloudflare Tunnel, FlareSolverr | [README](docker/pihole) |
 | `docker/jellyfin` | Jellyfin and Jellystat; the *arr stack (`servarr/`); music (`music/`) | [README](docker/jellyfin) |
 | `docker/monitoring` | Prometheus, VictoriaMetrics, Grafana, node-exporter, cAdvisor, Scrutiny, smartctl-exporter, Homepage | [README](docker/monitoring) |
-| `docker/finance` | Firefly III with a mail-driven ingest worker | [README](docker/finance) |
-| `docker/updater` | One-click container updater (custom app) | [README](docker/updater) |
-| `docker/gym` | Workout program, set logger and watch data (custom app) | [README](docker/gym) |
-| `docker/landing` | Personal website: the Observatory, solar system, games, Sunroom (custom app; code in a private repo) | [README](docker/landing) |
-| `docker/jobs` | 7xjobs, a job finder for the Indian market (custom app; code in a private repo) | [README](docker/jobs) |
 | `docker/homeassistant` | Home Assistant | [README](docker/homeassistant) |
+
+## Self-built apps
+
+These run on the same server but each lives in its **own private repository**, so their code is
+not published here (the containers still show in the table below). Access is available on request:
+open an issue in this repo.
+
+| App | What it is | Built with |
+|---|---|---|
+| **7xjobs** | Job finder for the Indian market: crawls companies' own ATS feeds and remote boards, installable web app with offline saved jobs | Python (Starlette) API + crawler, Postgres, Next.js 16 / React 19 |
+| **website** | Personal site: the Observatory, an interactive 3D solar system, browser games, the Sunroom realtime 3D hangout | Static site on nginx, Python realtime services |
+| **finance** | Household ledger: a mail-driven ingest that reads bank and card statements into Firefly III, plus an AI "ask my finances" | Python, Firefly III, Postgres, Grafana |
+| **ipodesk** | Paper trading account for recent IPO listings, run by an AI with a signal engine and live market data | Python, SQLite |
+| **gym** | Workout program, set logger and smartwatch data, with AI coaching | Python (stdlib), SQLite, PWA |
+| **health** | Family health records: AI reads lab reports into trends and summaries | Python (stdlib), SQLite, PWA |
+| **plants** | Plant photos, care guide, weather-aware watering plan and feeding log | Python (stdlib) |
+| **movies** | What to watch next, ranked by rating and the films you love | Python (stdlib) |
+| **resume-web** | Resume editor for the family, many templates, PDF download | Python (stdlib) |
+| **updater** | One-click container updates with release notes | Python (stdlib), Docker API |
+| **lab-ai** | AI gateway for all the apps (limits, one pinned model per job, ledger) and the core7x control portal | Python, MCP |
+| **lgtv** | Rooted LG webOS TV: minimal home screen and a movies app | JavaScript (webOS) |
+| **x7-home** | Minimal terminal-style Android launcher | Kotlin, no libraries |
+| **resume-studio** | Android resume builder | Kotlin |
 
 ### Containers
 
@@ -132,6 +150,8 @@ writes the files and runs the checks without committing, use
    `docker volume create monitoring_grafana_data` and `mkdir /mnt/disk2/victoria-metrics`. Start `finance` and `jellyfin`
    before `monitoring`, because Grafana joins their networks.
 6. `docker compose up -d` in each stack, `pihole` first.
+7. Self-built apps: clone each private repo into `/docker/<app>` (see `tools/private_mirrors.sh`),
+   then restore again with step 4 so their `.env` files come back from the bundles.
 
 Databases, media, documents and metrics history are data, not configuration, and are not
 in this repo.
