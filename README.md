@@ -57,6 +57,7 @@ Generated from `docker ps` on every sync.
 <!-- inventory:start -->
 | Stack (`docker/…`) | Container | Image | Host ports |
 |---|---|---|---|
+| - | jobs-api-next | `jobs-app:latest` | - |
 | - | simpleparty | `python:3.12-slim` | 1312 |
 | finance | finance-app | `finance-app:latest` | 8085 |
 | finance | finance-db | `postgres:16-alpine` | 5432 |
