@@ -9,15 +9,6 @@ hash and personal detail is replaced by a placeholder such as `[[secret:RADARR_A
 or `[[private:DOMAIN]]`. The real values, and the files that are private as a whole, are
 kept encrypted - see [Secrets](#secrets).
 
-## The machine
-
-| | |
-|---|---|
-| Hardware | Lenovo ThinkCentre M720q Tiny · Intel i3-8100 · 16 GB RAM |
-| Storage | NVMe boot SSD; two USB HDDs (`/mnt/disk1`, `/mnt/disk2`) pooled by mergerfs at `/data` |
-| OS | Ubuntu, Docker Engine with Compose v2 |
-| Network | LAN address `192.168.0.10`. Pi-hole is the LAN's DNS. Selected apps are published through a Cloudflare Tunnel, mostly behind Cloudflare Access; the rest are reached on the LAN or over Tailscale. |
-
 ## Layout
 
 | Path | What it is |
