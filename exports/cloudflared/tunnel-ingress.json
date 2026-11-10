@@ -89,10 +89,20 @@
       "service": "http://192.168.0.10:8095"
     },
     {
+      "hostname": "7xjobs.com",
+      "originRequest": {},
+      "service": "http://192.168.0.10:8095"
+    },
+    {
+      "hostname": "www.7xjobs.com",
+      "originRequest": {},
+      "service": "http://192.168.0.10:8095"
+    },
+    {
       "service": "http_status:404"
     }
   ],
-  "version": 37,
+  "version": 38,
   "warp-routing": {
     "enabled": false
   }
