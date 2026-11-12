@@ -353,15 +353,15 @@
         siteMonitor: http://192.168.0.10:8087/api/ping
 
 - Documents:
-    # Resume (/docker/resume): resume editor for everyone at home, many
-    # templates, PDF download. No logins.
-    - Resume:
+    # 7xResume (/docker/resume): the public resume builder at 7xjobs.com/resume/build/,
+    # reached on the LAN through jobs-react. Replaced the family Resume app (:8088) on 2026-11-12.
+    - 7xResume:
         icon: mdi-file-account
-        href: http://192.168.0.10:8088
-        description: Resume Builder
+        href: http://192.168.0.10:8095/resume/build/
+        description: Resume Builder (public)
         server: my-docker
-        container: resume
-        siteMonitor: http://192.168.0.10:8088/api/ping
+        container: resume-public
+        siteMonitor: http://192.168.0.10:8095/resume/build/api/ping
 
 - Archive:
     # oldbackup (/data/oldbackup): old downloads, browsed and played by simpleparty.
