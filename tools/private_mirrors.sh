@@ -28,7 +28,7 @@ mirror() {   # mirror REPO public|private SOURCE [DOCS_DIR]
   [ "$(gh repo view "$OWNER/$name" --json visibility -q .visibility 2>/dev/null)" = "${vis^^}" ] \
     || { echo "$name: repo is not $vis on GitHub (or unreachable) - not pushing"; rc=1; return; }
   local f=() ; [ -f "$CONF/mirror-$name.filter" ] && f+=(--filter="merge $CONF/mirror-$name.filter")
-  rsync -a --delete "${f[@]}" --filter="merge $CONF/mirror-common.filter" "$src/" "$dir/"
+  rsync -a --delete --max-size=90m "${f[@]}" --filter="merge $CONF/mirror-common.filter" "$src/" "$dir/"   # GitHub refuses files over 100 MB
   if [ -n "$docs" ]; then
     mkdir -p "$dir/docs"
     rsync -a --delete --filter="merge $CONF/mirror-docs.filter" "$docs/" "$dir/docs/"

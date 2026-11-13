@@ -1,7 +1,7 @@
 # Pi-hole configuration file (v6.8)
 # Encoding: UTF-8
 # This file is managed by pihole-FTL
-# Last updated on 2026-11-08 11:34:42 IST
+# Last updated on 2026-11-14 01:41:47 IST
 
 [dns]
   # Upstream DNS Servers to be used by Pi-hole. If this is not set, Pi-hole will not
@@ -814,7 +814,7 @@
   #
   # Allowed values are:
   #     A positive integer value in days, or 0 to disable the database
-  maxDBdays = 91
+  maxDBdays = 30 ### CHANGED, default = 91
 
   # How often do we store queries in FTL's database [seconds]?
   #
@@ -1769,6 +1769,6 @@
   all = false
 
 # Configuration statistics:
-# 167 total entries out of which 147 entries are default
-# --> 20 entries are modified
+# 167 total entries out of which 146 entries are default
+# --> 21 entries are modified
 

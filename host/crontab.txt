@@ -34,3 +34,9 @@
 5 4 * * * nice -n 19 ionice -c3 /docker/jobs/backup.sh >> /docker/jobs/logs/backup.log 2>&1
 # 7xjobs: copy the site guard's blocks to Cloudflare so blocked addresses are turned away at the edge (v20)
 */5 * * * * /usr/bin/python3 -I /docker/jobs/cloudflare/edge-guard.py sync --apply >> /docker/jobs/logs/edge-guard.log 2>&1
+# 7xjobs v22 AI company finder (ai/find-companies.py): names 12 segments a lane, then checks them; stops at 80% of a Google pool
+43 2 * * * /usr/bin/flock -n /docker/jobs/logs/ai/.lock /usr/bin/python3 /docker/jobs/ai/find-companies.py run --limit 12 >> /docker/jobs/logs/ai/cron.log 2>&1
+*/10 * * * * /usr/bin/python3 -I /docker/lab-ai/ondemand check >> /docker/lab-ai/state/ondemand.log 2>&1
+# agy model list: notify when Gemini 4 Hydrogen (or any model) appears or goes (2026-11-14)
+23 11 * * * /usr/bin/python3 -I /docker/lab-ai/model-watch >> /docker/lab-ai/state/model-watch.log 2>&1
+*/2 * * * * /usr/bin/python3 -I /docker/lab-ai/ondemand requests >> /docker/lab-ai/state/ondemand.log 2>&1
