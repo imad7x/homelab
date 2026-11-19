@@ -286,16 +286,6 @@
         server: my-docker
         container: finance-ingest
 
-    # IPO Desk (/docker/ipodesk): paper trading in recent IPO listings with Rs 1
-    # lakh of pretend money; an AI decides and keeps a playbook of its lessons.
-    - IPO Desk:
-        icon: mdi-chart-line
-        href: http://192.168.0.10:8091
-        siteMonitor: http://192.168.0.10:8091/api/ping
-        description: Paper Trading in New Listings
-        server: my-docker
-        container: ipodesk
-
 - AI:
     # core7x (/docker/lab-ai/portal): lead of the AI team and its portal. Sessions
     # on any model from the phone, plan limits, cleanup and growth reviews. A host
