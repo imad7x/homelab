@@ -9,6 +9,9 @@ services:
       --upstream https://1.1.1.1/dns-query
       --upstream https://1.0.0.1/dns-query
     restart: unless-stopped
+    # DNS-over-HTTPS for Pi-hole: a few MB; caps only stop a runaway (house rule, 2026-11-20).
+    mem_limit: 128m
+    cpus: 0.5
     networks:
       pihole_net:
         ipv4_address: 172.20.0.3
@@ -46,8 +49,16 @@ services:
     networks:
       pihole_net:
         ipv4_address: 172.20.0.4
-    command: "tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}"
+    # The token goes in as an environment variable (cloudflared reads TUNNEL_TOKEN), not on the command line,
+    # where every process list on the host showed it (2026-11-20). Value from .env.
+    command: "tunnel --no-autoupdate run"
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
     restart: unless-stopped
+    # All public sites pass through here: ~30 MB and well under 1% CPU normally; the caps only stop a runaway.
+    mem_limit: 256m
+    cpus: 1.0
+    pids_limit: 128
 
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest

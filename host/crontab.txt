@@ -38,3 +38,4 @@
 # agy model list: notify when Gemini 4 Hydrogen (or any model) appears or goes (2026-11-14)
 23 11 * * * /usr/bin/python3 -I /docker/lab-ai/model-watch >> /docker/lab-ai/state/model-watch.log 2>&1
 */2 * * * * /usr/bin/python3 -I /docker/lab-ai/ondemand requests >> /docker/lab-ai/state/ondemand.log 2>&1
+*/5 * * * * XDG_RUNTIME_DIR=/run/user/1000 systemd-run --user --quiet --collect --wait --pipe -p CPUQuota=50\% -p MemoryMax=512M nice -n 19 ionice -c3 /docker/landing/tools/music >> /docker/landing/logs/music.log 2>&1
