@@ -111,6 +111,63 @@ services:
       servarrnetwork:
         ipv4_address: 172.39.0.6
 
+  # Books for the ship's cabins (website cabins plan part 4, owner 2026-11-21): Bookshelf (Readarr fork,
+  # Hardcover metadata), root folder /data/books. Part of the on-demand "media" group (/docker/lab-ai/ondemand).
+  bookshelf:
+    image: ghcr.io/pennydreadful/bookshelf:hardcover
+    container_name: bookshelf
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./bookshelf:/config
+      - /data:/data
+    ports:
+      - 8787:8787
+    cpus: 1.0
+    mem_limit: 768m
+    dns:
+      - 172.20.0.2
+      - 1.1.1.1
+    networks:
+      servarrnetwork:
+        ipv4_address: 172.39.0.7
+
+  # Seedr bridge (owner 2026-11-25): a qBittorrent API stand-in for Bookshelf and Radarr. Books always go through
+  # Seedr, Radarr movies <= 2.5 GB too; one at a time; anything Seedr can't do falls back to qBittorrent. All other
+  # calls pass through to qbittorrent. Code and notes: ./seedr-bridge (bridge.py). Status: http://lab:8099/bridge
+  seedr-bridge:
+    image: python:3.13-alpine
+    container_name: seedr-bridge
+    restart: unless-stopped
+    user: "${PUID}:${PGID}"
+    command: ["python", "-u", "/app/bridge.py"]
+    environment:
+      - TZ=${TZ}
+      - QBIT_URL=http://172.39.0.2:8080
+      - SEEDR_ALWAYS=books
+      - SEEDR_SIZED=radarr
+      - SEEDR_MAX_GB=2.5
+    volumes:
+      - ./seedr-bridge/bridge.py:/app/bridge.py:ro
+      - ./seedr-bridge/state:/state
+      - /data/downloads/qbittorrent:/data/downloads/qbittorrent
+    ports:
+      - 8099:8080
+    cpus: 0.5
+    mem_limit: 128m
+    pids_limit: 64
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      servarrnetwork:
+        ipv4_address: 172.39.0.11
+
   jellyseerr:
     container_name: jellyseerr
     image: ghcr.io/seerr-team/seerr:latest

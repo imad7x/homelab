@@ -1,4 +1,22 @@
 {
+    "books": {
+        "download_path": null,
+        "inactive_seeding_time_limit": -2,
+        "ratio_limit": -2,
+        "save_path": "",
+        "seeding_time_limit": -2,
+        "share_limit_action": "Default",
+        "share_limits_mode": "Default"
+    },
+    "books-finder": {
+        "download_path": null,
+        "inactive_seeding_time_limit": -2,
+        "ratio_limit": -2,
+        "save_path": "/data/downloads/qbittorrent/completed/books-finder",
+        "seeding_time_limit": -2,
+        "share_limit_action": "Default",
+        "share_limits_mode": "Default"
+    },
     "lidarr": {
         "download_path": null,
         "inactive_seeding_time_limit": -2,

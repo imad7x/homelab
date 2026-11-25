@@ -10,13 +10,18 @@
   <PublicHttpPort>8096</PublicHttpPort>
   <PublicHttpsPort>8920</PublicHttpsPort>
   <AutoDiscovery>true</AutoDiscovery>
-  <EnableUPnP>true</EnableUPnP>
+  <EnableUPnP>false</EnableUPnP>
   <EnableIPv4>true</EnableIPv4>
   <EnableIPv6>false</EnableIPv6>
   <EnableRemoteAccess>true</EnableRemoteAccess>
-  <LocalNetworkSubnets />
+  <LocalNetworkSubnets>
+    <string>192.168.0.0/24</string>
+    <string>172.16.0.0/12</string>
+  </LocalNetworkSubnets>
   <LocalNetworkAddresses />
-  <KnownProxies />
+  <KnownProxies>
+    <string>172.18.0.1</string>
+  </KnownProxies>
   <IgnoreVirtualInterfaces>true</IgnoreVirtualInterfaces>
   <VirtualInterfaceNames>
     <string>veth</string>

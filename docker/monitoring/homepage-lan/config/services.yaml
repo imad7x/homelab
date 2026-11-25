@@ -1,14 +1,9 @@
 ---
-# For configuration options and examples, please see:
-# https://gethomepage.dev/configs/services
-#
-# LAN start page (homepage-lan, port 3010). Every link is a 192.168.0.10 address
-# and nothing here is routed through the tunnel, so this copy keeps the widgets
-# (API keys), Docker stats and site monitors. The public start page is
-# /docker/landing (a snapshot page, no widgets).
-#
-# Every tile with `server: my-docker` + `container:` shows a live running/stopped
-# dot and CPU/RAM usage (see docker.yaml).
+# LAN start page (homepage-lan, :3010). Every link is a 192.168.0.10 address; nothing here goes
+# through the tunnel. Tiles with server/container show a live dot and CPU/RAM (docker.yaml).
+# Cleaned up 2026-11-21: Home Assistant, Prometheus and simpleparty gone; Bookshelf, 7xjobs added.
+# Downloaders run on demand (core7x Server > Health > On demand, 2 h idle stop), so their API
+# widgets were dropped: they showed errors whenever the containers were stopped.
 
 - Media:
     - Jellyfin:
@@ -18,45 +13,26 @@
         server: my-docker
         container: jellyfin
         siteMonitor: http://192.168.0.10:8096
-        # WIDGET DISABLED - Jellyfin 12.0 removed the legacy /emby/ route prefix
-        # and ?api_key= query auth. homepage v1.13.2 hardcodes
-        # "emby/Sessions?api_key={key}", so this 404'd every refresh and spammed
-        # the logs. The API key below is still VALID (header auth works); the
-        # gap is upstream - both fixes (PR #7138, #7150) were closed unmerged,
-        # so no homepage release fixes it yet. Re-enable when one lands.
-        # widget:
-        #   type: jellyfin
-        #   url: http://192.168.0.10:8096
-        #   key: [[secret:SEERR_APIKEY_2]]
-        #   enableBlocks: true
-        #   enableNowPlaying: true
-        #   enableUser: true
-        #   enableMediaControl: true
-        #   showEpisodeNumber: true
-        #   expandOneStreamToTwoRows: false
-
+        # Widget off: Jellyfin 12 dropped the /emby/ route homepage still calls (no upstream fix yet).
     - Jellyseerr:
         icon: jellyseerr.png
         href: http://192.168.0.10:5055
-        description: Request Management
+        description: Requests (approving one starts the downloaders)
         server: my-docker
         container: jellyseerr
-
     - Jellystat:
         icon: jellystat.png
         href: http://192.168.0.10:3003
-        description: Jellyfin watch history & stats
+        description: Watch History & Stats
         server: my-docker
         container: jellystat
-
     - Movies:
         icon: mdi-movie-open-star-outline
         href: http://192.168.0.10:8089
-        description: What to watch next, by IMDb rating
+        description: What to Watch Next
         server: my-docker
         container: movies
         siteMonitor: http://192.168.0.10:8089/api/ping
-
     - Navidrome:
         icon: navidrome.png
         href: http://192.168.0.10:4533
@@ -69,97 +45,165 @@
           user: imad7x
           salt: [[secret:HOMEPAGE_SALT]]
           token: [[secret:HOMEPAGE_TOKEN]]
-
-- Smart Home:
-    - Home Assistant:
-        icon: home-assistant.png
-        href: http://192.168.0.10:8123
-        description: Home Automation
+    - Bookshelf:
+        icon: readarr.png
+        href: http://192.168.0.10:8787
+        description: Books (Readarr fork), always on
         server: my-docker
-        container: homeassistant
-        siteMonitor: http://192.168.0.10:8123
+        container: bookshelf
+        siteMonitor: http://192.168.0.10:8787
 
-- Arr:
+- Downloads:
     - Sonarr:
         icon: sonarr.png
         href: http://192.168.0.10:8989
-        description: TV Shows
+        description: TV Shows · on demand
         server: my-docker
         container: sonarr
-        siteMonitor: http://192.168.0.10:8989
-        widget:
-          type: sonarr
-          url: http://192.168.0.10:8989
-          key: [[secret:HOMEPAGE_KEY]]
-
     - Radarr:
         icon: radarr.png
         href: http://192.168.0.10:7878
-        description: Movies
+        description: Movies · on demand
         server: my-docker
         container: radarr
-        widget:
-          type: radarr
-          url: http://192.168.0.10:7878
-          key: [[secret:HOMEPAGE_KEY_2]]
-
     - Bazarr:
         icon: bazarr.png
         href: http://192.168.0.10:6767
-        description: Subtitles
+        description: Subtitles · on demand
         server: my-docker
         container: bazarr
-        widget:
-          type: bazarr
-          url: http://192.168.0.10:6767
-          key: [[secret:HOMEPAGE_KEY_3]]
-
-- Downloads:
-    - qBittorrent:
-        icon: qbittorrent.png
-        href: http://192.168.0.10:8080
-        description: Torrent Client
-        server: my-docker
-        container: qbittorrent
-        widget:
-          type: qbittorrent
-          url: http://192.168.0.10:8080
-          username: imad7x
-          password: [[secret:HOMEPAGE_PASSWORD]]
-
     - Prowlarr:
         icon: prowlarr.png
         href: http://192.168.0.10:9696
-        description: Index Manager
+        description: Indexers · on demand
         server: my-docker
         container: prowlarr
-        widget:
-          type: prowlarr
-          url: http://192.168.0.10:9696
-          key: [[secret:HOMEPAGE_KEY_4]]
-
-    - Soulseek:
-        icon: slskd.png
-        href: http://192.168.0.10:5030
-        description: P2P File Sharing
+    - qBittorrent:
+        icon: qbittorrent.png
+        href: http://192.168.0.10:8080
+        description: Torrents · on demand
         server: my-docker
-        container: slskd
-
+        container: qbittorrent
     - FlareSolverr:
         icon: flaresolverr.png
         href: http://192.168.0.10:8191
-        description: Cloudflare Solver
+        description: Cloudflare Solver · on demand
         server: my-docker
         container: flaresolverr
+    - Soulseek:
+        icon: slskd.png
+        href: http://192.168.0.10:5030
+        description: P2P Music · on demand
+        server: my-docker
+        container: slskd
+
+- Finance:
+    - Finances:
+        icon: mdi-finance
+        href: http://192.168.0.10:8085
+        description: Balances, Spending, Loans & Ask
+        server: my-docker
+        container: finance-app
+        siteMonitor: http://192.168.0.10:8085/api/ping
+    - Firefly III:
+        icon: firefly-iii.png
+        href: http://192.168.0.10:3002
+        description: Household Ledger
+        server: my-docker
+        container: firefly
+        siteMonitor: http://192.168.0.10:3002
+    - Bank Mail Importer:
+        icon: mdi-email-sync-outline
+        description: Reads Bank Mail Every 15 Min
+        server: my-docker
+        container: finance-ingest
+
+- Home:
+    - Gym:
+        icon: mdi-dumbbell
+        href: http://192.168.0.10:8086
+        description: Workouts, Progress & Watch Data
+        server: my-docker
+        container: gym
+        siteMonitor: http://192.168.0.10:8086/api/ping
+        widget:
+          type: customapi
+          url: http://192.168.0.10:8086/api/summary
+          refreshInterval: 300000
+          mappings:
+            - field: week_done
+              label: Days This Week
+              format: number
+            - field: streak_weeks
+              label: Week Streak
+              format: number
+    - Family Health:
+        icon: mdi-heart-pulse
+        href: http://192.168.0.10:8090
+        description: Lab Reports, Trends & Doctor Chat
+        server: my-docker
+        container: health
+        siteMonitor: http://192.168.0.10:8090/api/ping
+    - Plants:
+        icon: mdi-sprout
+        href: http://192.168.0.10:8087
+        description: Watering & Care Guide
+        server: my-docker
+        container: plants
+        siteMonitor: http://192.168.0.10:8087/api/ping
+    - core7x:
+        icon: /images/core7x.svg
+        href: http://192.168.0.10:8093
+        description: AI Sessions, Limits & Server
+        siteMonitor: http://192.168.0.10:8093/api/me
+
+- 7xjobs:
+    - 7xjobs:
+        icon: mdi-briefcase-search-outline
+        href: http://192.168.0.10:8095
+        description: Job Search (public site)
+        server: my-docker
+        container: jobs-react
+        siteMonitor: http://192.168.0.10:8095
+    - 7xResume:
+        icon: mdi-file-account
+        href: http://192.168.0.10:8095/resume/build/
+        description: Resume Builder (public)
+        server: my-docker
+        container: resume-public
+        siteMonitor: http://192.168.0.10:8095/resume/build/api/ping
+    - 7xjobs Visitors:
+        icon: mdi-account-eye-outline
+        href: http://192.168.0.10:8097
+        description: Visits & Resume Funnel
+        server: my-docker
+        container: jobs-visitors
+        siteMonitor: http://192.168.0.10:8097
+    - Crawler:
+        icon: mdi-spider-web
+        description: Job Crawler
+        server: my-docker
+        container: jobs-crawler
+
+- Public Site:
+    - Landing Page:
+        icon: mdi-web
+        href: http://192.168.0.10:3000
+        description: Public Start Page
+        server: my-docker
+        container: landing
+    - Visitors:
+        icon: mdi-account-eye-outline
+        href: http://192.168.0.10:3011
+        description: Who Opened the Public Page
+        server: my-docker
+        container: landing-visitors
 
 - Infrastructure:
-    # Container updater (/docker/updater). Home-only: it is deliberately kept
-    # off the tunnel. Checks run once a day, so a 5-minute refresh (the unit
-    # is ms) is plenty.
     - Updates:
         icon: mdi-package-up
         href: http://192.168.0.10:8084
-        description: Container Updates · Checks Daily
+        description: Container Updates · Daily
         server: my-docker
         container: updater
         widget:
@@ -173,52 +217,12 @@
             - field: last_check
               label: Checked
               format: relativeDate
-
     - Pi-hole:
         icon: pi-hole.png
         href: http://192.168.0.10:8081/admin
         description: DNS & Ad Blocking
         server: my-docker
         container: pihole
-
-    - Cloudflare Tunnel:
-        icon: cloudflare-zero-trust.png
-        href: https://one.dash.cloudflare.com
-        description: Public Ingress
-        server: my-docker
-        container: cloudflared_tunnel
-
-    - Cloudflared DoH:
-        icon: cloudflare.png
-        description: DNS-over-HTTPS Resolver
-        server: my-docker
-        container: cloudflared
-
-    - Homepage:
-        icon: homepage.png
-        href: http://192.168.0.10:3010
-        description: This Dashboard (LAN)
-        server: my-docker
-        container: homepage-lan
-
-    # The public landing page the tunnel serves (/docker/landing): a static nginx site.
-    - Landing Page:
-        icon: mdi-web
-        href: http://192.168.0.10:3000
-        description: Public start page
-        server: my-docker
-        container: landing
-
-    # Who opened the public page: visits per device, visits to the apps, blocklist.
-    - Visitors:
-        icon: mdi-account-eye-outline
-        href: http://192.168.0.10:3011
-        description: Who opened the public page
-        server: my-docker
-        container: landing-visitors
-
-    # ntfy (/docker/ntfy): phone push alerts from core7x and the apps. LAN and
-    # Tailscale only, never routed through the tunnel.
     - ntfy:
         icon: ntfy.png
         href: http://192.168.0.10:8094
@@ -226,6 +230,17 @@
         server: my-docker
         container: ntfy
         siteMonitor: http://192.168.0.10:8094/v1/health
+    - Cloudflare Tunnel:
+        icon: cloudflare-zero-trust.png
+        href: https://one.dash.cloudflare.com
+        description: Public Ingress
+        server: my-docker
+        container: cloudflared_tunnel
+    - Cloudflared DoH:
+        icon: cloudflare.png
+        description: DNS-over-HTTPS Resolver
+        server: my-docker
+        container: cloudflared
 
 - Monitoring:
     - Grafana:
@@ -234,131 +249,20 @@
         description: Dashboards
         server: my-docker
         container: grafana
-
-    - Prometheus:
-        icon: prometheus.png
-        href: http://192.168.0.10:9090
-        description: Metrics Store
-        server: my-docker
-        container: prometheus
-
-    - cAdvisor:
-        icon: cadvisor.png
-        href: http://192.168.0.10:8082
-        description: Container Metrics
-        server: my-docker
-        container: cadvisor
-
     - Scrutiny:
         icon: scrutiny.png
         href: http://192.168.0.10:8083
         description: Disk S.M.A.R.T. Health
         server: my-docker
         container: scrutiny
-
-    - SMART Exporter:
-        icon: mdi-harddisk
-        href: http://192.168.0.10:9633/metrics
-        description: Disk Metrics
+    - cAdvisor:
+        icon: cadvisor.png
+        href: http://192.168.0.10:8082
+        description: Container Metrics
         server: my-docker
-        container: smartctl-exporter
-
-- Finance:
-    - Firefly III:
-        icon: firefly-iii.png
-        href: http://192.168.0.10:3002
-        description: Household Ledger
+        container: cadvisor
+    - VictoriaMetrics:
+        icon: victoriametrics.png
+        description: Metrics Store & Alerts (host only)
         server: my-docker
-        container: firefly
-        siteMonitor: http://192.168.0.10:3002
-
-    - Finances:
-        icon: mdi-finance
-        href: http://192.168.0.10:8085
-        description: Balances, Spending, Loans, Categorise & Ask
-        siteMonitor: http://192.168.0.10:8085/api/ping
-        server: my-docker
-        container: finance-app
-
-    - Bank Mail Importer:
-        icon: mdi-email-sync-outline
-        description: Reads Bank Mail Every 15 Min
-        server: my-docker
-        container: finance-ingest
-
-- AI:
-    # core7x (/docker/lab-ai/portal): lead of the AI team and its portal. Sessions
-    # on any model from the phone, plan limits, cleanup and growth reviews. A host
-    # process, not a container, so only the site monitor shows its state.
-    - core7x:
-        icon: /images/core7x.svg
-        href: http://192.168.0.10:8093
-        description: AI Sessions, Limits & Reviews
-        siteMonitor: http://192.168.0.10:8093/api/me
-
-- Health:
-    # Gym (/docker/gym): workout program, set logger, progress charts and the
-    # watch's data. Its summary only changes when a workout is logged, so a
-    # 5-minute refresh (the unit is ms) is plenty. Offline/install as an app
-    # needs HTTPS, which only the tunnel hostname has.
-    - Gym:
-        icon: mdi-dumbbell
-        href: http://192.168.0.10:8086
-        siteMonitor: http://192.168.0.10:8086/api/ping
-        description: Workouts, Progress & Watch Data
-        server: my-docker
-        container: gym
-        widget:
-          type: customapi
-          url: http://192.168.0.10:8086/api/summary
-          refreshInterval: 300000
-          mappings:
-            - field: week_done
-              label: Days This Week
-              format: number
-            - field: streak_weeks
-              label: Week Streak
-              format: number
-    # Family Health (/docker/health): everyone's lab reports over time, an AI
-    # summary and a doctor chat. LAN + Tailscale only (no tunnel); no widget so
-    # no health numbers show on the dashboard.
-    - Family Health:
-        icon: mdi-heart-pulse
-        href: http://192.168.0.10:8090
-        siteMonitor: http://192.168.0.10:8090/api/ping
-        description: Lab Reports, Trends & Doctor Chat
-        server: my-docker
-        container: health
-
-- Garden:
-    # Plants (/docker/plants): photo inventory, per-plant care guide and the
-    # weather-driven watering log. The "needs water" count is worked out in the
-    # browser from the log, so there is no summary widget here.
-    - Plants:
-        icon: mdi-sprout
-        href: http://192.168.0.10:8087
-        description: Watering & Care Guide
-        server: my-docker
-        container: plants
-        siteMonitor: http://192.168.0.10:8087/api/ping
-
-- Documents:
-    # 7xResume (/docker/resume): the public resume builder at 7xjobs.com/resume/build/,
-    # reached on the LAN through jobs-react. Replaced the family Resume app (:8088) on 2026-11-12.
-    - 7xResume:
-        icon: mdi-file-account
-        href: http://192.168.0.10:8095/resume/build/
-        description: Resume Builder (public)
-        server: my-docker
-        container: resume-public
-        siteMonitor: http://192.168.0.10:8095/resume/build/api/ping
-
-- Archive:
-    # oldbackup (/data/oldbackup): old downloads, browsed and played by simpleparty.
-    - oldbackup:
-        icon: mdi-archive
-        href: http://192.168.0.10:1312
-        description: Old Downloads Browser
-        server: my-docker
-        container: simpleparty
-        siteMonitor: http://192.168.0.10:1312
+        container: victoriametrics

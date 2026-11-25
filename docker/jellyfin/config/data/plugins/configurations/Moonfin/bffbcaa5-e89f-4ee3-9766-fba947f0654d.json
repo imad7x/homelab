@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "lastUpdated": 1795021252523,
+  "lastUpdated": 1795628800066,
   "lastUpdatedBy": "moonfin-flutter",
   "syncEnabled": true,
   "global": {
@@ -1400,7 +1400,11 @@
     "loadingAnimationSize": "small",
     "loadingAnimationPosition": "middle",
     "loadingAnimationSpeed": "moderate",
-    "showLoadingAnimationText": false
+    "showLoadingAnimationText": false,
+    "autoDownloadEnabled": true,
+    "autoDownloadBackgroundRefresh": true,
+    "autoDownloadKeepUnwatched": 3,
+    "autoDownloadDeleteAfterHours": -1
   },
   "hiddenContentBaselines": {
     "tv": {

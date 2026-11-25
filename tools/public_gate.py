@@ -18,6 +18,9 @@ REWRITE = {'DOMAIN': 'example.com'}
 LABELS = {'this', 'super', 'return', 'break', 'continue'}   # Kotlin this@Label, not e-mail
 # Made-up sample data (owner OK 2026-11-14): skip only the e-mail, phone and card checks there.
 SAMPLE_FILES = {'app/web/data/examples.js'}   # resume-web: demo resumes on example.com, fake numbers
+# A blocked word that is a product name the app needs (owner 2026-11-25, "fix it"): resume-web's list of the phone's AI
+# apps to hand a prompt to. Only that file, only the blocked-word check.
+BLOCKED_OK = {'app/web/js/ai.js'}
 
 
 def text_files(root):
@@ -65,7 +68,7 @@ def main(root):
                 if kind == 'card number' and not h.luhn(m.group(0)):
                     continue
                 problems.append(f'{rel}:{line(m.start())}: {kind}')
-        for rx in blocked:
+        for rx in ([] if rel in BLOCKED_OK else blocked):
             m = rx.search(text)
             if m:
                 problems.append(f'{rel}:{line(m.start())}: blocked word')

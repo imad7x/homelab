@@ -7,7 +7,6 @@ My home server as code: Docker Compose stacks, configs, Grafana dashboards and h
 | [`pihole`](docker/pihole) | Pi-hole, DNS-over-HTTPS, Cloudflare Tunnel |
 | [`jellyfin`](docker/jellyfin) | Jellyfin, the *arr stack, music |
 | [`monitoring`](docker/monitoring) | Prometheus, VictoriaMetrics, Grafana, Homepage |
-| [`homeassistant`](docker/homeassistant) | Home Assistant |
 
 My own apps live in their own repos: [movies](https://github.com/imad7x/movies),
 [resume-web](https://github.com/imad7x/resume-web),

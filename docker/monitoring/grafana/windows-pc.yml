@@ -1,0 +1,15 @@
+# Windows PC dashboard: pc.db is a copy of /docker/lab-ai/state/pc/pc.db (one sample a minute + switch events),
+# rewritten into /docker/lab-ai/state/grafana every 5 minutes by `pc tick` (/docker/lab-ai/pc/pc) and mounted
+# read-only. Same SQLite plugin as AI Usage. Dashboard source: dashboards-src/windows_pc.py.
+apiVersion: 1
+
+datasources:
+  - name: Windows PC
+    uid: windows-pc
+    type: frser-sqlite-datasource
+    access: proxy
+    jsonData:
+      path: /var/lib/lab-ai/pc.db
+      pathPrefix: 'file:'
+      pathOptions: mode=ro
+    editable: false

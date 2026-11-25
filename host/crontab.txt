@@ -39,3 +39,7 @@
 23 11 * * * /usr/bin/python3 -I /docker/lab-ai/model-watch >> /docker/lab-ai/state/model-watch.log 2>&1
 */2 * * * * /usr/bin/python3 -I /docker/lab-ai/ondemand requests >> /docker/lab-ai/state/ondemand.log 2>&1
 */5 * * * * XDG_RUNTIME_DIR=/run/user/1000 systemd-run --user --quiet --collect --wait --pipe -p CPUQuota=50\% -p MemoryMax=512M nice -n 19 ionice -c3 /docker/landing/tools/music >> /docker/landing/logs/music.log 2>&1
+# Windows PC (/docker/lab-ai/pc/pc): one probe a minute -> pc.db (energy, who, events), auto-sleep of a PC the lab AI woke, core7x + Grafana data.
+* * * * * /docker/lab-ai/pc/pc tick >/dev/null 2>>/docker/lab-ai/state/pc/tick.err
+*/5 * * * * /usr/bin/python3 -I /docker/jellyfin/servarr/books-convert/convert.py >> /docker/jellyfin/logs/books-convert.log 2>&1
+*/2 * * * * /usr/bin/python3 -I /docker/jellyfin/servarr/books-finder/finder.py >> /docker/jellyfin/logs/books-finder.log 2>&1

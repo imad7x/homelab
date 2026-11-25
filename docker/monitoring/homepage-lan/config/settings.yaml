@@ -31,21 +31,32 @@ quicklaunch:
   hideInternetSearch: false
   hideVisitURL: false
 
-# Explicit ordering and column counts. Without this block the groups render in
-# file order at a default width, which is what made the page feel ragged.
+# Group order and widths. Every group in services.yaml is listed so none falls back to a default width.
 layout:
   Media:
     style: row
     columns: 4
     icon: mdi-play-circle
-  Arr:
-    style: row
-    columns: 4
-    icon: mdi-television-classic
   Downloads:
     style: row
     columns: 4
     icon: mdi-download-circle
+  Finance:
+    style: row
+    columns: 4
+    icon: mdi-cash-multiple
+  Home:
+    style: row
+    columns: 4
+    icon: mdi-home-heart
+  7xjobs:
+    style: row
+    columns: 4
+    icon: mdi-briefcase-outline
+  Public Site:
+    style: row
+    columns: 4
+    icon: mdi-web
   Infrastructure:
     style: row
     columns: 4
@@ -54,10 +65,6 @@ layout:
     style: row
     columns: 4
     icon: mdi-chart-areaspline
-  Finance:
-    style: row
-    columns: 4
-    icon: mdi-cash-multiple
 
 providers:
   # NOTE: unused - there is no weather widget configured in widgets.yaml. Add

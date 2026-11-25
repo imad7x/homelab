@@ -25,7 +25,7 @@ API="http://localhost:8989/api/v3"
 LOG=/config/logs/preair-guard.log
 
 log() { echo "$(date '+%F %T') $*" >> "$LOG"; }
-KEY=$(sed -n 's:.*<ApiKey>[[secret:JELLYFIN_APIKEY]]</ApiKey>.*:\1:p' /config/config.xml)
+KEY=$(sed -n 's:.*<ApiKey>[[secret:JELLYFIN_APIKEY_2]]</ApiKey>.*:\1:p' /config/config.xml)
 
 # Detached half: find the queue item for this download and remove it.
 if [ "${1:-}" = "--remove" ]; then

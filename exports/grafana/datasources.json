@@ -200,5 +200,26 @@
     "uid": "sonarr-api",
     "url": "",
     "user": ""
+  },
+  {
+    "access": "proxy",
+    "basicAuth": false,
+    "database": "",
+    "id": 12,
+    "isDefault": false,
+    "jsonData": {
+      "path": "/var/lib/lab-ai/pc.db",
+      "pathOptions": "mode=ro",
+      "pathPrefix": "file:"
+    },
+    "name": "Windows PC",
+    "orgId": 1,
+    "readOnly": true,
+    "type": "frser-sqlite-datasource",
+    "typeLogoUrl": "public/plugins/frser-sqlite-datasource/img/logo.svg",
+    "typeName": "SQLite",
+    "uid": "windows-pc",
+    "url": "",
+    "user": ""
   }
 ]

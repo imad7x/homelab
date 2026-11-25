@@ -55,8 +55,9 @@ PRIVATE = [
     'finance/ingest/*.py', 'finance/ingest/*.yaml', 'finance/ingest/*.sql',
     'finance/grafana_dashboard.py', 'finance/FORMATS.md',
     'finance/ask/*.py', 'finance/ask/*.html', 'finance/ask/*.sh',   # Ask my finances: prompts name family
-    'homeassistant/config/secrets.yaml', 'homeassistant/config/.storage/*',
     'monitoring/grafana/provisioning/dashboards/finance.json',   # names banks, cards and loans
+    # the Windows PC dashboard names the lab's AI (a blocked word) in its labels and queries (2026-11-25)
+    'monitoring/dashboards-src/windows_pc.py', 'monitoring/grafana/provisioning/dashboards/windows-pc.json',
 ]
 PUBLIC = [
     '*/compose.y*ml', '*/*/compose.y*ml',
@@ -82,7 +83,6 @@ PUBLIC = [
     'jellyfin/servarr/jellyseerr/settings.json',
     'jellyfin/servarr/scripts/*.sh', 'jellyfin/servarr/scripts/*.snippet',
     'jellyfin/music/slskd-data/slskd.yml',
-    'homeassistant/config/*.yaml', 'homeassistant/config/blueprints/**/*.yaml',
 ]
 # Self-built apps, each in its own private repo (tools/private_mirrors.sh): nothing of theirs is
 # published here, but their .env files and private files still go into the encrypted bundles.
@@ -90,9 +90,6 @@ OWN_REPO = ('landing/', 'jobs/', 'finance/', 'gym/', 'health/', 'ipodesk/', 'mov
             'resume/', 'updater/', 'lab-ai/', 'lgtv/', 'phone/')
 SKIP = [
     '**/__pycache__/*', '**/*.bak*', '**/*cache*.json',
-    'homeassistant/config/.storage/core.restore_state', 'homeassistant/config/.storage/trace.*',
-    'homeassistant/config/.storage/repairs.*', 'homeassistant/config/.storage/bluetooth.*',
-    'homeassistant/config/.storage/frontend.*',
 ]
 PRUNE = {   # big data folders never worth walking
     'jellyfin/config/metadata', 'jellyfin/config/cache', 'jellyfin/config/.cache', 'jellyfin/config/log',
@@ -100,7 +97,7 @@ PRUNE = {   # big data folders never worth walking
     'jellyfin/config/data/temp', 'jellyfin/music/navidrome-data', 'jellyfin/servarr/prowlarr/Definitions',
     'jellyfin/jellystat/db', 'jellyfin/jellystat/backup-data', 'monitoring/scrutiny/influxdb',
     'paperless/data', 'finance/mail', 'finance/samples', 'finance/backups', 'finance/state',
-    'homeassistant/config/deps', 'homeassistant/config/.cache', 'pihole/etc-pihole/listsCache',
+    'pihole/etc-pihole/listsCache',
     'updater/state', 'jellyfin/logs', 'finance/ask/state',
 }
 PRUNE_NAMES = {'__pycache__', 'MediaCover', 'Backups', 'logs', 'log', 'node_modules', '.git'}
@@ -140,8 +137,9 @@ EMAIL = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-
 EMAIL_OK = re.compile(r'(?i)(@(example\.(com|org|net)|users\.noreply\.github\.com|localhost)$|^(noreply|example)@|^git@github\.com$)')
 VPA = re.compile(r'(?i)(?<![\w.-])[\w.-]+@(ok(axis|hdfcbank|icici|sbi)|ybl|paytm|upi|ibl|axl|apl|ptyes|ptsbi|ptaxis|pthdfc)\b')
 PH = re.compile(r'\[\[(secret|private):([A-Z0-9_]+)\]\]')
-PHONE = re.compile(r'(?<![\d.:/#-])(?:\+91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}(?![\d.:/-])')
-CARD = re.compile(r'(?<![\d.])(?:[3-6]\d{14,15}|\d{4}[ -]\d{4}[ -]\d{4}[ -]\d{3,4})(?![\d.])')
+# Not next to a letter either: a SHA-256 in a file manifest holds 10-digit runs (resume-web, 2026-11-25).
+PHONE = re.compile(r'(?<![\w.:/#-])(?:\+91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}(?![\w.:/-])')
+CARD = re.compile(r'(?<![\w.])(?:[3-6]\d{14,15}|\d{4}[ -]\d{4}[ -]\d{4}[ -]\d{3,4})(?![\w.])')
 AADHAAR = re.compile(r'(?<!\d)[2-9]\d{3} \d{4} \d{4}(?!\d)')
 PAN = re.compile(r'\b[A-Z]{3}[ABCFGHLJPT][A-Z]\d{4}[A-Z]\b')
 IFSC = re.compile(r'\b[A-Z]{4}0[A-Z0-9]{6}\b')
@@ -394,11 +392,6 @@ def live_names():
     except Exception as e:
         print(f'  live names (seerr): {type(e).__name__}')
     try:
-        person = json.loads(read_text(LIVE / 'homeassistant/config/.storage/person'))
-        names.update(i.get('name', '') for i in person.get('data', {}).get('items', []))
-    except Exception as e:
-        print(f'  live names (home assistant): {type(e).__name__}')
-    try:
         ts = json.loads(subprocess.run(['tailscale', 'status', '--json'], capture_output=True, text=True, timeout=15).stdout)
         for u in (ts.get('User') or {}).values():
             names.update([u.get('LoginName', ''), u.get('DisplayName', '')])
@@ -561,7 +554,7 @@ def build():
 
     # secret values from every env-style private file come first, so their names are the env keys
     env_keys = collections.Counter()
-    env_files = [r for r in private if r.endswith('.env') or r == 'homeassistant/config/secrets.yaml']
+    env_files = [r for r in private if r.endswith('.env')]
     parsed = {}
     for rel in env_files:
         text = read_any(LIVE / rel)

@@ -14,31 +14,6 @@
       "service": "http://192.168.0.10:5055"
     },
     {
-      "hostname": "sonarr.[[private:DOMAIN]]",
-      "originRequest": {},
-      "service": "http://192.168.0.10:8989"
-    },
-    {
-      "hostname": "radarr.[[private:DOMAIN]]",
-      "originRequest": {},
-      "service": "http://192.168.0.10:7878"
-    },
-    {
-      "hostname": "bazarr.[[private:DOMAIN]]",
-      "originRequest": {},
-      "service": "http://192.168.0.10:6767"
-    },
-    {
-      "hostname": "qb.[[private:DOMAIN]]",
-      "originRequest": {},
-      "service": "http://192.168.0.10:8080"
-    },
-    {
-      "hostname": "prowlarr.[[private:DOMAIN]]",
-      "originRequest": {},
-      "service": "http://192.168.0.10:9696"
-    },
-    {
       "hostname": "pihole.[[private:DOMAIN]]",
       "originRequest": {},
       "path": "admin",
@@ -53,11 +28,6 @@
       "hostname": "navidrome.[[private:DOMAIN]]",
       "originRequest": {},
       "service": "http://192.168.0.10:4533"
-    },
-    {
-      "hostname": "soulseek.[[private:DOMAIN]]",
-      "originRequest": {},
-      "service": "http://192.168.0.10:5030"
     },
     {
       "hostname": "finance.[[private:DOMAIN]]",
@@ -102,7 +72,7 @@
       "service": "http_status:404"
     }
   ],
-  "version": 38,
+  "version": 39,
   "warp-routing": {
     "enabled": false
   }
